@@ -1,6 +1,6 @@
 {
   "name": "skeleton",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "puppeteer": "^0.10.1",
+    "puppeteer": "^0.12.0",
     "sockjs": "^0.3.19",
     "sockjs-client": "^1.1.4"
   },
