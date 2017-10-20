@@ -13,6 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "puppeteer": "^0.10.1"
+    "puppeteer": "^0.10.1",
+    "sockjs": "^0.3.19",
+    "sockjs-client": "^1.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-webpack": "^1.2.5",
+    "eslint-plugin-import": "^2.8.0"
   }
 }
