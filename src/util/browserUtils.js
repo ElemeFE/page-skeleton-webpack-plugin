@@ -4,8 +4,8 @@ function isBase64Img(img) {
 }
 
 function getBase64(width, height, color) {
-  const CANVAS_ID = '#pre-canvas'
-  let canvas = document.querySelector(CANVAS_ID)
+  const CANVAS_ID = 'pre-canvas'
+  let canvas = document.querySelector(`#${CANVAS_ID}`)
   if (!canvas) {
     canvas = document.createElement('canvas')
     canvas.style.position = 'absolute'
