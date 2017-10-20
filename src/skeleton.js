@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
 const { sleep, genScriptContent } = require('./util/utils')
-const scriptFns = require('./util/browserUtils')
 
 const skeleton = async function(url, option = {}) {
   const defaultOption = {
@@ -20,31 +19,20 @@ const skeleton = async function(url, option = {}) {
   const page = await browser.newPage()
   await page.emulate(devices[device])
   await page.goto(url)
-  // 将一些 utils 插入到打开的页面执行环境中
-  await page.addScriptTag({
-    content: genScriptContent(...scriptFns)
-  })
+  const content = await genScriptContent()
+  // `./util/headlessClient.js` 文件插入到 page 中
+  await page.addScriptTag({ content })
   await sleep(defer)
 
   const html = await page.evaluate(async (remove, excludes, hide) => {
-
-    const $ = document.querySelectorAll.bind(document)
-
-    if (remove.length) {
-      const removeEle = $(remove.join(','))
-      Array.from(removeEle).forEach(ele => ele.parentNode.removeChild(ele))
+    let outHtml
+    try {
+      // `getOutHtml` 方法是通过 `addScriptTag` 方法插入 js 代码中的方法
+      outHtml = await getOutHtml(remove, excludes, hide)
+    } catch (err) {
+      throw new Error(err)
     }
-
-    if (hide.length) {
-      const hideEle = $(hide.join(','))
-      Array.from(hideEle).forEach(ele => ele.style.opacity = 0)
-    }
-
-    const excludesEle = excludes.length ? Array.from($(excludes.join(','))) : []
-
-    await traverse(document.documentElement, excludesEle)
-
-    return document.documentElement.outerHTML
+    return outHtml
 
   }, remove, excludes, hide)
 
