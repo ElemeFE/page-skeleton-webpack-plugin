@@ -1,8 +1,9 @@
 /**
  * this file's centent will be insert into the page which headless Chrome open.
- * and will be exec in browser environment.
+ * and will be exec in browser environment. 
  */
-
+// TODO: IF this file is more than 500 lines, pls split it into modules, and use
+// webpack packup it.
 /**
  * get the output html source code,
  * this function return a promise, and the `html` will be resolve
@@ -214,11 +215,9 @@ const getOutHtml = (function (document) {
     }
 
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
-
     const root = document.documentElement
-
     await traverse(root, excludesEle)
-
+    // TODO: 对输出的 html 进行处理，比如删除 script 标签，对 style tree shake...
     return root.outerHTML
 
   }

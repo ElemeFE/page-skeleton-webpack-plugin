@@ -4,7 +4,7 @@ const { sleep, genScriptContent } = require('./util/utils')
 
 const skeleton = async function(url, option = {}) {
   const defaultOption = {
-    device: 'iPhone 6'
+    device: 'iPhone 6 Plus'
   }
   const {
     device,
