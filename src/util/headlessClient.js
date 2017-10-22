@@ -18,7 +18,9 @@ const getOutHtml = (function (document) {
   const TEXT_COLOR = '#EEEEEE'
   const BUTTON_COLOR = '#EFEFEF'
   const BACK_COLOR = '#EFEFEF'
+  const TRANSPARENT = 'transparent'
   const EXT_REG = /jpeg|png|gif|svg/
+  const removedTags = ['script', 'link', 'title']
 
   const $$ = document.querySelectorAll.bind(document)
   const isBase64Img = img => /base64/.test(img.src)
@@ -35,8 +37,7 @@ const getOutHtml = (function (document) {
       document.body.appendChild(canvas)
       canvas.id = CANVAS_ID
     }
-    canvas.width = width
-    canvas.height = height
+    Object.assign(canvas, { width, height })
     const ctx = canvas.getContext('2d')
     ctx.fillStyle = color
     ctx.fillRect(0, 0, width, height)
@@ -60,6 +61,7 @@ const getOutHtml = (function (document) {
 
   function imgHandler(ele) {
     const { width, height } = ele.getBoundingClientRect()
+    // 图片宽或高为零，不用处理，即使处理，canvas.toBlob 也会报错
     if (width === 0 || height === 0) return Promise.resolve()
     return new Promise((resolve, reject) => {
       getBase64(width, height, IMG_COLOR)
@@ -133,7 +135,7 @@ const getOutHtml = (function (document) {
   }
 
   function transparent(ele) {
-    ele.style.color = 'transparent'
+    ele.style.color = TRANSPARENT
   }
 
   function setOpacity(ele) {
@@ -149,18 +151,29 @@ const getOutHtml = (function (document) {
     Array.from(children).forEach((c, i) => {
       if (i > 0) c.parentNode.removeChild(c)
     })
+    // 将 li 所有兄弟元素设置成相同的元素，保证生成的页面骨架整齐
     for(let i = 1; i < len; i++) {
       ele.appendChild(firstChild.cloneNode(true))
     }
+  }
+
+  function removeHandler(ele) {
+    const parent = ele.parentNode
+    parent && parent.removeChild(ele)
   }
 
   function traverse(ele, excludesEle) {
     const texts = []
     const buttons = []
     const hasImageBackEles = []
+    const toRemove = []
     const imgs = [];
     (function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
+      const lowerTagName = ele.tagName.toLowerCase()
+      if (~removedTags.indexOf(lowerTagName)) {
+        return toRemove.push(ele)
+      }
       if (~excludesEle.indexOf(ele)) return false
       if (ele.children.length > 0 && /UL|OL/.test(ele.tagName)) {
         listHandle(ele)
@@ -196,6 +209,7 @@ const getOutHtml = (function (document) {
 
     })(ele)
 
+    toRemove.forEach(ele => removeHandler(ele))
     texts.forEach(ele => textHandler(ele))
     buttons.forEach(ele => buttonHandler(ele))
     hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
@@ -217,7 +231,6 @@ const getOutHtml = (function (document) {
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const root = document.documentElement
     await traverse(root, excludesEle)
-    // TODO: 对输出的 html 进行处理，比如删除 script 标签，对 style tree shake...
     return root.outerHTML
 
   }

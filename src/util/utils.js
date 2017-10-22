@@ -10,6 +10,29 @@ const promisefy = fn => (...args) => {
   })
 }
 
+async function writeShell(pathname, html) {
+  const templatesPath = path.resolve(__dirname, '../templates')
+  const jsFilename = 'shell.js'
+  const vueFilename = 'shell.vue'
+  const jsDestPath = path.resolve(pathname, jsFilename)
+  const vueDestPath = path.resolve(pathname, vueFilename)
+  try {
+    await promisefy(fs.copyFile)(path.resolve(templatesPath, jsFilename), jsDestPath)
+    const vueTemplate = await promisefy(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
+    const code = vueTemplate.replace(/\$\$html/g, html)
+    await promisefy(fs.writeFile)(vueDestPath, code, 'utf-8')
+  } catch(err) {
+    console.log(err)
+  }
+}
+
+function getSegment(html) {
+  return html
+    .replace(/<html(?:\s.*|)>(.*)<\/html>/g, '$1')
+    .replace(/<body(?:\s.*|)>(.*)<\/body>/g, '$1')
+    .replace(/<head>(.*)<\/head>/g, '$1')
+}
+
 function sleep(duration) {
   return new Promise(resolve => {
     setTimeout(resolve, duration)
@@ -30,5 +53,6 @@ async function genScriptContent() {
 module.exports = {
   sleep,
   promisefy,
+  writeShell,
   genScriptContent
 }

@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
+    "memory-fs": "^0.4.1",
     "puppeteer": "^0.12.0",
     "sockjs": "^0.3.19",
     "sockjs-client": "^1.1.4"
