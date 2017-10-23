@@ -49,6 +49,13 @@ async function genScriptContent() {
   }
   return result
 }
+// add script tag into html string, just as document.body.appendChild(script)
+function addScriptTag(source, src) {
+  const token = source.split('</body>')
+  if (token.length < 2) return source
+  const scriptTag = `<script type="text/javascript" src="${src}" defer></script>`
+  return `${token[0]}${scriptTag}</body>${token[1]}`
+}
 
 function log(msg) {
   console.log(`[PSG] ${msg}`)
@@ -58,6 +65,7 @@ module.exports = {
   log,
   sleep,
   promisefy,
+  addScriptTag,
   writeShell,
   getSegment,
   genScriptContent

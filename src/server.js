@@ -1,3 +1,4 @@
+const fs = require('fs')
 const http = require('http')
 const sockjs = require('sockjs')
 const hasha = require('hasha')
@@ -22,6 +23,11 @@ class Server extends EventEmitter {
   listen() {
     const app = this.app = express()
     
+    app.get(`/${this.staticPath}/index.js`, (req, res) => {
+      res.setHeader('Content-Type', 'application/javascript')
+      fs.createReadStream(path.join(__dirname, '..', 'client', 'index.js')).pipe(res)
+    })
+
     app.use('/:filename', (req, res) => {
       const { filename } = req.params
       if (!/\.html$/.test(filename)) return false
@@ -83,6 +89,15 @@ class Server extends EventEmitter {
   close() {
     process.exit()
   }
+  // Server 端主动推送消息到制定 socket
+  sockWrite(sockets, type, data) {
+    sockets.forEach(sock => {
+      sock.write(JSON.stringify({
+        type, data
+      }))
+    })
+  }
+
 }
 
 
