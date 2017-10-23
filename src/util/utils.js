@@ -54,6 +54,6 @@ module.exports = {
   sleep,
   promisefy,
   writeShell,
-  getSegment
+  getSegment,
   genScriptContent
 }

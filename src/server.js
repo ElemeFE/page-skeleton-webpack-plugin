@@ -58,7 +58,7 @@ class Server extends EventEmitter {
                   
                   const pathName = path.join(__dirname, self.staticPath)
                   const fileName = 'index.html'
-                  self.cacheHtml = html
+                  self.cacheHtml = getSegment(html)
                   conn.write(`http://127.0.0.1:${self.port}/${fileName}`)
                   myFs.mkdirpSync(pathName)
                   myFs.writeFile(path.join(pathName, fileName), html, 'utf8', err => {
