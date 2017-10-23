@@ -4,7 +4,7 @@
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "webpack ./client/entry.js ./client/index.js --color --config client/webpack.config.js"
   },
   "keywords": [
     "puppeteer"
@@ -20,8 +20,13 @@
     "sockjs-client": "^1.1.4"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "eslint": "^4.9.0",
     "eslint-config-webpack": "^1.2.5",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.8.0",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.8.1"
   }
 }

@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const { skeleton } = require('../index')
+const { Skeleton } = require('../index')
 const url = 'http://h5.test.ele.me/limitbuy/#/home'
 
 const option = {
@@ -18,7 +18,7 @@ const option = {
 
 (async function() {
 
-  const { html } = await skeleton(url, option)
+  const { html } = await new Skeleton(url, option).genHtml
   const pathName = path.join(__dirname, '/index.html')
   fs.writeFile(pathName, html, 'utf8', err => {
     if (err) console.log(err)

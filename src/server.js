@@ -6,7 +6,7 @@ const path = require('path')
 const EventEmitter = require('events')
 const MemoryFileSystem = require('memory-fs')
 const { getSegment, writeShell, log } = require('./util/utils')
-const skeleton = require('./skeleton')
+const Skeleton = require('./Skeleton')
 
 const myFs = new MemoryFileSystem()
 
@@ -45,7 +45,7 @@ class Server extends EventEmitter {
 
                 (async () => {
 
-                  const { html } = await skeleton(url, this.options)
+                  const { html } = await new Skeleton(url, this.options).genHtml()
                   const pathName = path.join(__dirname, this.staticPath)
                   let fileName = await hasha(html, { algorithm: 'md5' })
                   fileName += '.html'

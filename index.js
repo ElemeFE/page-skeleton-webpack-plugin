@@ -1,7 +1,7 @@
 const SkeletonPlugin = require('./src/skeletonPlugin')
-const skeleton = require('./src/skeleton')
+const Skeleton = require('./src/Skeleton')
 
 module.exports = {
   SkeletonPlugin,
-  skeleton
+  Skeleton
 }
