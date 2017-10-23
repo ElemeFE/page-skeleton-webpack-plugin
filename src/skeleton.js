@@ -2,9 +2,10 @@ const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
 const { sleep, genScriptContent } = require('./util/utils')
 
-const skeleton = async function(url, option = {}) {
+const skeleton = async function(url, options = {}) {
   const defaultOption = {
-    device: 'iPhone 6 Plus'
+    device: 'iPhone 6 Plus',
+    executablePath: '/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
   }
   const {
     device,
@@ -12,10 +13,11 @@ const skeleton = async function(url, option = {}) {
     remove = [],
     excludes = [],
     hide = [],
-    launch: launchOpt
-  } = Object.assign({}, defaultOption, option)
+    headless,
+    executablePath
+  } = Object.assign({}, defaultOption, options)
 
-  const browser = await puppeteer.launch(launchOpt)
+  const browser = await puppeteer.launch({ headless, executablePath })
   const page = await browser.newPage()
   await page.emulate(devices[device])
   await page.goto(url)

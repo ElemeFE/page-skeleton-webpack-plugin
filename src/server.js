@@ -1,76 +1,68 @@
 const http = require('http')
 const sockjs = require('sockjs')
+const hasha = require('hasha')
 const express = require('express')
 const path = require('path')
 const EventEmitter = require('events')
 const MemoryFileSystem = require('memory-fs')
-const { getSegment } = require('./util/utils')
-const myFs = new MemoryFileSystem()
-
+const { getSegment, writeShell, log } = require('./util/utils')
 const skeleton = require('./skeleton')
 
+const myFs = new MemoryFileSystem()
+
 class Server extends EventEmitter {
-  constructor({ port = 9898, staticPath = 'statics' }) {
+  constructor(options) {
     super()
-    this.port = port
-    this.staticPath = staticPath
+    Object.keys(options).forEach(k => Object.assign(this, { [k]: options[k] }))
+    this.options = options
+    // 用于缓存写入 shell.vue 文件的 html
     this.cacheHtml = ''
-    this.createServer({ staticPath, port })
   }
   // 启动服务
-  createServer({ staticPath, port }) {
-    if (!staticPath) throw new Error('You must provide static path')
-    const self = this
+  listen() {
     const app = this.app = express()
     
-    app.use('/index.html', (req, res) => {
-      const html = myFs.readFileSync(path.resolve(__dirname, `${this.staticPath}/index.html`), 'utf-8')
-      res.send(html)
+    app.use('/:filename', (req, res) => {
+      const { filename } = req.params
+      if (!/\.html$/.test(filename)) return false
+      myFs.readFile(path.resolve(__dirname, `${this.staticPath}/${filename}`), 'utf-8', (err, html) => {
+        if (err) return log(err)
+        res.send(html)
+      })
     })
 
     // app.use('/', express.static(path.resolve(__dirname, staticPath)))
 
     var sockjsServer = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' })
 
-    sockjsServer.on('connection', function(conn) {
-        conn.on('data', function(message) {
+    sockjsServer.on('connection', conn => {
+        conn.on('data', message => {
             const msg = JSON.parse(message)
             switch (msg.type) {
               case 'generate': {
-                if (!msg.url) return console.log(msg)
-                const url = msg.url
-                console.log(url)
-                const option = {
-                  device: 'iPhone 6 Plus',
-                  defer: 5000,
-                  excludes: ['.app-header'],
-                  remove: ['.icon-wrapper', '.unlogin-container_1Kyfq_0', '.main-wrapper_2p2-E_0'],
-                  hide: ['.remain-bar'],
-                  launch: {
-                    headless: false,
-                    executablePath: '/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
-                  }
-                };
+                if (!msg.url) return log(msg)
+                const url = msg.url;
 
-                (async function() {
+                (async () => {
 
-                  const { html } = await skeleton(url, option)
-                  
-                  const pathName = path.join(__dirname, self.staticPath)
-                  const fileName = 'index.html'
-                  self.cacheHtml = getSegment(html)
-                  conn.write(`http://127.0.0.1:${self.port}/${fileName}`)
+                  const { html } = await skeleton(url, this.options)
+                  const pathName = path.join(__dirname, this.staticPath)
+                  let fileName = await hasha(html, { algorithm: 'md5' })
+                  fileName += '.html'
+                  this.cacheHtml = getSegment(html)
+                  conn.write(html)
+                  conn.write(`http://127.0.0.1:${this.port}/${fileName}`)
                   myFs.mkdirpSync(pathName)
                   myFs.writeFile(path.join(pathName, fileName), html, 'utf8', err => {
-                    if (err) console.log(err)
+                    if (err) log(err)
                   })
 
                 })()
-                .catch(console.log.bind(console))
+                .catch(log)
                 break
               }
               case 'ok': {
-                self.emit('writeShell', self.cacheHtml)
+                writeShell(this.pathname, this.cacheHtml)
                 break
               }
             }
@@ -83,8 +75,8 @@ class Server extends EventEmitter {
 
     const listenServer = http.createServer(app)
     sockjsServer.installHandlers(listenServer, { prefix:'/socket' })
-    listenServer.listen(port, () => {
-      console.log(`start server at port: ${port}`)
+    listenServer.listen(this.port, () => {
+      log(`page-skeleton server listen at port: ${this.port}`)
     })
   }
    // 关闭服务

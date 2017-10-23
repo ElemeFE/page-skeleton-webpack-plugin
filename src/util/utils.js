@@ -50,7 +50,12 @@ async function genScriptContent() {
   return result
 }
 
+function log(msg) {
+  console.log(`[PSG] ${msg}`)
+}
+
 module.exports = {
+  log,
   sleep,
   promisefy,
   writeShell,

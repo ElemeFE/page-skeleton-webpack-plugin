@@ -1,23 +1,22 @@
 const Server = require('./Server')
-const { writeShell } = require('./util/utils')
+const { log } = require('./util/utils')
+const { pluginConfig, port, staticPath } = require('./config/config')
 
-function SkeletonPlugin({ pathname }) {
-  console.log(pathname)
-  this.pathname = pathname
+function SkeletonPlugin(options = {}) {
+  this.options = Object.assign({ port, staticPath }, pluginConfig, options)
   this.server = null
 }
 
 SkeletonPlugin.prototype.apply = function(compiler) {
   compiler.plugin('entry-option', compiler => {
-    this.server = new Server({ staticPath: 'statics' })
-    this.server.on('writeShell', html => {
-      writeShell(this.pathname, html)
+    const server = this.server = new Server(this.options)
+    server.listen()
+  });
+  ['watch-close', 'failed'].forEach(event => {
+    compiler.plugin(event, () => {
+      this.server && this.server.close()
     })
-  })
-  compiler.plugin('fail', compiler => {
-    this.server && this.server.close()
   })
 }
 
 module.exports = SkeletonPlugin
-
