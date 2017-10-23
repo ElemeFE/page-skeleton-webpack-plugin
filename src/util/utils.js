@@ -28,9 +28,9 @@ async function writeShell(pathname, html) {
 
 function getSegment(html) {
   return html
-    .replace(/<html(?:\s.*|)>(.*)<\/html>/g, '$1')
-    .replace(/<body(?:\s.*|)>(.*)<\/body>/g, '$1')
-    .replace(/<head>(.*)<\/head>/g, '$1')
+    .replace(/(<html[^>]*>|<\/html>)/g, '')
+    .replace(/(<body[^>]*>|<\/body>)/g, '')
+    .replace(/(<head>|<\/head>)/g, '')
 }
 
 function sleep(duration) {
@@ -54,5 +54,6 @@ module.exports = {
   sleep,
   promisefy,
   writeShell,
+  getSegment
   genScriptContent
 }
