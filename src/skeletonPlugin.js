@@ -23,6 +23,7 @@ SkeletonPlugin.prototype.apply = function(compiler) {
     const assets = compilation.assets
     const htmlFiles = Object.keys(assets).filter(filename => /\.html$/.test(filename))
     const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
+
     htmlFiles.forEach(filename => {
       const { source, size } = assets[filename]
       assets[filename] = {

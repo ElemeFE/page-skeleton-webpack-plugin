@@ -17,7 +17,7 @@
 **使用流程：**
 
 #### 贡献代码
-
+在 examples 目录中找到开发的项目。 npm run dev 启动后进行开发。
 如果你对该项目感兴趣，欢迎大家贡献代码。
 
 #### TODO List
@@ -31,7 +31,7 @@
 - 添加eslint
 - 发布流程：发布到npm。发布脚本？
 - 单元测试
-- 添加example
+- 添加example [已增加 sale 页面]
 - 文档：README.md
 
 二期：

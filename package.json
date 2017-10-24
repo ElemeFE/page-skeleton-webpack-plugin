@@ -32,6 +32,7 @@
     "eslint-plugin-import": "^2.8.0",
     "html-webpack-include-assets-plugin": "^1.0.2",
     "uglifyjs-webpack-plugin": "^0.4.6",
+    "vue": "^2.5.2",
     "webpack": "^3.8.1"
   }
 }
