@@ -23,16 +23,19 @@
 #### TODO List
 
 - 客户端接收消息、打印消息、跳转页面、界面
-- Server 中sockjs 代码优化
+- Server 中sockjs 代码优化（完成）
 - plugin 配置参数 schema 验证
 - 一个plugin能够获取另外一个plugin的配置吗？
-- 优化错误处理
+- 优化错误处理（完成）
 - Skeleton优化：隐藏高度小于某个值的元素。背景颜色不是灰色处理成灰色
 - 添加eslint
 - 发布流程：发布到npm。发布脚本？
 - 单元测试
 - 添加example
 - 文档：README.md
+- 动态利用 canvas 替换图片 base64
+
+需要放到 htmlplugin 后面
 
 二期：
 

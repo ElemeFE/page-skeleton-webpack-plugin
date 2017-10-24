@@ -14,9 +14,8 @@ const option = {
     headless: false,
     executablePath: '/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
   }
-};
-
-(async function() {
+}
+;(async function() {
 
   const { html } = await new Skeleton(url, option).genHtml
   const pathName = path.join(__dirname, '/index.html')

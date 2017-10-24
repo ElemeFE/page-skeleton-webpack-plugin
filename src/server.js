@@ -6,7 +6,7 @@ const express = require('express')
 const path = require('path')
 const EventEmitter = require('events')
 const MemoryFileSystem = require('memory-fs')
-const { getSegment, writeShell, log, promisefy } = require('./util/utils')
+const { htmlMinify, writeShell, log, promisify } = require('./util/utils')
 const Skeleton = require('./Skeleton')
 
 const myFs = new MemoryFileSystem()
@@ -24,7 +24,7 @@ class Server extends EventEmitter {
     const { app, staticPath } = this
     // app.use(`/${staticPath}`, express.static(path.resolve(__dirname, staticPath)))
 
-    const staticFiles = await promisefy(fs.readdir)(path.resolve(__dirname, '../client'))
+    const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
 
     staticFiles
       .filter(file => /\.bundle/.test(file))
@@ -40,10 +40,10 @@ class Server extends EventEmitter {
       if (!/\.html$/.test(filename)) return false
       let html
       try {
-        // if I use `promisefy(myFs.readFile)` if will occur an error 
+        // if I use `promisify(myFs.readFile)` if will occur an error 
         // `TypeError: this[(fn + "Sync")] is not a function`,
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
-        html = await promisefy(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
+        html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
       } catch(err) {
         log(err, 'error')
       } 
@@ -133,9 +133,9 @@ class Server extends EventEmitter {
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
-      this.cacheHtml = getSegment(html)
+      this.cacheHtml = htmlMinify(html)
       myFs.mkdirpSync(pathName)
-      await promisefy(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), html, 'utf8')
+      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), html, 'utf8')
       return fileName      
     } catch (err) {
       log(err, 'error')

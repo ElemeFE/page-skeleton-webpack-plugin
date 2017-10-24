@@ -1,15 +1,9 @@
+const { promisify } = require('util')
 const fs = require('fs')
+const fse = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
-
-const promisefy = fn => (...args) => {
-  return new Promise((resolve, reject) => {
-    fn(...args, (err, data) => {
-      if (err) return reject(err)
-      return resolve(data)
-    })
-  })
-}
+const { minify } = require('html-minifier')
 
 async function writeShell(pathname, html) {
   const templatesPath = path.resolve(__dirname, '../templates')
@@ -18,17 +12,23 @@ async function writeShell(pathname, html) {
   const jsDestPath = path.resolve(pathname, jsFilename)
   const vueDestPath = path.resolve(pathname, vueFilename)
   try {
-    await promisefy(fs.copyFile)(path.resolve(templatesPath, jsFilename), jsDestPath)
-    const vueTemplate = await promisefy(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
+    await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
+    const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
     const code = vueTemplate.replace(/\$\$html/g, html)
-    await promisefy(fs.writeFile)(vueDestPath, code, 'utf-8')
+    await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
   } catch(err) {
     log(err, 'error')
   }
 }
 
-function getSegment(html) {
-  return html
+function htmlMinify(html) {
+  const minHtml = minify(html, {
+    minifyCSS: true,
+    removeComments: true,
+    removeAttributeQuotes: true,
+    removeEmptyAttributes: true
+  })
+  return minHtml
     .replace(/(<html[^>]*>|<\/html>)/g, '')
     .replace(/(<body[^>]*>|<\/body>)/g, '')
     .replace(/(<head>|<\/head>)/g, '')
@@ -44,7 +44,7 @@ async function genScriptContent() {
   const sourcePath = path.resolve(__dirname, './headlessClient.js')
   let result
   try {
-    result = await promisefy(fs.readFile)(sourcePath, 'utf-8')
+    result = await promisify(fs.readFile)(sourcePath, 'utf-8')
   } catch(err) {
     throw new Error(err)
   }
@@ -68,9 +68,9 @@ function log(msg, type = 'log') {
 module.exports = {
   log,
   sleep,
-  promisefy,
+  promisify,
   addScriptTag,
   writeShell,
-  getSegment,
+  htmlMinify,
   genScriptContent
 }

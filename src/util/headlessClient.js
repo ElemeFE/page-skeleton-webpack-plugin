@@ -162,6 +162,13 @@ const getOutHtml = (function (document) {
     parent && parent.removeChild(ele)
   }
 
+  function inViewPort(ele) {
+    const rect = ele.getBoundingClientRect()
+
+    return rect.top < window.innerHeight
+      && rect.left < window.innerWidth
+  }
+
   function traverse(ele, excludesEle) {
     const texts = []
     const buttons = []
@@ -171,7 +178,10 @@ const getOutHtml = (function (document) {
     (function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
       const lowerTagName = ele.tagName.toLowerCase()
-      if (~removedTags.indexOf(lowerTagName)) {
+      if (
+          ~removedTags.indexOf(lowerTagName)
+          || !inViewPort(ele)
+        ) {
         return toRemove.push(ele)
       }
       if (~excludesEle.indexOf(ele)) return false
@@ -183,7 +193,7 @@ const getOutHtml = (function (document) {
       }
 
       // 将所有拥有 textChildNode 子元素的元素的文字颜色设置成背景色，这样就不会在显示文字了。
-      if (ele.childNodes && Array.from(ele.childNodes).some(n => n.nodeType === 3)) {
+      if (ele.childNodes && Array.from(ele.childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
         transparent(ele)
       }
       // 隐藏所有 svg 元素
@@ -196,13 +206,13 @@ const getOutHtml = (function (document) {
       if (ele.tagName === 'IMG' && !isBase64Img(ele)) {
         return imgs.push(ele)
       }
-      if (ele.nodeType === 1 && ele.tagName === 'BUTTON') {
+      if (ele.nodeType === Node.ELEMENT_NODE && ele.tagName === 'BUTTON') {
         return buttons.push(ele)
       }
       if (
         ele.childNodes
         && ele.childNodes.length === 1
-        && ele.childNodes[0].nodeType === 3
+        && ele.childNodes[0].nodeType === Node.TEXT_NODE
         ) {
         return texts.push(ele)
       }

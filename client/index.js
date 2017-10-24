@@ -1,8 +1,8 @@
 import SockJS from 'sockjs-client'
 import { port } from '../src/config/config'
 import { log } from './utils'
-
-var sock = new SockJS(`http://localhost:${port}/socket`)
+// TODO headless 打开的页面不连接 socket
+const sock = new SockJS(`http://localhost:${port}/socket`)
 sock.onopen = function() {
   log('connected')
   sock.send(JSON.stringify({open: 'test'}))
@@ -24,7 +24,7 @@ sock.onmessage = function(e) {
   }
  }
 
- sock.onclose = function() {
+sock.onclose = function() {
   log('close')
   sock.close()
- }
+}
