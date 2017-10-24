@@ -4,7 +4,9 @@
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
-    "prepublish": "webpack ./client/entry.js ./client/index.js --color --config client/webpack.config.js"
+    "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
+    "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
+    "prepublish": "npm run build:index && npm run build:sockjs"
   },
   "keywords": [
     "puppeteer"
@@ -12,12 +14,14 @@
   "author": "jocs",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^2.3.0",
     "express": "^4.16.2",
     "hasha": "^3.0.0",
     "memory-fs": "^0.4.1",
     "puppeteer": "^0.12.0",
     "sockjs": "^0.3.19",
-    "sockjs-client": "^1.1.4"
+    "sockjs-client": "^1.1.4",
+    "tiza": "^2.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

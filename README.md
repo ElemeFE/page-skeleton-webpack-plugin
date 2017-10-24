@@ -20,4 +20,23 @@
 
 如果你对该项目感兴趣，欢迎大家贡献代码。
 
+#### TODO List
+
+- 客户端接收消息、打印消息、跳转页面、界面
+- Server 中sockjs 代码优化
+- plugin 配置参数 schema 验证
+- 一个plugin能够获取另外一个plugin的配置吗？
+- 优化错误处理
+- Skeleton优化：隐藏高度小于某个值的元素。背景颜色不是灰色处理成灰色
+- 添加eslint
+- 发布流程：发布到npm。发布脚本？
+- 单元测试
+- 添加example
+- 文档：README.md
+
+二期：
+
+- 预览页面可编辑
+- ShellWebpackPlugin 将shell文件打包
+
 **注意：** **page-skeleton-webpack-plugin**还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必生产的**骨架页面** 是否满足你的要求。

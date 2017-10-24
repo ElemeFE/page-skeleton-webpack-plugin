@@ -232,7 +232,6 @@ const getOutHtml = (function (document) {
     const root = document.documentElement
     await traverse(root, excludesEle)
     return root.outerHTML
-
   }
 
   return getOutHtml

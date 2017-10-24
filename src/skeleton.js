@@ -34,7 +34,7 @@ class Skeleton {
         // `getOutHtml` 方法是通过 `addScriptTag` 方法插入 js 代码中的方法
         outHtml = await getOutHtml(remove, excludes, hide)
       } catch (err) {
-        log(err)
+        log(err, 'error')
       }
       return outHtml
 

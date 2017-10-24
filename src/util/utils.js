@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const chalk = require('chalk')
 
 const promisefy = fn => (...args) => {
   return new Promise((resolve, reject) => {
@@ -22,7 +23,7 @@ async function writeShell(pathname, html) {
     const code = vueTemplate.replace(/\$\$html/g, html)
     await promisefy(fs.writeFile)(vueDestPath, code, 'utf-8')
   } catch(err) {
-    console.log(err)
+    log(err, 'error')
   }
 }
 
@@ -57,8 +58,11 @@ function addScriptTag(source, src) {
   return `${token[0]}${scriptTag}</body>${token[1]}`
 }
 
-function log(msg) {
-  console.log(`[PSG] ${msg}`)
+function log(msg, type = 'log') {
+  if (type === 'log') {
+    return console.log(chalk.bold.blueBright(`[PSG] ${msg}`))
+  }
+  console[type](chalk.bold.redBright(msg))
 }
 
 module.exports = {
