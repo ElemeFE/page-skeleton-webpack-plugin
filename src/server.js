@@ -11,7 +11,8 @@ const {
   htmlMinify,
   writeShell,
   log,
-  promisify
+  promisify,
+  addScriptTag
 } = require('./util/utils')
 const Skeleton = require('./Skeleton')
 
@@ -117,18 +118,20 @@ class Server extends EventEmitter {
           const afterGenMsg = 'generator HTML successfully...'
           log(afterGenMsg)
           this.sockWrite(this.sockets, 'console', afterGenMsg)
-          const directUrl = `http://127.0.0.1:${this.port}/${fileName}`
-          this.sockWrite([conn], 'console', 'browser will open another page automaticlly...')
-          this.sockWrite([conn], 'success', directUrl)
+          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=true`
+          const openMsg = 'Browser open another page...'
+          this.sockWrite([conn], 'console', openMsg)
+          this.sockWrite([conn], 'success', openMsg)
           open(directUrl, { app: 'google chrome' })
           break
         }
         case 'ok': {
           this.sockWrite([conn], 'console', 'before write shell files...')
           await writeShell(this.pathname, this.cacheHtml)
-          const afterWriteMsg = 'shell files have been writen successfully...'
+          const afterWriteMsg = 'Write files successfully...'
           log(afterWriteMsg)
           this.sockWrite([conn], 'console', afterWriteMsg)
+          this.sockWrite([conn], 'success', afterWriteMsg)
           break
         }
       }
@@ -139,13 +142,15 @@ class Server extends EventEmitter {
    */
   async writeMagicHtml(html) {
     try {
-      const { staticPath } = this
+      const { staticPath, port } = this
+      const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
       this.cacheHtml = htmlMinify(html)
+      const sockHtml = addScriptTag(html, clientEntry)
       myFs.mkdirpSync(pathName)
-      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), html, 'utf8')
+      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), sockHtml, 'utf8')
       return fileName      
     } catch (err) {
       log(err, 'error')

@@ -8,6 +8,9 @@ const log = msg => {
     .log()
 }
 
+const isPreview = /preview=true/.test(window.location.href)
+
 export {
-  log
+  log,
+  isPreview
 }

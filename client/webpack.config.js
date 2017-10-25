@@ -10,6 +10,14 @@ module.exports = {
           presets: ['env']
         }
       }
+    }, {
+      test: /\.tpl\.html$/,
+      use: {
+        loader: 'raw-loader'
+      }
+    }, {
+      test: /\.vue/,
+      use: ['vue-loader']
     }]
   },
   plugins: [

@@ -21,6 +21,7 @@ const getOutHtml = (function (document) {
   const TRANSPARENT = 'transparent'
   const EXT_REG = /jpeg|png|gif|svg/
   const removedTags = ['script', 'link', 'title']
+  const CONSOLE_CLASS = '.sk-console'
 
   const $$ = document.querySelectorAll.bind(document)
   const isBase64Img = img => /base64/.test(img.src)
@@ -228,7 +229,8 @@ const getOutHtml = (function (document) {
 
   async function getOutHtml(remove, excludes, hide) {
     // 将 `remove` 队列中的元素删除
-    if (remove.length) {
+    if (Array.isArray(remove)) {
+      remove.push(CONSOLE_CLASS)
       const removeEle = $$(remove.join(','))
       Array.from(removeEle).forEach(ele => ele.parentNode.removeChild(ele))
     }

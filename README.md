@@ -22,7 +22,7 @@
 
 #### TODO List
 
-- 客户端接收消息、打印消息、跳转页面、界面
+- 客户端接收消息、打印消息、跳转页面、界面（完成）
 - Server 中sockjs 代码优化（完成）
 - plugin 配置参数 schema 验证
 - 一个plugin能够获取另外一个plugin的配置吗？
@@ -42,4 +42,4 @@
 - 预览页面可编辑
 - ShellWebpackPlugin 将shell文件打包
 
-**注意：** **page-skeleton-webpack-plugin**还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必生产的**骨架页面** 是否满足你的要求。
+**注意：** **page-skeleton-webpack-plugin**还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必检查生产的**骨架页面** 是否满足你的要求。
