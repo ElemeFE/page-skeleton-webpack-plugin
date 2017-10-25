@@ -46,7 +46,7 @@ async function genScriptContent() {
   try {
     result = await promisify(fs.readFile)(sourcePath, 'utf-8')
   } catch(err) {
-    throw new Error(err)
+    log(err, 'error')
   }
   return result
 }

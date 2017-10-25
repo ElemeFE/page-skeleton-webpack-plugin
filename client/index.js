@@ -14,7 +14,8 @@ sock.onmessage = function(e) {
   const { type, data } = JSON.parse(e.data)
   switch (type) {
     case 'success': {
-      window.open(data)
+      // window.open(data)
+      log(data)
       break
     }
     case 'console': {

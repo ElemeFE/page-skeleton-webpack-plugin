@@ -5,8 +5,14 @@ const hasha = require('hasha')
 const express = require('express')
 const path = require('path')
 const EventEmitter = require('events')
+const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
-const { htmlMinify, writeShell, log, promisify } = require('./util/utils')
+const {
+  htmlMinify,
+  writeShell,
+  log,
+  promisify
+} = require('./util/utils')
 const Skeleton = require('./Skeleton')
 
 const myFs = new MemoryFileSystem()
@@ -89,6 +95,9 @@ class Server extends EventEmitter {
   close() {
     // TODO...
     process.exit()
+    this.listenServer.close(() => {
+      log('server closed')
+    })
   }
   /**
    * 处理 data socket 消息
@@ -111,6 +120,7 @@ class Server extends EventEmitter {
           const directUrl = `http://127.0.0.1:${this.port}/${fileName}`
           this.sockWrite([conn], 'console', 'browser will open another page automaticlly...')
           this.sockWrite([conn], 'success', directUrl)
+          open(directUrl, { app: 'google chrome' })
           break
         }
         case 'ok': {
