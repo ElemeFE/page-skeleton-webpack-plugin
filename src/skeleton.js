@@ -14,12 +14,10 @@ class Skeleton {
       remove = [],
       excludes = [],
       hide = [],
-      headless,
-      executablePath
+      headless
     } = this.options
     const { url } = this
-
-    const browser = await puppeteer.launch({ headless, executablePath })
+    const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
     await page.emulate(devices[device])
     await page.goto(url)
@@ -29,15 +27,7 @@ class Skeleton {
     await sleep(defer)
 
     const html = await page.evaluate(async (remove, excludes, hide) => {
-      let outHtml
-      try {
-        // `getOutHtml` 方法是通过 `addScriptTag` 方法插入 js 代码中的方法
-        outHtml = await getOutHtml(remove, excludes, hide)
-      } catch (err) {
-        log(err, 'error')
-      }
-      return outHtml
-
+      return getOutHtml(remove, excludes, hide)
     }, remove, excludes, hide)
 
     browser.close()

@@ -13,67 +13,42 @@ const getOutHtml = (function (document) {
   /**
    * 常量
    */
-  const CANVAS_ID = 'pre-canvas'
+  // const CANVAS_ID = 'pre-canvas'
   const IMG_COLOR = '#EFEFEF'
   const TEXT_COLOR = '#EEEEEE'
   const BUTTON_COLOR = '#EFEFEF'
   const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
   const EXT_REG = /jpeg|png|gif|svg/
-  const removedTags = ['script', 'link', 'title']
+  const removedTags = ['script', 'link', 'title', 'svg']
   const CONSOLE_CLASS = '.sk-console'
+  const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
   const $$ = document.querySelectorAll.bind(document)
   const isBase64Img = img => /base64/.test(img.src)
-  /**
-   * 获取颜色为 `color` ,宽高为: `width`,`height`的图片的 base64编码
-   * 返回一个 promise resolve(base64)
-   */
-  function getBase64(width, height, color) {
-    let canvas = document.querySelector(`#${CANVAS_ID}`)
-    if (!canvas) {
-      canvas = document.createElement('canvas')
-      canvas.style.position = 'absolute'
-      canvas.left = '-100000px'
-      document.body.appendChild(canvas)
-      canvas.id = CANVAS_ID
-    }
-    Object.assign(canvas, { width, height })
-    const ctx = canvas.getContext('2d')
-    ctx.fillStyle = color
-    ctx.fillRect(0, 0, width, height)
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(blob => {
-        var reader = new FileReader()
-        if (blob) {
-          reader.readAsDataURL(blob)
-        } else {
-          reject('toBlob fail')
-        }
-        reader.onloadend = function(){
-          resolve(reader.result)
-        }
-        reader.onerror = function() {
-          reject()
-        }
-      }, 'image/jpeg', 1)
-    })
+
+  const setAttributes = (ele, attrs) => {
+    Object.keys(attrs).forEach(k => ele.setAttribute(k, attrs[k]))
+  }
+
+  const inViewPort = function(ele) {
+    const rect = ele.getBoundingClientRect()
+    return rect.top < window.innerHeight
+      && rect.left < window.innerWidth
   }
 
   function imgHandler(ele) {
     const { width, height } = ele.getBoundingClientRect()
-    // 图片宽或高为零，不用处理，即使处理，canvas.toBlob 也会报错
-    if (width === 0 || height === 0) return Promise.resolve()
-    return new Promise((resolve, reject) => {
-      getBase64(width, height, IMG_COLOR)
-      .then(base64 => {
-        ele.src = base64
-        resolve()
-      })
-      .catch(err => {
-        resolve()
-      })
-    })
+    const attrs = {
+      width,
+      height,
+      src: SMALLEST_BASE64,
+      style: `background: ${IMG_COLOR}`
+    }
+    setAttributes(ele, attrs)
+    if (ele.hasAttribute('alt')) {
+      ele.removeAttribute('alt')
+    }
   }
 
   function textHandler(ele) {
@@ -100,6 +75,7 @@ const getOutHtml = (function (document) {
       backgroundSize: `100% ${lineHeight}px`,
       backgroundClip: 'content-box',
       backgroundPositionY: paddingTop,
+      backgroundColor: TRANSPARENT,
       position
     })
     // add white mask
@@ -134,9 +110,12 @@ const getOutHtml = (function (document) {
   function backgroundImageHandler(ele) {
     ele.style.background = BACK_COLOR
   }
-
+  /**
+   * [transparent 设置元素字体颜色为透明，必要情况下，设置其 textDecorationColor 也为透明色]
+   */
   function transparent(ele) {
     ele.style.color = TRANSPARENT
+    const styles = getComputedStyle(ele)
   }
 
   function setOpacity(ele) {
@@ -146,6 +125,7 @@ const getOutHtml = (function (document) {
   function listHandle(ele) {
     const children = ele.children
     const len = children.length
+    if (len === 0) return false
     const firstChild = children[0]
     // 解决有时ul元素子元素不是 li元素的 bug。
     if (firstChild.tagName !== 'LI') return listHandle(firstChild)
@@ -161,13 +141,6 @@ const getOutHtml = (function (document) {
   function removeHandler(ele) {
     const parent = ele.parentNode
     parent && parent.removeChild(ele)
-  }
-
-  function inViewPort(ele) {
-    const rect = ele.getBoundingClientRect()
-
-    return rect.top < window.innerHeight
-      && rect.left < window.innerWidth
   }
 
   function traverse(ele, excludesEle) {
@@ -197,6 +170,9 @@ const getOutHtml = (function (document) {
       if (ele.childNodes && Array.from(ele.childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
         transparent(ele)
       }
+      if (!/none/.test(styles.textDecorationLine)) {
+        ele.style.textDecorationColor = TRANSPARENT
+      }
       // 隐藏所有 svg 元素
       if (ele.tagName === 'svg') {
         return setOpacity(ele)
@@ -224,10 +200,10 @@ const getOutHtml = (function (document) {
     texts.forEach(ele => textHandler(ele))
     buttons.forEach(ele => buttonHandler(ele))
     hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
-    return Promise.all(imgs.map(ele => imgHandler(ele)))
+    imgs.map(ele => imgHandler(ele))
   }
 
-  async function getOutHtml(remove, excludes, hide) {
+  function getOutHtml(remove, excludes, hide) {
     // 将 `remove` 队列中的元素删除
     if (Array.isArray(remove)) {
       remove.push(CONSOLE_CLASS)
@@ -242,7 +218,7 @@ const getOutHtml = (function (document) {
 
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const root = document.documentElement
-    await traverse(root, excludesEle)
+    traverse(root, excludesEle)
     return root.outerHTML
   }
 
