@@ -4,6 +4,7 @@ const { log, addScriptTag } = require('./util/utils')
 const { pluginConfig, port, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
+  Object.assign(pluginConfig.screenShot, options.screenShot)
   this.options = Object.assign({ port, staticPath }, pluginConfig, options)
   this.server = null
 }

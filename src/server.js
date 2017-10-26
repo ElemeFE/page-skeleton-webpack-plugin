@@ -26,6 +26,10 @@ class Server extends EventEmitter {
     // 用于缓存写入 shell.vue 文件的 html
     this.cacheHtml = ''
     this.sockets = []
+    this.skeleton = null
+  }
+  _getSkeleton() {
+    return this.skeleton = this.skeleton ||  new Skeleton(this.options)
   }
   async initRouters() {
     const { app, staticPath } = this
@@ -47,13 +51,13 @@ class Server extends EventEmitter {
       if (!/\.html$/.test(filename)) return false
       let html
       try {
-        // if I use `promisify(myFs.readFile)` if will occur an error 
+        // if I use `promisify(myFs.readFile)` if will occur an error
         // `TypeError: this[(fn + "Sync")] is not a function`,
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
         html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
       } catch(err) {
         log(err, 'error')
-      } 
+      }
       res.send(html)
     })
   }
@@ -113,8 +117,40 @@ class Server extends EventEmitter {
           const preGenMsg = 'begin to generator HTML...'
           log(preGenMsg)
           this.sockWrite(this.sockets, 'console', preGenMsg)
-          const { html } = await new Skeleton(url, this.options).genHtml()
+          const { html } = await this._getSkeleton().genHtml(url)
           const fileName = await this.writeMagicHtml(html)
+          const afterGenMsg = 'generator HTML successfully...'
+          log(afterGenMsg)
+          this.sockWrite(this.sockets, 'console', afterGenMsg)
+          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=true`
+          const openMsg = 'Browser open another page...'
+          this.sockWrite([conn], 'console', openMsg)
+          this.sockWrite([conn], 'success', openMsg)
+          open(directUrl, { app: 'google chrome' })
+          break
+        }
+        case 'screenshot': {
+          if (!msg.data) return log(msg)
+          const url = msg.data
+          const screenShotMsg = 'begin to generator screenshot...'
+          log(screenShotMsg)
+          this.sockWrite(this.sockets, 'console', screenShotMsg)
+          const { screenShotBuffer } = await this._getSkeleton().genScreenShot(url)
+          // todo 图片压缩
+          const base64 = `data:${this.options.screenShot.type};base64,${screenShotBuffer.toString('base64')}`
+          const fileName = await this.writeMagicHtml(`
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <title>预览 shell 图片</title>
+          </head>
+          <body>
+            <img style="width: 100%;" src="${base64}">
+          </body>
+          </html>`)
           const afterGenMsg = 'generator HTML successfully...'
           log(afterGenMsg)
           this.sockWrite(this.sockets, 'console', afterGenMsg)
@@ -151,11 +187,12 @@ class Server extends EventEmitter {
       const sockHtml = addScriptTag(html, clientEntry)
       myFs.mkdirpSync(pathName)
       await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), sockHtml, 'utf8')
-      return fileName      
+      return fileName
     } catch (err) {
       log(err, 'error')
     }
   }
+
   // Server 端主动推送消息到制定 socket
   sockWrite(sockets, type, data) {
     sockets.forEach(sock => {
