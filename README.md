@@ -34,6 +34,9 @@
 - 添加example [已增加 sale 页面]
 - 文档：README.md
 - 动态利用 canvas 替换图片 base64
+- puppeteer 打开浏览器的报错信息生成服务端 log
+- example 生成 elm 所有页面的对比图
+- example 输入 url ,生成对比图
 
 需要放到 htmlplugin 后面
 

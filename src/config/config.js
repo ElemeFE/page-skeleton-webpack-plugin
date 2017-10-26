@@ -6,7 +6,7 @@ const pluginConfig = {
   excludes: [],
   remove: [],
   hide: [],
-  headless: true
+  headless: false
 }
 module.exports = {
   pluginConfig,

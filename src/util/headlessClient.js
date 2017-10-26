@@ -20,8 +20,10 @@ const getOutHtml = (function (document) {
   const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
   const EXT_REG = /jpeg|png|gif|svg/
-  const removedTags = ['script', 'link', 'title', 'svg']
-  const CONSOLE_CLASS = '.sk-console'
+  const removedTags = ['script', 'title', 'svg']
+  const CONSOLE_CLASS = '.sk-console' // 插件客户端界面的 className
+  const SKELETON_STYLE = 'skeleton-style'
+  const CLASS_NAME_PREFEX = 'sk-'
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
   const $$ = document.querySelectorAll.bind(document)
@@ -31,10 +33,22 @@ const getOutHtml = (function (document) {
     Object.keys(attrs).forEach(k => ele.setAttribute(k, attrs[k]))
   }
 
+  const genClassName = () => `${CLASS_NAME_PREFEX}${Math.random().toString(32).slice(2)}`
+  const PSEUDO_CLASS = genClassName()
   const inViewPort = function(ele) {
     const rect = ele.getBoundingClientRect()
     return rect.top < window.innerHeight
       && rect.left < window.innerWidth
+  }
+
+  const checkHasPseudoEle = ele => {
+    const hasBefore = getComputedStyle(ele, '::before').getPropertyValue('content') !== ''
+    const hasAfter = getComputedStyle(ele, '::after').getPropertyValue('content') !== ''
+    if (hasBefore || hasAfter) {
+      return { hasBefore, hasAfter, ele }
+    } else {
+      return false
+    }
   }
 
   function imgHandler(ele) {
@@ -143,15 +157,38 @@ const getOutHtml = (function (document) {
     parent && parent.removeChild(ele)
   }
 
+  function pseudosHandler({ hasBefore, hasAfter, ele }) {
+    console.log(ele)
+    let styleEle = document.querySelector(`[data-skeleton="${SKELETON_STYLE}"]`)
+    if (!styleEle) {
+      styleEle = document.createElement('style')
+      styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
+      document.head.appendChild(styleEle)
+      if (!window.createPopup) { /* For Safari */
+        styleEle.appendChild(document.createTextNode(''))
+      }
+    }
+    
+    ele.classList.add(PSEUDO_CLASS)
+    const oldHTML = styleEle.innerHTML
+    if (!/content:\snone!important/.test(oldHTML)) {
+      const rule = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {content: none!important;}`
+      styleEle.innerHTML = oldHTML + '\n' + rule
+    }
+ 
+  }
+
   function traverse(ele, excludesEle) {
     const texts = []
     const buttons = []
     const hasImageBackEles = []
     const toRemove = []
-    const imgs = [];
-    (function preTraverse(ele) {
+    const imgs = []
+    const pseudos = []
+    ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
       const lowerTagName = ele.tagName.toLowerCase()
+      const hasPseudoEle = checkHasPseudoEle(ele)
       if (
           ~removedTags.indexOf(lowerTagName)
           || !inViewPort(ele)
@@ -159,6 +196,9 @@ const getOutHtml = (function (document) {
         return toRemove.push(ele)
       }
       if (~excludesEle.indexOf(ele)) return false
+
+      hasPseudoEle && pseudos.push(hasPseudoEle)
+
       if (ele.children.length > 0 && /UL|OL/.test(ele.tagName)) {
         listHandle(ele)
       }
@@ -195,12 +235,13 @@ const getOutHtml = (function (document) {
       }
 
     })(ele)
-
+    console.log(pseudos)
     toRemove.forEach(ele => removeHandler(ele))
     texts.forEach(ele => textHandler(ele))
     buttons.forEach(ele => buttonHandler(ele))
     hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
-    imgs.map(ele => imgHandler(ele))
+    imgs.forEach(ele => imgHandler(ele))
+    pseudos.forEach(ele => pseudosHandler(ele))
   }
 
   function getOutHtml(remove, excludes, hide) {

@@ -35,6 +35,7 @@
 <style scoped>
   .sk-console {
     position: fixed;
+    z-index: 10000;
     top: -2rem;
     left: 0;
     right: 0;
