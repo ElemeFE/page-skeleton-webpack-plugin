@@ -7,9 +7,14 @@ const path = require('path')
 const EventEmitter = require('events')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
+const imagemin = require('imagemin')
+const imageminPngquant = require('imagemin-pngquant')
+
 const {
   htmlMinify,
   writeShell,
+  writeScreenShot,
+  insertScreenShotTpl,
   log,
   promisify,
   addScriptTag
@@ -135,26 +140,20 @@ class Server extends EventEmitter {
           const screenShotMsg = 'begin to generator screenshot...'
           log(screenShotMsg)
           this.sockWrite(this.sockets, 'console', screenShotMsg)
-          const { screenShotBuffer } = await this._getSkeleton().genScreenShot(url)
-          // todo 图片压缩
-          const base64 = `data:${this.options.screenShot.type};base64,${screenShotBuffer.toString('base64')}`
-          const fileName = await this.writeMagicHtml(`
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <title>预览 shell 图片</title>
-          </head>
-          <body>
-            <img style="width: 100%;" src="${base64}">
-          </body>
-          </html>`)
-          const afterGenMsg = 'generator HTML successfully...'
+          let { screenShotBuffer } = await this._getSkeleton().genScreenShot(url)
+          // 图片压缩
+          screenShotBuffer = await imagemin.buffer(screenShotBuffer, {
+            plugins: [
+              imageminPngquant({ quality: '65-80' })
+            ]
+          })
+          const base64 = `data:png;base64,${screenShotBuffer.toString('base64')}`
+          const html = await insertScreenShotTpl(base64)
+          const fileName = await this.writeMagicHtml(html, false)
+          const afterGenMsg = 'generator screenshot successfully...'
           log(afterGenMsg)
           this.sockWrite(this.sockets, 'console', afterGenMsg)
-          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=true`
+          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=false`
           const openMsg = 'Browser open another page...'
           this.sockWrite([conn], 'console', openMsg)
           this.sockWrite([conn], 'success', openMsg)
@@ -176,14 +175,16 @@ class Server extends EventEmitter {
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。
    */
-  async writeMagicHtml(html) {
+  async writeMagicHtml(html, needCache = true) {
     try {
       const { staticPath, port } = this
       const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
-      this.cacheHtml = htmlMinify(html)
+      if (needCache) {
+        this.cacheHtml = htmlMinify(html)
+      }
       const sockHtml = addScriptTag(html, clientEntry)
       myFs.mkdirpSync(pathName)
       await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), sockHtml, 'utf8')

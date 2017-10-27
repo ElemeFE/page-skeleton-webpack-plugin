@@ -6,10 +6,6 @@ const pluginConfig = {
   excludes: [],
   remove: [],
   hide: [],
-  screenShot: {
-    type: 'png',
-    fullPage: true,
-  },
   headless: false
 }
 module.exports = {

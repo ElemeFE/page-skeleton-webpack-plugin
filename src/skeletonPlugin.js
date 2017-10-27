@@ -3,7 +3,6 @@ const { log, addScriptTag } = require('./util/utils')
 const { pluginConfig, port, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
-  Object.assign(pluginConfig.screenShot, options.screenShot)
   this.options = Object.assign({ port, staticPath }, pluginConfig, options)
   this.server = null
 }
@@ -14,7 +13,7 @@ SkeletonPlugin.prototype.apply = function(compiler) {
     server.listen()
     .catch(err => log(err, 'error'))
   })
-  
+
   compiler.plugin('compilation', function(compilation) {
     compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
 
@@ -22,7 +21,7 @@ SkeletonPlugin.prototype.apply = function(compiler) {
       const oldHtml = htmlPluginData.html
       htmlPluginData.html = addScriptTag(oldHtml, clientEntry)
       callback(null, htmlPluginData)
-      
+
     })
   })
 
