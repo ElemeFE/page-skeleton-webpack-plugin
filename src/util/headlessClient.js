@@ -20,13 +20,17 @@ const getOutHtml = (function (document) {
   const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
   const EXT_REG = /jpeg|png|gif|svg/
-  const removedTags = ['script', 'title', 'svg']
+  const removedTags = ['script', 'title']
   const CONSOLE_CLASS = '.sk-console' // 插件客户端界面的 className
   const SKELETON_STYLE = 'skeleton-style'
   const CLASS_NAME_PREFEX = 'sk-'
+  // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-
+  /**
+   * 工具函数
+   */
   const $$ = document.querySelectorAll.bind(document)
+  const $ = document.querySelector.bind(document)
   const isBase64Img = img => /base64/.test(img.src)
 
   const setAttributes = (ele, attrs) => {
@@ -51,6 +55,8 @@ const getOutHtml = (function (document) {
     }
   }
 
+  const checkHasBorder = styles => styles.getPropertyValue('border-style') !== 'none'
+  const checkHasTextDecoration = styles => !/none/.test(styles.textDecorationLine)
   function imgHandler(ele) {
     const { width, height } = ele.getBoundingClientRect()
     const attrs = {
@@ -129,7 +135,6 @@ const getOutHtml = (function (document) {
    */
   function transparent(ele) {
     ele.style.color = TRANSPARENT
-    const styles = getComputedStyle(ele)
   }
 
   function setOpacity(ele) {
@@ -157,6 +162,10 @@ const getOutHtml = (function (document) {
     parent && parent.removeChild(ele)
   }
 
+  function emptyHandler(ele) {
+    ele.innerHTML = ''
+  }
+
   function pseudosHandler({ hasBefore, hasAfter, ele }) {
     console.log(ele)
     let styleEle = document.querySelector(`[data-skeleton="${SKELETON_STYLE}"]`)
@@ -175,7 +184,19 @@ const getOutHtml = (function (document) {
       const rule = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {content: none!important;}`
       styleEle.innerHTML = oldHTML + '\n' + rule
     }
- 
+  }
+
+  function svgHandler(ele) {
+    const { width, height } = ele.getBoundingClientRect()
+    if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
+      return removeHandler(ele)
+    }
+    emptyHandler(ele)
+    setOpacity(ele)
+    Object.assign(ele.style, {
+      width,
+      height
+    })
   }
 
   function traverse(ele, excludesEle) {
@@ -184,6 +205,7 @@ const getOutHtml = (function (document) {
     const hasImageBackEles = []
     const toRemove = []
     const imgs = []
+    const svgs = []
     const pseudos = []
     ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
@@ -199,6 +221,10 @@ const getOutHtml = (function (document) {
 
       hasPseudoEle && pseudos.push(hasPseudoEle)
 
+      if (checkHasBorder(styles)) {
+        ele.style.border = 'none'
+      }
+
       if (ele.children.length > 0 && /UL|OL/.test(ele.tagName)) {
         listHandle(ele)
       }
@@ -210,12 +236,12 @@ const getOutHtml = (function (document) {
       if (ele.childNodes && Array.from(ele.childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
         transparent(ele)
       }
-      if (!/none/.test(styles.textDecorationLine)) {
+      if (checkHasTextDecoration(styles)) {
         ele.style.textDecorationColor = TRANSPARENT
       }
       // 隐藏所有 svg 元素
       if (ele.tagName === 'svg') {
-        return setOpacity(ele)
+        return svgs.push(ele)
       }
       if (EXT_REG.test(styles.background) || EXT_REG.test(styles.backgroundImage)) {
         return hasImageBackEles.push(ele)
@@ -235,7 +261,7 @@ const getOutHtml = (function (document) {
       }
 
     })(ele)
-    console.log(pseudos)
+    svgs.forEach(ele => svgHandler(ele))
     toRemove.forEach(ele => removeHandler(ele))
     texts.forEach(ele => textHandler(ele))
     buttons.forEach(ele => buttonHandler(ele))
