@@ -1,4 +1,3 @@
-// const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin')
 const Server = require('./Server')
 const { log, addScriptTag } = require('./util/utils')
 const { pluginConfig, port, staticPath } = require('./config/config')
@@ -15,29 +14,18 @@ SkeletonPlugin.prototype.apply = function(compiler) {
     server.listen()
     .catch(err => log(err, 'error'))
   })
-  // const insertAssets = new HtmlWebpackIncludeAssetsPlugin({
-  //   assets: [`http://localhost:${port}/${staticPath}/index.js`],
-  //   append: true
-  // })
-  // insertAssets.apply(compiler)
-  compiler.plugin('emit', (compilation, callback) => {
-    const assets = compilation.assets
-    const htmlFiles = Object.keys(assets).filter(filename => /\.html$/.test(filename))
-    const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
+  
+  compiler.plugin('compilation', function(compilation) {
+    compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
 
-    htmlFiles.forEach(filename => {
-      const { source, size } = assets[filename]
-      assets[filename] = {
-        source: function() {
-          return addScriptTag(source(), clientEntry)
-        },
-        size: function() {
-          return size
-        }
-      }
+      const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
+      const oldHtml = htmlPluginData.html
+      htmlPluginData.html = addScriptTag(oldHtml, clientEntry)
+      callback(null, htmlPluginData)
+      
     })
-    callback()
   })
+
   ;['watch-close', 'failed'].forEach(event => {
     compiler.plugin(event, () => {
       this.server && this.server.close()
