@@ -21,6 +21,12 @@ async function writeShell(pathname, html) {
   }
 }
 
+async function insertScreenShotTpl(html) {
+  const tplFilePath = path.resolve(__dirname, '../templates/screenShotTpl.html')
+  const screenShotTemplate = await promisify(fs.readFile)(tplFilePath, 'utf-8')
+  return screenShotTemplate.replace(/\$\$html/g, html)
+}
+
 function htmlMinify(html) {
   const minHtml = minify(html, {
     minifyCSS: true,
@@ -71,6 +77,7 @@ module.exports = {
   promisify,
   addScriptTag,
   writeShell,
+  insertScreenShotTpl,
   htmlMinify,
   genScriptContent
 }

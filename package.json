@@ -43,6 +43,8 @@
     "eslint-config-webpack": "^1.2.5",
     "eslint-plugin-import": "^2.8.0",
     "html-webpack-include-assets-plugin": "^1.0.2",
+    "imagemin": "^5.3.1",
+    "imagemin-pngquant": "^5.0.1",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "vue": "^2.5.2",
     "webpack": "^3.8.1"

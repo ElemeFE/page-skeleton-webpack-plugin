@@ -45,13 +45,17 @@ class Skeleton {
   }
 
   async genScreenShot(url) {
-    const { screenShot } = this.options
     await this._init()
     await this.page.goto(url)
+    /* 待优化 目前是拿到VP 然后设置VP 主要是 deviceScaleFactor */
     await this._makeSkeleton()
-
-    const screenShotBuffer = await this.page.screenshot(screenShot)
-
+    const viewport = await this.page.viewport()
+    viewport.deviceScaleFactor = 1
+    await this.page.setViewport(viewport)
+    const screenShotBuffer = await this.page.screenshot({
+      type: 'png',
+      fullPage: true,
+    })
     return { screenShotBuffer }
   }
 }

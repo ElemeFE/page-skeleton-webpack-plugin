@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="sk-console"
     :class="{'show': show}"
   >
@@ -34,6 +34,7 @@
 </script>
 <style scoped>
   .sk-console {
+    display: none;
     position: fixed;
     z-index: 10000;
     top: -2rem;
@@ -49,6 +50,7 @@
   }
   .show {
     top: 0;
+    display: block;
   }
   .button-wrapper {
     position: relative;
@@ -60,7 +62,7 @@
     box-sizing: border-box;
     line-height: 1rem;
   }
-  
+
   a {
     width: 1rem;
     height: 1rem;
