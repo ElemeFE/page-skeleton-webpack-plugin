@@ -32,12 +32,9 @@ function htmlMinify(html) {
     minifyCSS: true,
     removeComments: true,
     removeAttributeQuotes: true,
-    removeEmptyAttributes: true
+    removeEmptyAttributes: false
   })
   return minHtml
-    .replace(/(<html[^>]*>|<\/html>)/g, '')
-    .replace(/(<body[^>]*>|<\/body>)/g, '')
-    .replace(/(<head>|<\/head>)/g, '')
 }
 
 function sleep(duration) {
@@ -71,6 +68,38 @@ function log(msg, type = 'log') {
   console[type](chalk.bold.redBright(msg))
 }
 
+/**
+ * original author: pepterbe(https://github.com/peterbe/minimalcss)
+ * Take call "important comments" and extract them all to the
+ * beginning of the CSS string.
+ * This makes it possible to merge when minifying across blocks of CSS.
+ * For example, if you have (ignore the escaping for the sake of demonstration):
+ *
+ *   /*! important 1 *\/
+ *   p { color: red; }
+ *   /*! important 2 *\/
+ *   p { background-color: red; }
+ *
+ * You can then instead get:
+ *
+ *   /*! important 1 *\/
+ *   /*! important 2 *\/
+ *   p { color: red; background-color: red; }
+ *
+ * @param {string} css
+ * @return {string}
+ */
+const collectImportantComments = css => {
+  const once = new Set()
+  let cleaned = css.replace(/\/\*\![\s\S]*?\*\/\n*/gm, match => {
+    once.add(match)
+    return ''
+  })
+  let combined = Array.from(once)
+  combined.push(cleaned)
+  return combined.join('\n')
+}
+
 module.exports = {
   log,
   sleep,
@@ -79,5 +108,6 @@ module.exports = {
   writeShell,
   insertScreenShotTpl,
   htmlMinify,
-  genScriptContent
+  genScriptContent,
+  collectImportantComments
 }

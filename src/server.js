@@ -104,6 +104,7 @@ class Server extends EventEmitter {
    // 关闭服务
   close() {
     // TODO...
+    this.skeleton && this.skeleton.closeBrowser()
     process.exit()
     this.listenServer.close(() => {
       log('server closed')
@@ -122,7 +123,9 @@ class Server extends EventEmitter {
           const preGenMsg = 'begin to generator HTML...'
           log(preGenMsg)
           this.sockWrite(this.sockets, 'console', preGenMsg)
-          const { html } = await this._getSkeleton().genHtml(url)
+          const { html, shellHtml } = await this._getSkeleton().genHtml(url)
+          // CACHE SHELLHTML
+          this.cacheHtml = shellHtml
           const fileName = await this.writeMagicHtml(html)
           const afterGenMsg = 'generator HTML successfully...'
           log(afterGenMsg)
@@ -149,7 +152,7 @@ class Server extends EventEmitter {
           })
           const base64 = `data:png;base64,${screenShotBuffer.toString('base64')}`
           const html = await insertScreenShotTpl(base64)
-          const fileName = await this.writeMagicHtml(html, false)
+          const fileName = await this.writeMagicHtml(html)
           const afterGenMsg = 'generator screenshot successfully...'
           log(afterGenMsg)
           this.sockWrite(this.sockets, 'console', afterGenMsg)
@@ -175,16 +178,13 @@ class Server extends EventEmitter {
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。
    */
-  async writeMagicHtml(html, needCache = true) {
+  async writeMagicHtml(html) {
     try {
       const { staticPath, port } = this
       const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
-      if (needCache) {
-        this.cacheHtml = htmlMinify(html)
-      }
       const sockHtml = addScriptTag(html, clientEntry)
       myFs.mkdirpSync(pathName)
       await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), sockHtml, 'utf8')

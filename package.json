@@ -17,6 +17,8 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "css-loader": "^0.28.7",
+    "css-tree": "^1.0.0-alpha25",
+    "csso": "^3.3.1",
     "express": "^4.16.2",
     "fs-extra": "^4.0.2",
     "hasha": "^3.0.0",
