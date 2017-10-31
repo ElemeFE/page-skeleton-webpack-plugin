@@ -19,6 +19,8 @@ const Skeleton = (function (document) {
   const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
   const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/
+  const GRADIENT_REG = /gradient/
+  const DISPLAY_NONE = /display:\s*none/
   const CONSOLE_CLASS = '.sk-console' // 插件客户端界面的 className
   const PRE_REMOVE_TAGS = ['script']
   const AFTER_REMOVE_TAGS = ['title', 'meta', 'style', 'link']
@@ -62,10 +64,11 @@ const Skeleton = (function (document) {
     const attrs = {
       width,
       height,
-      src: SMALLEST_BASE64,
-      style: `background: ${IMG_COLOR}`
+      src: SMALLEST_BASE64
     }
     setAttributes(ele, attrs)
+    // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
+    ele.style.background = IMG_COLOR
     if (ele.hasAttribute('alt')) {
       ele.removeAttribute('alt')
     }
@@ -167,12 +170,11 @@ const Skeleton = (function (document) {
   }
 
   function pseudosHandler({ hasBefore, hasAfter, ele }) {
-    console.log(ele)
     let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
     if (!styleEle) {
       styleEle = document.createElement('style')
       styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
-      document.head.appendChild(styleEle)
+      document.head ? document.head.appendChild(styleEle) : document.body.appendChild(styleEle)
       if (!window.createPopup) { /* For Safari */
         styleEle.appendChild(document.createTextNode(''))
       }
@@ -199,6 +201,10 @@ const Skeleton = (function (document) {
     })
   }
 
+  function gradientHandler(ele) {
+    ele.style.background = TRANSPARENT
+  }
+
   function traverse(ele, excludesEle) {
     const texts = []
     const buttons = []
@@ -207,10 +213,11 @@ const Skeleton = (function (document) {
     const imgs = []
     const svgs = []
     const pseudos = []
+    const gradientBackEles = []
     ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
       const hasPseudoEle = checkHasPseudoEle(ele)
-      if (!inViewPort(ele)) {
+      if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
       }
       if (~excludesEle.indexOf(ele)) return false
@@ -242,10 +249,16 @@ const Skeleton = (function (document) {
       if (EXT_REG.test(styles.background) || EXT_REG.test(styles.backgroundImage)) {
         return hasImageBackEles.push(ele)
       }
+      if (GRADIENT_REG.test(styles.background) || GRADIENT_REG.test(styles.backgroundImage)) {
+        return gradientBackEles.push(ele)
+      }
       if (ele.tagName === 'IMG' && !isBase64Img(ele)) {
         return imgs.push(ele)
       }
-      if (ele.nodeType === Node.ELEMENT_NODE && ele.tagName === 'BUTTON') {
+      if (
+          ele.nodeType === Node.ELEMENT_NODE
+          && (ele.tagName === 'BUTTON' || (ele.tagName === 'A' && ele.getAttribute('role') === 'button'))
+        ) {
         return buttons.push(ele)
       }
       if (
@@ -264,6 +277,7 @@ const Skeleton = (function (document) {
     hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
     imgs.forEach(ele => imgHandler(ele))
     pseudos.forEach(ele => pseudosHandler(ele))
+    gradientBackEles.forEach(ele => gradientHandler(ele))
   }
 
   function genSkeleton(remove, excludes, hide) {
