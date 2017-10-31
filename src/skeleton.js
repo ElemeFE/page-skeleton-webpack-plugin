@@ -24,6 +24,9 @@ class Skeleton {
     await page.emulate(devices[device])
     this.browser = browser
     this.page = page
+    page.on('console', (...args) => {
+      console.log(...args)
+    })
     return this.page
   }
 
@@ -189,6 +192,7 @@ class Skeleton {
       const cleanedAst = fromPlainObject(ast)
       return translate(cleanedAst)
     }).join('\n')
+
     let finalCss = collectImportantComments(allCleanedCSS)
     finalCss = minify(finalCss).css
     const shellHtml = `<style>${finalCss}</style>\n${htmlMinify(cleanedHtml)}`

@@ -27,7 +27,7 @@ const Skeleton = (function (document) {
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
   /**
-   * 工具函数
+   * utils
    */
   const $$ = document.querySelectorAll.bind(document)
   const $ = document.querySelector.bind(document)
@@ -295,7 +295,9 @@ const Skeleton = (function (document) {
     const rawHtml = root.outerHTML
     const styles = Array.from($$('style')).map(style => style.innerHTML || style.innerText)
     Array.from($$(AFTER_REMOVE_TAGS.join(','))).forEach(ele => removeHandler(ele))
-    const cleanedHtml = document.body.innerHTML
+    // fix html parser can not handle `<div ubt-click=3659 ubt-data="{&quot;restaurant_id&quot;:1236835}" >`
+    // need replace `&quot;` into `'`
+    const cleanedHtml = document.body.innerHTML.replace(/&quot;/g, "'")
     return { rawHtml, styles, cleanedHtml }
   }
 
