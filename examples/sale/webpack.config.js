@@ -56,7 +56,6 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./src`),
       defer: 5000,
-      headless: true,
       excludes: ['.app-header'],
       remove: ['.icon-wrapper', '.unlogin-container_1Kyfq_0', '.main-wrapper_2p2-E_0'],
       hide: ['.remain-bar']

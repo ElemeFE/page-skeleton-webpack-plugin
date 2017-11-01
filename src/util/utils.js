@@ -5,12 +5,21 @@ const path = require('path')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
 
-async function writeShell(pathname, html) {
+async function writeShell(pathname, html, options) {
+  const { h5Only } = options
   const templatesPath = path.resolve(__dirname, '../templates')
   const jsFilename = 'shell.js'
   const vueFilename = 'shell.vue'
+  const htmlFilename = 'shell.html'
   const jsDestPath = path.resolve(pathname, jsFilename)
   const vueDestPath = path.resolve(pathname, vueFilename)
+  const htmlDestPath = path.resolve(pathname, htmlFilename)
+
+  if (!h5Only) {
+    await promisify(fs.writeFile)(htmlDestPath, html, 'utf-8')
+    return Promise.resolve()
+  }
+
   try {
     await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
     const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
@@ -94,6 +103,18 @@ const collectImportantComments = css => {
   return combined.join('\n')
 }
 
+const getShellCode = async pathname => {
+  const filename = 'shell.html'
+  let code
+  try {
+    code = await promisify(fs.readFile)(path.resolve(pathname, filename), 'utf-8')
+  } catch (err) {
+    log('You do not has shell.html file now!')
+    code = ''
+  }
+  return code
+}
+
 module.exports = {
   log,
   sleep,
@@ -102,6 +123,7 @@ module.exports = {
   writeShell,
   insertScreenShotTpl,
   htmlMinify,
+  getShellCode,
   genScriptContent,
   collectImportantComments
 }

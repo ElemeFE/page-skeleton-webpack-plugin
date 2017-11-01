@@ -165,7 +165,8 @@ class Server extends EventEmitter {
         }
         case 'ok': {
           this.sockWrite([conn], 'console', 'before write shell files...')
-          await writeShell(this.pathname, this.cacheHtml)
+          const { pathname, cacheHtml, options } = this
+          await writeShell(pathname, cacheHtml, options)
           const afterWriteMsg = 'Write files successfully...'
           log(afterWriteMsg)
           this.sockWrite([conn], 'console', afterWriteMsg)

@@ -1,5 +1,5 @@
 {
-  "name": "skeleton",
+  "name": "page-skeleton-webpack-plugin",
   "version": "0.0.1",
   "description": "web site skeleton generator",
   "main": "index.js",
@@ -7,10 +7,12 @@
     "dev:client": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js --watch",
     "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
-    "prepublish": "npm run build:index && npm run build:sockjs"
+    "prepare": "npm run build:index && npm run build:sockjs"
   },
   "keywords": [
-    "puppeteer"
+    "puppeteer",
+    "page skeleton",
+    "webpack"
   ],
   "author": "jocs",
   "license": "ISC",

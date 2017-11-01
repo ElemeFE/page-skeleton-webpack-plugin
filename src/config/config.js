@@ -13,7 +13,8 @@ const pluginConfig = {
   excludes: [],
   remove: [],
   hide: [],
-  headless: true
+  headless: true,
+  h5Only: false
 }
 module.exports = {
   pluginConfig,
