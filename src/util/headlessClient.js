@@ -8,26 +8,28 @@
  * get the output html source code,
  * this function return a promise, and the `html` will be resolve
  */
-const getOutHtml = (function (document) {
+const Skeleton = (function (document) {
 
   /**
-   * 常量
+   * constants
    */
-  // const CANVAS_ID = 'pre-canvas'
   const IMG_COLOR = '#EFEFEF'
   const TEXT_COLOR = '#EEEEEE'
   const BUTTON_COLOR = '#EFEFEF'
   const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
-  const EXT_REG = /jpeg|png|gif|svg/
-  const removedTags = ['script', 'title']
+  const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/
+  const GRADIENT_REG = /gradient/
+  const DISPLAY_NONE = /display:\s*none/
   const CONSOLE_CLASS = '.sk-console' // 插件客户端界面的 className
+  const PRE_REMOVE_TAGS = ['script']
+  const AFTER_REMOVE_TAGS = ['title', 'meta', 'style', 'link']
   const SKELETON_STYLE = 'skeleton-style'
   const CLASS_NAME_PREFEX = 'sk-'
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
   /**
-   * 工具函数
+   * utils
    */
   const $$ = document.querySelectorAll.bind(document)
   const $ = document.querySelector.bind(document)
@@ -62,10 +64,11 @@ const getOutHtml = (function (document) {
     const attrs = {
       width,
       height,
-      src: SMALLEST_BASE64,
-      style: `background: ${IMG_COLOR}`
+      src: SMALLEST_BASE64
     }
     setAttributes(ele, attrs)
+    // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
+    ele.style.background = IMG_COLOR
     if (ele.hasAttribute('alt')) {
       ele.removeAttribute('alt')
     }
@@ -167,12 +170,11 @@ const getOutHtml = (function (document) {
   }
 
   function pseudosHandler({ hasBefore, hasAfter, ele }) {
-    console.log(ele)
-    let styleEle = document.querySelector(`[data-skeleton="${SKELETON_STYLE}"]`)
+    let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
     if (!styleEle) {
       styleEle = document.createElement('style')
       styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
-      document.head.appendChild(styleEle)
+      document.head ? document.head.appendChild(styleEle) : document.body.appendChild(styleEle)
       if (!window.createPopup) { /* For Safari */
         styleEle.appendChild(document.createTextNode(''))
       }
@@ -199,6 +201,10 @@ const getOutHtml = (function (document) {
     })
   }
 
+  function gradientHandler(ele) {
+    ele.style.background = TRANSPARENT
+  }
+
   function traverse(ele, excludesEle) {
     const texts = []
     const buttons = []
@@ -207,14 +213,11 @@ const getOutHtml = (function (document) {
     const imgs = []
     const svgs = []
     const pseudos = []
+    const gradientBackEles = []
     ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
-      const lowerTagName = ele.tagName.toLowerCase()
       const hasPseudoEle = checkHasPseudoEle(ele)
-      if (
-          ~removedTags.indexOf(lowerTagName)
-          || !inViewPort(ele)
-        ) {
+      if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
       }
       if (~excludesEle.indexOf(ele)) return false
@@ -246,10 +249,16 @@ const getOutHtml = (function (document) {
       if (EXT_REG.test(styles.background) || EXT_REG.test(styles.backgroundImage)) {
         return hasImageBackEles.push(ele)
       }
+      if (GRADIENT_REG.test(styles.background) || GRADIENT_REG.test(styles.backgroundImage)) {
+        return gradientBackEles.push(ele)
+      }
       if (ele.tagName === 'IMG' && !isBase64Img(ele)) {
         return imgs.push(ele)
       }
-      if (ele.nodeType === Node.ELEMENT_NODE && ele.tagName === 'BUTTON') {
+      if (
+          ele.nodeType === Node.ELEMENT_NODE
+          && (ele.tagName === 'BUTTON' || (ele.tagName === 'A' && ele.getAttribute('role') === 'button'))
+        ) {
         return buttons.push(ele)
       }
       if (
@@ -268,27 +277,44 @@ const getOutHtml = (function (document) {
     hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
     imgs.forEach(ele => imgHandler(ele))
     pseudos.forEach(ele => pseudosHandler(ele))
+    gradientBackEles.forEach(ele => gradientHandler(ele))
   }
 
-  function getOutHtml(remove, excludes, hide) {
+  function genSkeleton(remove, excludes, hide) {
+    /**
+     * before walk
+     */
     // 将 `remove` 队列中的元素删除
     if (Array.isArray(remove)) {
-      remove.push(CONSOLE_CLASS)
+      remove.push(CONSOLE_CLASS, ...PRE_REMOVE_TAGS)
       const removeEle = $$(remove.join(','))
-      Array.from(removeEle).forEach(ele => ele.parentNode.removeChild(ele))
+      Array.from(removeEle).forEach(ele => removeHandler(ele))
     }
     // 将 `hide` 队列中的元素通过调节透明度为 0 来进行隐藏
     if (hide.length) {
       const hideEle = $$(hide.join(','))
-      Array.from(hideEle).forEach(ele => ele.style.opacity = 0)
+      Array.from(hideEle).forEach(ele => setOpacity(ele))
     }
-
+    /**
+     * walk in process
+     */
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const root = document.documentElement
     traverse(root, excludesEle)
-    return root.outerHTML
+
   }
 
-  return getOutHtml
+  function getHtmlAndStyle() {
+    const root = document.documentElement
+    const rawHtml = root.outerHTML
+    const styles = Array.from($$('style')).map(style => style.innerHTML || style.innerText)
+    Array.from($$(AFTER_REMOVE_TAGS.join(','))).forEach(ele => removeHandler(ele))
+    // fix html parser can not handle `<div ubt-click=3659 ubt-data="{&quot;restaurant_id&quot;:1236835}" >`
+    // need replace `&quot;` into `'`
+    const cleanedHtml = document.body.innerHTML.replace(/&quot;/g, "'")
+    return { rawHtml, styles, cleanedHtml }
+  }
+
+  return { genSkeleton, getHtmlAndStyle }
 
 })(document)

@@ -5,12 +5,21 @@ const path = require('path')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
 
-async function writeShell(pathname, html) {
+async function writeShell(pathname, html, options) {
+  const { h5Only } = options
   const templatesPath = path.resolve(__dirname, '../templates')
   const jsFilename = 'shell.js'
   const vueFilename = 'shell.vue'
+  const htmlFilename = 'shell.html'
   const jsDestPath = path.resolve(pathname, jsFilename)
   const vueDestPath = path.resolve(pathname, vueFilename)
+  const htmlDestPath = path.resolve(pathname, htmlFilename)
+
+  if (!h5Only) {
+    await promisify(fs.writeFile)(htmlDestPath, html, 'utf-8')
+    return Promise.resolve()
+  }
+
   try {
     await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
     const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
@@ -27,17 +36,8 @@ async function insertScreenShotTpl(html) {
   return screenShotTemplate.replace(/\$\$html/g, html)
 }
 
-function htmlMinify(html) {
-  const minHtml = minify(html, {
-    minifyCSS: true,
-    removeComments: true,
-    removeAttributeQuotes: true,
-    removeEmptyAttributes: true
-  })
-  return minHtml
-    .replace(/(<html[^>]*>|<\/html>)/g, '')
-    .replace(/(<body[^>]*>|<\/body>)/g, '')
-    .replace(/(<head>|<\/head>)/g, '')
+function htmlMinify(html, options) {
+  return minify(html, options)
 }
 
 function sleep(duration) {
@@ -71,6 +71,50 @@ function log(msg, type = 'log') {
   console[type](chalk.bold.redBright(msg))
 }
 
+/**
+ * original author: pepterbe(https://github.com/peterbe/minimalcss)
+ * Take call "important comments" and extract them all to the
+ * beginning of the CSS string.
+ * This makes it possible to merge when minifying across blocks of CSS.
+ * For example, if you have (ignore the escaping for the sake of demonstration):
+ *
+ *   /*! important 1 *\/
+ *   p { color: red; }
+ *   /*! important 2 *\/
+ *   p { background-color: red; }
+ *
+ * You can then instead get:
+ *
+ *   /*! important 1 *\/
+ *   /*! important 2 *\/
+ *   p { color: red; background-color: red; }
+ *
+ * @param {string} css
+ * @return {string}
+ */
+const collectImportantComments = css => {
+  const once = new Set()
+  let cleaned = css.replace(/\/\*\![\s\S]*?\*\/\n*/gm, match => {
+    once.add(match)
+    return ''
+  })
+  let combined = Array.from(once)
+  combined.push(cleaned)
+  return combined.join('\n')
+}
+
+const getShellCode = async pathname => {
+  const filename = 'shell.html'
+  let code
+  try {
+    code = await promisify(fs.readFile)(path.resolve(pathname, filename), 'utf-8')
+  } catch (err) {
+    log('You do not has shell.html file now!')
+    code = ''
+  }
+  return code
+}
+
 module.exports = {
   log,
   sleep,
@@ -79,5 +123,7 @@ module.exports = {
   writeShell,
   insertScreenShotTpl,
   htmlMinify,
-  genScriptContent
+  getShellCode,
+  genScriptContent,
+  collectImportantComments
 }
