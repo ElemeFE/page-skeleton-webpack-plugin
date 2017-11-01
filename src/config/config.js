@@ -1,3 +1,5 @@
+'use strict'
+
 const port = '8989'
 const staticPath = '__webpack_page_skeleton__'
 const pluginConfig = {

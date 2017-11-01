@@ -8,8 +8,8 @@
  * get the output html source code,
  * this function return a promise, and the `html` will be resolve
  */
+const { getComputedStyle, Node } = window
 const Skeleton = (function (document) {
-
   /**
    * constants
    */
@@ -41,20 +41,19 @@ const Skeleton = (function (document) {
 
   const genClassName = () => `${CLASS_NAME_PREFEX}${Math.random().toString(32).slice(2)}`
   const PSEUDO_CLASS = genClassName()
-  const inViewPort = function(ele) {
+  const inViewPort = function (ele) {
     const rect = ele.getBoundingClientRect()
     return rect.top < window.innerHeight
       && rect.left < window.innerWidth
   }
 
-  const checkHasPseudoEle = ele => {
+  const checkHasPseudoEle = (ele) => {
     const hasBefore = getComputedStyle(ele, '::before').getPropertyValue('content') !== ''
     const hasAfter = getComputedStyle(ele, '::after').getPropertyValue('content') !== ''
     if (hasBefore || hasAfter) {
       return { hasBefore, hasAfter, ele }
-    } else {
-      return false
     }
+    return false
   }
 
   const checkHasBorder = styles => styles.getPropertyValue('border-style') !== 'none'
@@ -114,9 +113,8 @@ const Skeleton = (function (document) {
         bottom: paddingBottom
       })
 
-      ele.appendChild(div)        
+      ele.appendChild(div)
     }
-
   }
   /**
    * [buttonHandler 改变 button 元素样式：包括去除 border和 box-shadow, 背景色和文字颜色统一]
@@ -155,7 +153,7 @@ const Skeleton = (function (document) {
       if (i > 0) c.parentNode.removeChild(c)
     })
     // 将 li 所有兄弟元素设置成相同的元素，保证生成的页面骨架整齐
-    for(let i = 1; i < len; i++) {
+    for (let i = 1; i < len; i++) {
       ele.appendChild(firstChild.cloneNode(true))
     }
   }
@@ -179,12 +177,12 @@ const Skeleton = (function (document) {
         styleEle.appendChild(document.createTextNode(''))
       }
     }
-    
+
     ele.classList.add(PSEUDO_CLASS)
     const oldHTML = styleEle.innerHTML
     if (!/content:\snone!important/.test(oldHTML)) {
       const rule = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {content: none!important;}`
-      styleEle.innerHTML = oldHTML + '\n' + rule
+      styleEle.innerHTML = `${oldHTML}\n${rule}`
     }
   }
 
@@ -256,28 +254,27 @@ const Skeleton = (function (document) {
         return imgs.push(ele)
       }
       if (
-          ele.nodeType === Node.ELEMENT_NODE
+        ele.nodeType === Node.ELEMENT_NODE
           && (ele.tagName === 'BUTTON' || (ele.tagName === 'A' && ele.getAttribute('role') === 'button'))
-        ) {
+      ) {
         return buttons.push(ele)
       }
       if (
         ele.childNodes
         && ele.childNodes.length === 1
         && ele.childNodes[0].nodeType === Node.TEXT_NODE
-        ) {
+      ) {
         return texts.push(ele)
       }
-
-    })(ele)
-    svgs.forEach(ele => svgHandler(ele))
-    toRemove.forEach(ele => removeHandler(ele))
-    texts.forEach(ele => textHandler(ele))
-    buttons.forEach(ele => buttonHandler(ele))
-    hasImageBackEles.forEach(ele => backgroundImageHandler(ele))
-    imgs.forEach(ele => imgHandler(ele))
-    pseudos.forEach(ele => pseudosHandler(ele))
-    gradientBackEles.forEach(ele => gradientHandler(ele))
+    }(ele))
+    svgs.forEach(e => svgHandler(e))
+    toRemove.forEach(e => removeHandler(e))
+    texts.forEach(e => textHandler(e))
+    buttons.forEach(e => buttonHandler(e))
+    hasImageBackEles.forEach(e => backgroundImageHandler(e))
+    imgs.forEach(e => imgHandler(e))
+    pseudos.forEach(e => pseudosHandler(e))
+    gradientBackEles.forEach(e => gradientHandler(e))
   }
 
   function genSkeleton(remove, excludes, hide) {
@@ -301,7 +298,6 @@ const Skeleton = (function (document) {
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const root = document.documentElement
     traverse(root, excludesEle)
-
   }
 
   function getHtmlAndStyle() {
@@ -316,5 +312,4 @@ const Skeleton = (function (document) {
   }
 
   return { genSkeleton, getHtmlAndStyle }
-
-})(document)
+}(document))

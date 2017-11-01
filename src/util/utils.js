@@ -1,3 +1,5 @@
+'use strict'
+
 const { promisify } = require('util')
 const fs = require('fs')
 const fse = require('fs-extra')
@@ -25,7 +27,7 @@ async function writeShell(pathname, html, options) {
     const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
     const code = vueTemplate.replace(/\$\$html/g, html)
     await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
-  } catch(err) {
+  } catch (err) {
     log(err, 'error')
   }
 }
@@ -41,7 +43,7 @@ function htmlMinify(html, options) {
 }
 
 function sleep(duration) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, duration)
   })
 }
@@ -51,7 +53,7 @@ async function genScriptContent() {
   let result
   try {
     result = await promisify(fs.readFile)(sourcePath, 'utf-8')
-  } catch(err) {
+  } catch (err) {
     log(err, 'error')
   }
   return result
@@ -92,18 +94,18 @@ function log(msg, type = 'log') {
  * @param {string} css
  * @return {string}
  */
-const collectImportantComments = css => {
+const collectImportantComments = (css) => {
   const once = new Set()
-  let cleaned = css.replace(/\/\*\![\s\S]*?\*\/\n*/gm, match => {
+  const cleaned = css.replace(/\/\*\![\s\S]*?\*\/\n*/gm, (match) => {
     once.add(match)
     return ''
   })
-  let combined = Array.from(once)
+  const combined = Array.from(once)
   combined.push(cleaned)
   return combined.join('\n')
 }
 
-const getShellCode = async pathname => {
+const getShellCode = async (pathname) => {
   const filename = 'shell.html'
   let code
   try {
@@ -115,10 +117,20 @@ const getShellCode = async pathname => {
   return code
 }
 
+// Server 端主动推送消息到制定 socket
+const sockWrite = (sockets, type, data) => {
+  sockets.forEach((sock) => {
+    sock.write(JSON.stringify({
+      type, data
+    }))
+  })
+}
+
 module.exports = {
   log,
   sleep,
   promisify,
+  sockWrite,
   addScriptTag,
   writeShell,
   insertScreenShotTpl,
