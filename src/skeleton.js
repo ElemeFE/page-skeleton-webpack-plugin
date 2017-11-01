@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
-const { minify } = require('csso')
 const { parse, toPlainObject, fromPlainObject, translate } = require('css-tree')
 const {
   sleep, genScriptContent, log,
@@ -18,13 +17,13 @@ class Skeleton {
     if (this.browser && this.page) {
       return this.page
     }
-    const { device, headless } = this.options
+    const { device, headless, debug } = this.options
     const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
     await page.emulate(devices[device])
     this.browser = browser
     this.page = page
-    page.on('console', (...args) => {
+    debug && page.on('console', (...args) => {
       console.log(...args)
     })
     return this.page
@@ -193,9 +192,11 @@ class Skeleton {
       return translate(cleanedAst)
     }).join('\n')
 
-    let finalCss = collectImportantComments(allCleanedCSS)
-    finalCss = minify(finalCss).css
-    const shellHtml = `<style>${finalCss}</style>\n${htmlMinify(cleanedHtml)}`
+    const finalCss = collectImportantComments(allCleanedCSS)
+    // finalCss = minify(finalCss).css ? `html-minifier` use `clean-css` as css minifier
+    // so don't need to use another mimifier.
+    let shellHtml = `<style>${finalCss}</style>\n${cleanedHtml}`
+    shellHtml = htmlMinify(shellHtml, this.options.minify)
     const returned = {
       html: rawHtml,
       shellHtml

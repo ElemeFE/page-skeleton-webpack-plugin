@@ -27,14 +27,8 @@ async function insertScreenShotTpl(html) {
   return screenShotTemplate.replace(/\$\$html/g, html)
 }
 
-function htmlMinify(html) {
-  const minHtml = minify(html, {
-    minifyCSS: true,
-    removeComments: true,
-    removeAttributeQuotes: true,
-    removeEmptyAttributes: false
-  })
-  return minHtml
+function htmlMinify(html, options) {
+  return minify(html, options)
 }
 
 function sleep(duration) {
