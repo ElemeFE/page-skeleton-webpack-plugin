@@ -2,7 +2,7 @@
 
 你是否还在为你的应用首屏前的一段白屏而困扰？或者单纯重复的 **loading** 图已经让用户产生了审美疲劳？如果在应用首屏出现之前能够展示应用的骨架样式该多好啊，这样用户感觉页面似乎加载更快了。但是开发者都不想重复的去写这些繁琐的骨架页面。**pageSkeletonWebpackPlugin** 就是一款帮你解决以上痛点的整套方案。
 
-**page-skeleton-webpack-plugin** 是一款 webpack 插件，它能够在你开发过程中，生成应用的**骨架页面**。并通过 webpack 将骨架页面打包到你的应用中，这样在你启动应用的时，就能够在首屏之前看到应用的大概样式了。
+**pageSkeletonWebpackPlugin** 是一款 webpack 插件，它能够在你开发过程中，生成应用的**骨架页面**。并通过 webpack 将骨架页面打包到你的应用中，这样在你启动应用的时，就能够在首屏之前看到应用的大概样式了。
 
 ![](./assets/skeleton2.jpg)
 
@@ -45,7 +45,7 @@ const webpackConfig = {
 
 ```
 
-2. 修改 HtmlWebpackPlugin 插件的模板，添加 `<!-- shell -->` 注释。
+1. 修改 HtmlWebpackPlugin 插件的模板，添加 `<!-- shell -->` 注释。
 
 ```html
 <!DOCTYPE html>
@@ -62,25 +62,25 @@ const webpackConfig = {
 </html>
 ```
 
-3. 开发过程中使用插件
+1. 开发过程中使用插件
 
-* 通过浏览器打开你正在开发的项目，选定你要生成 page skeleton页面，通过 `ctrl + enter` 组合键呼出插件的交互界面。
-* 点击交互界面上的唯一按钮 **P**，插件将在后台生成骨架页面，并自动帮你打开预览page skeleton 的页面。这个过程可能会耗时几秒到十几秒的时间。
-* 如果你对预览页面还算满意，点击预览页面中的 **G** 按钮，将在你项目配置的路径中生成骨架页面所需名为 shell 文件。
-* 通过 webpack 重新打包，e.g. npm run dev(你设置的开发 npm script)。这样当你刷新页面的时候就能够看到页面的骨架结构了。
+- 通过浏览器打开你正在开发的项目，选定你要生成 page skeleton页面，通过 `ctrl + enter` 组合键呼出插件的交互界面。
+- 点击交互界面上的唯一按钮 **P**，插件将在后台生成骨架页面，并自动帮你打开预览page skeleton 的页面。这个过程可能会耗时几秒到十几秒的时间。
+- 如果你对预览页面还算满意，点击预览页面中的 **G** 按钮，将在你项目配置的路径中生成骨架页面所需名为 shell 文件。
+- 通过 webpack 重新打包，e.g. npm run dev(你设置的开发 npm script)。这样当你刷新页面的时候就能够看到页面的骨架结构了。
 
 #### Configuration
 
 你可以向 `pageSkeletonWebpackPlugin` 插件传递一个对象作为配置对象。该配置对象可包含如下字段：
 
-* `pathname:` `string` 生成的 shell 文件存放路径，需为**绝对路径**，且为**必配置项**。
-* `debug:` `boolean` 默认值为 `false`，是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。
-* `minify:` `object | false` 默认值会对生成 shell 文件中的 **html** 和 **css** 进行压缩，当配置为 false 时，不压缩文件。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。
-* `device: string` Chrome 支持的手机模拟器的名字，配置参见[puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js)。
-* `defer:` `number` 默认值为 5000， headless Chromium 打开页面进行操作的延迟，单位`ms`。
-* `excludes`: `array` 默认值为空数组，如果你有不需要进行骨架处理的元素，那么将该元素的 CSS 选择器写入该数组。
-* `remove:` `array` 默认值为空数组，不需要生成页面骨架，且需要从 DOM 中移除的元素，配置值为移除元素的 CSS 选择器。
-* `hide:` `array` 默认值为空数组，不需要移除，但是通过设置其透明度为 0，来隐藏该元素，配置值为隐藏元素的 CSS 选择器。
+- `pathname:` `string` 生成的 shell 文件存放路径，需为**绝对路径**，且为**必配置项**。
+- `debug:` `boolean` 默认值为 `false`，是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。
+- `minify:` `object | false` 默认值会对生成 shell 文件中的 **html** 和 **css** 进行压缩，当配置为 false 时，不压缩文件。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。
+- `device: string` Chrome 支持的手机模拟器的名字，配置参见[puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js)。
+- `defer:` `number` 默认值为 5000， headless Chromium 打开页面进行操作的延迟，单位`ms`。
+- `excludes`: `array` 默认值为空数组，如果你有不需要进行骨架处理的元素，那么将该元素的 CSS 选择器写入该数组。
+- `remove:` `array` 默认值为空数组，不需要生成页面骨架，且需要从 DOM 中移除的元素，配置值为移除元素的 CSS 选择器。
+- `hide:` `array` 默认值为空数组，不需要移除，但是通过设置其透明度为 0，来隐藏该元素，配置值为隐藏元素的 CSS 选择器。
 
 可能的配置如下：
 
@@ -118,7 +118,7 @@ pageSkeletonWebpackPlugin 完全兼容 h5 项目，只需要添加配置项 `h5O
 
 **注意：** **page-skeleton-webpack-plugin** 还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必检查生产的**骨架页面** 是否满足你的要求。
 
-####Contribution
+#### Contribution
 
 在 examples 目录中找到开发的项目。 npm run dev 启动后进行开发。
 如果你对该项目感兴趣，欢迎大家贡献代码。
@@ -126,5 +126,4 @@ pageSkeletonWebpackPlugin 完全兼容 h5 项目，只需要添加配置项 `h5O
 #### License
 
 This project is licensed under MIT.
-
 

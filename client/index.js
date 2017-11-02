@@ -1,3 +1,5 @@
+'use strict'
+
 import SockJS from 'sockjs-client'
 import Vue from 'vue/dist/vue.esm.js'
 import { port } from '../src/config/config'

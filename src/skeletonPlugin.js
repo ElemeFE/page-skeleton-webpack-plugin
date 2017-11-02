@@ -1,4 +1,6 @@
-const Server = require('./Server')
+'use strict'
+
+const Server = require('./server')
 const { log, addScriptTag, getShellCode } = require('./util/utils')
 const { pluginConfig, port, staticPath } = require('./config/config')
 
@@ -7,20 +9,20 @@ function SkeletonPlugin(options = {}) {
   this.server = null
 }
 
-SkeletonPlugin.prototype.apply = function(compiler) {
-  compiler.plugin('entry-option', compiler => {
+SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-inline func-names
+  compiler.plugin('entry-option', (compiler) => {
     const server = this.server = new Server(this.options)
     server.listen()
-    .catch(err => log(err, 'error'))
+      .catch(err => log(err, 'error'))
   })
 
-  compiler.plugin('compilation', compilation => {
+  compiler.plugin('compilation', (compilation) => {
     compilation.plugin('html-webpack-plugin-before-html-processing', async (htmlPluginData, callback) => {
       // at develop phase, insert the interface code
       if (process.env.NODE_ENV !== 'production') {
         const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
         const oldHtml = htmlPluginData.html
-        htmlPluginData.html = addScriptTag(oldHtml, clientEntry)       
+        htmlPluginData.html = addScriptTag(oldHtml, clientEntry)
       }
       // replace `<!-- shell -->` with `shell code`
       if (!this.options.h5Only) {
@@ -29,13 +31,13 @@ SkeletonPlugin.prototype.apply = function(compiler) {
           htmlPluginData.html = htmlPluginData.html.replace('<!-- shell -->', code)
         } catch (err) {
           log(err.toString(), 'error')
-        }   
+        }
       }
       callback(null, htmlPluginData)
     })
   })
 
-  ;['watch-close', 'failed'].forEach(event => {
+  ;['watch-close', 'failed'].forEach((event) => {
     compiler.plugin(event, () => {
       this.server && this.server.close()
     })

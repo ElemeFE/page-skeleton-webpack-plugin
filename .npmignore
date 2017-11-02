@@ -1,7 +1,7 @@
 npm-debug.log
 node_modules
-/client/index.bundle.js
-/client/sockjs.bundle.js
+assets
+examples
 /coverage
 *.pem
 .idea/

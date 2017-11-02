@@ -1,9 +1,10 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint src client/{index,sockjs,utils}.js --fix",
     "dev:client": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js --watch",
     "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
@@ -37,6 +38,8 @@
     "style-loader": "^0.19.0",
     "tiza": "^2.1.0",
     "vue-loader": "^13.3.0",
+    "imagemin": "^5.3.1",
+    "imagemin-pngquant": "^5.0.1",
     "vue-template-compiler": "^2.5.2"
   },
   "devDependencies": {
@@ -47,8 +50,6 @@
     "eslint-config-webpack": "^1.2.5",
     "eslint-plugin-import": "^2.8.0",
     "html-webpack-include-assets-plugin": "^1.0.2",
-    "imagemin": "^5.3.1",
-    "imagemin-pngquant": "^5.0.1",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "vue": "^2.5.2",
     "webpack": "^3.8.1"

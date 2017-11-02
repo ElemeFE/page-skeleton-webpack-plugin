@@ -1,25 +1,25 @@
+'use strict'
+
 const fs = require('fs')
 const http = require('http')
+const path = require('path')
+const EventEmitter = require('events')
 const sockjs = require('sockjs')
 const hasha = require('hasha')
 const express = require('express')
-const path = require('path')
-const EventEmitter = require('events')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
 const imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
-
 const {
-  htmlMinify,
   writeShell,
-  writeScreenShot,
   insertScreenShotTpl,
   log,
+  sockWrite,
   promisify,
   addScriptTag
 } = require('./util/utils')
-const Skeleton = require('./Skeleton')
+const Skeleton = require('./skeleton')
 
 const myFs = new MemoryFileSystem()
 
@@ -34,7 +34,8 @@ class Server extends EventEmitter {
     this.skeleton = null
   }
   _getSkeleton() {
-    return this.skeleton = this.skeleton ||  new Skeleton(this.options)
+    this.skeleton = this.skeleton || new Skeleton(this.options)
+    return this.skeleton
   }
   async initRouters() {
     const { app, staticPath } = this
@@ -44,7 +45,7 @@ class Server extends EventEmitter {
 
     staticFiles
       .filter(file => /\.bundle/.test(file))
-      .forEach(file => {
+      .forEach((file) => {
         app.get(`/${staticPath}/${file}`, (req, res) => {
           res.setHeader('Content-Type', 'application/javascript')
           fs.createReadStream(path.join(__dirname, '..', 'client', file)).pipe(res)
@@ -60,7 +61,7 @@ class Server extends EventEmitter {
         // `TypeError: this[(fn + "Sync")] is not a function`,
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
         html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
-      } catch(err) {
+      } catch (err) {
         log(err, 'error')
       }
       res.send(html)
@@ -68,7 +69,7 @@ class Server extends EventEmitter {
   }
   initSocket() {
     const { listenServer } = this
-    const sockjsServer = this.sockjsServer = sockjs.createServer({
+    const sockjsServer = sockjs.createServer({
       sockjs_url: `/${this.staticPath}/sockjs.bundle.js`,
       log(severity, line) {
         if (severity === 'error') {
@@ -76,9 +77,10 @@ class Server extends EventEmitter {
         }
       }
     })
-    sockjsServer.installHandlers(listenServer, { prefix:'/socket' })
-    sockjsServer.on('connection', conn => {
-      if (!~this.sockets.indexOf(conn)) {
+    this.sockjsServer = sockjsServer
+    sockjsServer.installHandlers(listenServer, { prefix: '/socket' })
+    sockjsServer.on('connection', (conn) => {
+      if (this.sockets.indexOf(conn) === -1) {
         this.sockets.push(conn)
         log(`client socket: ${conn.id} connect to server`)
       }
@@ -93,18 +95,20 @@ class Server extends EventEmitter {
   }
   // 启动服务
   async listen() {
+    /* eslint-disable no-multi-assign */
     const app = this.app = express()
     const listenServer = this.listenServer = http.createServer(app)
+    /* eslint-enable no-multi-assign */
     this.initRouters()
     this.initSocket()
     listenServer.listen(this.port, () => {
       log(`page-skeleton server listen at port: ${this.port}`)
     })
   }
-   // 关闭服务
+  // 关闭服务
   close() {
     // TODO...
-    this.skeleton && this.skeleton.closeBrowser()
+    if (this.skeleton) this.skeleton.closeBrowser()
     process.exit()
     this.listenServer.close(() => {
       log('server closed')
@@ -122,18 +126,18 @@ class Server extends EventEmitter {
           const url = msg.data
           const preGenMsg = 'begin to generator HTML...'
           log(preGenMsg)
-          this.sockWrite(this.sockets, 'console', preGenMsg)
+          sockWrite(this.sockets, 'console', preGenMsg)
           const { html, shellHtml } = await this._getSkeleton().genHtml(url)
           // CACHE SHELLHTML
           this.cacheHtml = shellHtml
           const fileName = await this.writeMagicHtml(html)
           const afterGenMsg = 'generator HTML successfully...'
           log(afterGenMsg)
-          this.sockWrite(this.sockets, 'console', afterGenMsg)
+          sockWrite(this.sockets, 'console', afterGenMsg)
           const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=true`
           const openMsg = 'Browser open another page...'
-          this.sockWrite([conn], 'console', openMsg)
-          this.sockWrite([conn], 'success', openMsg)
+          sockWrite([conn], 'console', openMsg)
+          sockWrite([conn], 'success', openMsg)
           open(directUrl, { app: 'google chrome' })
           break
         }
@@ -142,7 +146,7 @@ class Server extends EventEmitter {
           const url = msg.data
           const screenShotMsg = 'begin to generator screenshot...'
           log(screenShotMsg)
-          this.sockWrite(this.sockets, 'console', screenShotMsg)
+          sockWrite(this.sockets, 'console', screenShotMsg)
           let { screenShotBuffer } = await this._getSkeleton().genScreenShot(url)
           // 图片压缩
           screenShotBuffer = await imagemin.buffer(screenShotBuffer, {
@@ -155,24 +159,25 @@ class Server extends EventEmitter {
           const fileName = await this.writeMagicHtml(html)
           const afterGenMsg = 'generator screenshot successfully...'
           log(afterGenMsg)
-          this.sockWrite(this.sockets, 'console', afterGenMsg)
+          sockWrite(this.sockets, 'console', afterGenMsg)
           const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=false`
           const openMsg = 'Browser open another page...'
-          this.sockWrite([conn], 'console', openMsg)
-          this.sockWrite([conn], 'success', openMsg)
+          sockWrite([conn], 'console', openMsg)
+          sockWrite([conn], 'success', openMsg)
           open(directUrl, { app: 'google chrome' })
           break
         }
         case 'ok': {
-          this.sockWrite([conn], 'console', 'before write shell files...')
+          sockWrite([conn], 'console', 'before write shell files...')
           const { pathname, cacheHtml, options } = this
           await writeShell(pathname, cacheHtml, options)
           const afterWriteMsg = 'Write files successfully...'
           log(afterWriteMsg)
-          this.sockWrite([conn], 'console', afterWriteMsg)
-          this.sockWrite([conn], 'success', afterWriteMsg)
+          sockWrite([conn], 'console', afterWriteMsg)
+          sockWrite([conn], 'success', afterWriteMsg)
           break
         }
+        default: break
       }
     }
   }
@@ -194,16 +199,6 @@ class Server extends EventEmitter {
       log(err, 'error')
     }
   }
-
-  // Server 端主动推送消息到制定 socket
-  sockWrite(sockets, type, data) {
-    sockets.forEach(sock => {
-      sock.write(JSON.stringify({
-        type, data
-      }))
-    })
-  }
-
 }
 
 module.exports = Server

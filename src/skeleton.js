@@ -1,3 +1,5 @@
+'use strict'
+
 const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
 const { parse, toPlainObject, fromPlainObject, translate } = require('css-tree')
@@ -23,9 +25,11 @@ class Skeleton {
     await page.emulate(devices[device])
     this.browser = browser
     this.page = page
-    debug && page.on('console', (...args) => {
-      console.log(...args)
-    })
+    if (debug) {
+      page.on('console', (...args) => {
+        console.log(...args) // eslint-disable-line no-console
+      })
+    }
     return this.page
   }
 
@@ -35,21 +39,20 @@ class Skeleton {
     // `./util/headlessClient.js` 文件插入到 page 中
     await this.page.addScriptTag({ content })
     await sleep(defer)
-    await this.page.evaluate(async (remove, excludes, hide) => {
+    await this.page.evaluate(async (toRemove, toExcludes, toHide) => {
       const { genSkeleton } = Skeleton
-      genSkeleton(remove, excludes, hide)
+      genSkeleton(toRemove, toExcludes, toHide)
     }, remove, excludes, hide)
   }
 
   async genHtml(url) {
-
     const stylesheetAstObjects = {}
     const stylesheetContents = {}
 
     const page = await this.initPage()
 
     await page.setRequestInterceptionEnabled(true)
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (stylesheetAstObjects[request.url]) {
         // don't need to download the same assets
         request.abort()
@@ -58,14 +61,14 @@ class Skeleton {
       }
     })
     // To build a map of all downloaded CSS (css use link tag)
-    page.on('response', response => {
-      const { url } = response
+    page.on('response', (response) => {
+      const { url } = response // eslint-disable-line no-shadow
       const ct = response.headers['content-type'] || ''
       if (!response.ok) {
         throw new Error(`${response.status} on ${url}`)
       }
       if (ct.indexOf('text/css') > -1 || /\.css$/i.test(url)) {
-        response.text().then(text => {
+        response.text().then((text) => {
           const ast = parse(text, {
             parseValue: false,
             parseRulePrelude: false
@@ -75,7 +78,7 @@ class Skeleton {
         })
       }
     })
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       throw error
     })
 
@@ -91,7 +94,7 @@ class Skeleton {
       return getHtmlAndStyle()
     })
 
-    const stylesheetAstArray = styles.map(style => {
+    const stylesheetAstArray = styles.map((style) => {
       const ast = parse(style, {
         parseValue: false,
         parseRulePrelude: false
@@ -99,10 +102,10 @@ class Skeleton {
       return toPlainObject(ast)
     })
 
-    const cleanedStyles = await page.evaluate(async (stylesheetAstObjects, stylesheetAstArray) => {
+    const cleanedCSS = await page.evaluate(async (stylesheetAstObjects, stylesheetAstArray) => { // eslint-disable-line no-shadow
       const DEAD_OBVIOUS = new Set(['*', 'body', 'html'])
       const cleanedStyles = []
-      const checker = selector => {
+      const checker = (selector) => {
         if (DEAD_OBVIOUS.has(selector)) {
           return true
         }
@@ -114,43 +117,39 @@ class Skeleton {
           return keep
         } catch (err) {
           const exception = err.toString()
-          console.error(`Unable to querySelector('${selector}') [${exception}]`)
+          log(`Unable to querySelector('${selector}') [${exception}]`, 'error')
           return false
         }
       }
 
       const cleaner = (ast, callback) => {
-
         const decisionsCache = {}
 
-        const clean = (children, callback) => {
-          return children.filter(child => {
-            if (child.type === 'Rule') {
-              const values = child.prelude.value.split(',').map(x => x.trim())
-              const keepValues = values.filter(selectorString => {
-                if (decisionsCache[selectorString] !== undefined) {
-                  return decisionsCache[selectorString]
-                }
-                const keep = callback(selectorString)
-                decisionsCache[selectorString] = keep
-                return keep
-              })
-              if (keepValues.length) {
-                // re-write the selector value
-                child.prelude.value = keepValues.join(', ')
-                return true
-              } else {
-                return false
+        const clean = (children, cb) => children.filter((child) => {
+          if (child.type === 'Rule') {
+            const values = child.prelude.value.split(',').map(x => x.trim())
+            const keepValues = values.filter((selectorString) => {
+              if (decisionsCache[selectorString]) {
+                return decisionsCache[selectorString]
               }
-            } else if (child.type === 'Atrule' && child.name === 'media') {
-              // recurse
-              child.block.children = clean(child.block.children, callback)
-              return child.block.children.length > 0
+              const keep = cb(selectorString)
+              decisionsCache[selectorString] = keep
+              return keep
+            })
+            if (keepValues.length) {
+              // re-write the selector value
+              child.prelude.value = keepValues.join(', ')
+              return true
             }
-            // The default is to keep it.
-            return true
-          })
-        }
+            return false
+          } else if (child.type === 'Atrule' && child.name === 'media') {
+            // recurse
+            child.block.children = clean(child.block.children, cb)
+            return child.block.children.length > 0
+          }
+          // The default is to keep it.
+          return true
+        })
 
         ast.children = clean(ast.children, callback)
         return ast
@@ -158,16 +157,14 @@ class Skeleton {
 
       const links = Array.from(document.querySelectorAll('link'))
       links
-        .filter(link => {
-          return (
-            link.href &&
+        .filter(link => (
+          link.href &&
             (link.rel === 'stylesheet' ||
               link.href.toLowerCase().endsWith('.css')) &&
             !link.href.toLowerCase().startsWith('blob:') &&
             link.media !== 'print'
-          )
-        })
-        .forEach(stylesheet => {
+        ))
+        .forEach((stylesheet) => {
           if (stylesheetAstObjects[stylesheet.href]) {
             throw new Error(`${stylesheet.href} not in stylesheetAstObjects`)
           }
@@ -179,15 +176,14 @@ class Skeleton {
           const ast = stylesheetAstObjects[stylesheet.href]
           cleanedStyles.push(cleaner(ast, checker))
         })
-      stylesheetAstArray.forEach(ast => {
+      stylesheetAstArray.forEach((ast) => {
         cleanedStyles.push(cleaner(ast, checker))
       })
 
       return cleanedStyles
-
     }, stylesheetAstObjects, stylesheetAstArray)
 
-    const allCleanedCSS = cleanedStyles.map(ast => {
+    const allCleanedCSS = cleanedCSS.map((ast) => {
       const cleanedAst = fromPlainObject(ast)
       return translate(cleanedAst)
     }).join('\n')
@@ -214,13 +210,13 @@ class Skeleton {
     await this.page.setViewport(viewport)
     const screenShotBuffer = await this.page.screenshot({
       type: 'png',
-      fullPage: true,
+      fullPage: true
     })
     return { screenShotBuffer }
   }
 
   closeBrowser() {
-    this.browser && this.browser.close()
+    if (this.browser) this.browser.close()
   }
 }
 
