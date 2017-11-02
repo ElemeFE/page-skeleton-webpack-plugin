@@ -39,7 +39,7 @@ async function insertScreenShotTpl(html) {
 }
 
 function htmlMinify(html, options) {
-  return minify(html, options)
+  return options === false ? html : minify(html, options)
 }
 
 function sleep(duration) {
