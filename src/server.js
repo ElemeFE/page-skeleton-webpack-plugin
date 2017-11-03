@@ -30,7 +30,11 @@ class Server extends EventEmitter {
     this.options = options
     // 用于缓存写入 shell.vue 文件的 html
     this.cacheHtml = ''
+    this.previewUrl = ''
+    const { port } = options
+    this.directUrl = `http://127.0.0.1:${port}/preview.html`
     this.sockets = []
+    this.previewSocket = null
     this.skeleton = null
   }
   _getSkeleton() {
@@ -39,7 +43,7 @@ class Server extends EventEmitter {
   }
   async initRouters() {
     const { app, staticPath } = this
-    // app.use(`/${staticPath}`, express.static(path.resolve(__dirname, staticPath)))
+    app.use('/', express.static(path.resolve(__dirname, '../client/dist')))
 
     const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
 
@@ -51,6 +55,10 @@ class Server extends EventEmitter {
           fs.createReadStream(path.join(__dirname, '..', 'client', file)).pipe(res)
         })
       })
+
+    app.get('/preview.html', async(req, res) => {
+      fs.createReadStream(path.resolve(__dirname, '..', 'client/dist/index.html')).pipe(res)
+    })
 
     app.get('/:filename', async (req, res) => {
       const { filename } = req.params
@@ -90,6 +98,10 @@ class Server extends EventEmitter {
       conn.on('close', () => {
         const index = this.sockets.indexOf(conn)
         if (index > -1) this.sockets.splice(index, 1)
+        if (this.previewSocket === conn) {
+          this.previewSocket = null
+          log('preview closed')
+        }
       })
     })
   }
@@ -134,11 +146,26 @@ class Server extends EventEmitter {
           const afterGenMsg = 'generator HTML successfully...'
           log(afterGenMsg)
           sockWrite(this.sockets, 'console', afterGenMsg)
-          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=true`
+          this.previewUrl = `http://127.0.0.1:${this.port}/${fileName}`
           const openMsg = 'Browser open another page...'
           sockWrite([conn], 'console', openMsg)
           sockWrite([conn], 'success', openMsg)
-          open(directUrl, { app: 'google chrome' })
+          if (!this.previewSocket) {
+            open(this.directUrl, { app: 'google chrome' })
+          } else {
+            sockWrite([this.previewSocket], 'url', this.previewUrl)
+          }
+          break
+        }
+        case 'connect': {
+          if (msg.data === 'preview') {
+            this.previewSocket = conn
+            log('preview page connected')
+          }
+        }
+        case 'url': {
+          if (msg.data !== 'preview') return log(msg)
+          sockWrite([conn], 'url', this.previewUrl)
           break
         }
         case 'screenshot': {
@@ -174,7 +201,6 @@ class Server extends EventEmitter {
           const afterWriteMsg = 'Write files successfully...'
           log(afterWriteMsg)
           sockWrite([conn], 'console', afterWriteMsg)
-          sockWrite([conn], 'success', afterWriteMsg)
           break
         }
         default: break
@@ -187,13 +213,11 @@ class Server extends EventEmitter {
   async writeMagicHtml(html) {
     try {
       const { staticPath, port } = this
-      const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
-      const sockHtml = addScriptTag(html, clientEntry)
       myFs.mkdirpSync(pathName)
-      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), sockHtml, 'utf8')
+      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), html, 'utf8')
       return fileName
     } catch (err) {
       log(err, 'error')
