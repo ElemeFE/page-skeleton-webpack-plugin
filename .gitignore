@@ -2,6 +2,7 @@ npm-debug.log
 node_modules
 /client/index.bundle.js
 /client/sockjs.bundle.js
+/client/dist
 /coverage
 *.pem
 .idea/
