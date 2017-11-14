@@ -1,6 +1,6 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "dev:preview": "webpack --color --config client/webpack.preview.config.js --watch",
     "dev:client": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js --watch",
     "dev:doc": "node build/doc-server.js",
+    "dev:sale": "cd examples/sale && npm run dev",
     "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
     "build:preview": "webpack --color --config client/webpack.preview.config.js",
@@ -22,12 +23,16 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.3.0",
-    "css-tree": "^1.0.0-alpha25",
+    "css-tree": "^1.0.0-alpha.26",
     "csso": "^3.3.1",
     "express": "^4.16.2",
+    "extract-text-webpack-plugin": "^3.0.2",
     "fs-extra": "^4.0.2",
     "hasha": "^3.0.0",
     "html-minifier": "^3.5.6",
+    "html-webpack-plugin": "^2.30.1",
+    "imagemin": "^5.3.1",
+    "imagemin-pngquant": "^5.0.1",
     "memory-fs": "^0.4.1",
     "opn": "^5.1.0",
     "postcss-cssnext": "^3.0.2",
@@ -39,12 +44,10 @@
     "sockjs-client": "^1.1.4",
     "tiza": "^2.1.0",
     "vue-loader": "^13.3.0",
-    "imagemin": "^5.3.1",
-    "imagemin-pngquant": "^5.0.1",
     "vue-template-compiler": "^2.5.2",
+    "vuex": "^3.0.1",
+    "vue": "^2.5.2",
     "webpack": "^3.8.1",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "html-webpack-plugin": "^2.30.1",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.20.0"
   },
@@ -67,7 +70,6 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "url-loader": "^0.6.2",
-    "vue": "^2.5.2"
+    "url-loader": "^0.6.2"
   }
 }
