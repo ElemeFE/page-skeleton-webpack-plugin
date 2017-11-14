@@ -11,10 +11,9 @@
 
 html {
   box-sizing: border-box;
-  background-color: #f5f5f5;
+  background-color: #00aeee;
   color: #333;
   font-family: 'Montserrat', 'Helvetica Neue', Tahoma, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
-  user-select: none;
   -webkit-font-smoothing: antialiased;
   touch-action: manipulation;
 }

@@ -1,29 +1,43 @@
 <template>
   <div class="home">
-    <div class="title">Make your project more awesome</div>
-    <div class="sub-title">
-      remove loading, see your page at first sight <br>
-      get image or code for your shell page
+    <div class="first-page">
+      <div class="title">Make your project more awesome</div>
+      <div class="sub-title">
+        remove loading, see your page at first sight <br>
+        get image or code for your shell page
+      </div>
+      <router-link class="get-start" :to="{ name: 'guide'}">Get start</router-link>
+      <cloud class="cloud"></cloud>
+      <img class="pull-down" src="./images/pull-down.png" width="32" alt="pull-down">
     </div>
-    <router-link class="get-start" :to="{ name: 'guide'}">Get start</router-link>
-    <cloud class="cloud"></cloud>
+    <div class="main">
+      <demo></demo>
+      <preview></preview>
+      <usage></usage>
+    </div>
   </div>
 </template>
 
 <script>
   import Cloud from '../components/cloud.vue'
+  import Demo from '../components/demo.vue'
+  import Usage from '../components/usage.vue'
+  import Preview from '../components/preview.vue'
 
   export default {
     name: 'Home',
 
     components: {
-      Cloud
+      Cloud,
+      Demo,
+      Usage,
+      Preview
     }
   }
 </script>
 
 <style scoped>
-  .home {
+  .first-page {
     display: flex;
     flex-flow: column nowrap;
     justify-content: flex-start;;
@@ -57,8 +71,25 @@
       background-color: #32c5fb;
     }
   }
+  .main {
+    background-color: #fff;
+    padding: 60px 0;
+  }
   .cloud {
     margin-top: -100px;
+  }
+  .pull-down {
+    position: absolute;
+    width: 32px;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pullDown 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes pullDown {
+    to {
+        transform: translateX(-50%) translateY(10px)
+    }
   }
 </style>
 

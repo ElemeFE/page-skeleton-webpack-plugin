@@ -2,8 +2,12 @@
 
 const postcssNested = require('postcss-nested')
 const postcssCssnext = require('postcss-cssnext')
+const marked = require('marked')
+const highlight = require('highlight.js')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const svgoConfig = JSON.stringify(require('./svgo-config.json'))
+
+const renderer = new marked.Renderer()
 
 const postCssPlugins = [
   postcssNested,
@@ -35,6 +39,30 @@ const rules = [
     exclude: /node_modules/
   },
   /*  loaders  */
+  {
+    test: /\.md$/,
+    use: [
+      {
+        loader: 'html-loader'
+      },
+      {
+        loader: 'markdown-loader',
+        options: {
+          renderer,
+          highlight(code) {
+            return highlight.highlightAuto(code).value
+          },
+          gfm: true,
+          tables: true,
+          breaks: false,
+          pedantic: false,
+          sanitize: false,
+          smartLists: true,
+          smartypants: false
+        }
+      }
+    ]
+  },
   {
     test: /\.svg$/,
     exclude: [/not-sprite-svg/, /node_modules/],

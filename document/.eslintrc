@@ -1,8 +1,5 @@
 {
   "extends": "eslint:recommended",
-  "ecmaFeatures": {
-    "modules": true
-  },
   "globals": {
     "Vue": true,
     "VueRouter": true,
@@ -20,6 +17,7 @@
     "no-underscore-dangle": "off",
     "prefer-destructuring": ["error", {"object": false, "array": false}],
     "prefer-rest-params": "off",
+    "no-console": "off",
     "strict": ["error", "safe"]
   },
   "parser": "babel-eslint",
