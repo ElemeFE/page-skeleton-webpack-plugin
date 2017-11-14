@@ -4,6 +4,7 @@ node_modules
 /client/sockjs.bundle.js
 /client/dist
 /coverage
+/examples/**/shell.html
 *.pem
 .idea/
 .DS_Store
