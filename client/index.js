@@ -10,14 +10,14 @@ import Console from './components/console/index.vue'
 const sock = new SockJS(`http://localhost:${port}/socket`)
 const vm = createView(sock)
 
-sock.onopen = function() {
+sock.onopen = function () {
   log('connected')
   sock.send(JSON.stringify({open: 'test'}))
 }
 // 用于调试
 window.sock = sock
 
-sock.onmessage = function(e) {
+sock.onmessage = function (e) {
   const { type, data } = JSON.parse(e.data)
   switch (type) {
     case 'success': {
@@ -41,7 +41,7 @@ sock.onclose = function() {
 function createView(sock) {
   const root = document.createElement('div')
   document.body.appendChild(root)
- 
+
   return new Vue({
     components: {
       Console
@@ -61,7 +61,7 @@ function createView(sock) {
           if(ctrlKey && keyCode === 13) {
             this.show = !this.show
           }
-          
+
         })
       })
     },

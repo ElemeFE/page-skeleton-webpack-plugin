@@ -15,6 +15,7 @@
     "no-underscore-dangle": "off",
     "prefer-destructuring": ["error", {"object": false, "array": false}],
     "prefer-rest-params": "off",
+    "import/no-extraneous-dependencies": "off",
     "strict": ["error", "safe"]
   }
 }

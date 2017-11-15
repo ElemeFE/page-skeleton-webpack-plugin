@@ -1,0 +1,15 @@
+{
+  "globals": {
+    "Vue": true,
+    "VueRouter": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-console": "off"
+  },
+  "parser": "babel-eslint",
+  "extends": "scm/vue",
+  "plugins": ["vue"]
+}
