@@ -9,9 +9,9 @@ function SkeletonPlugin(options = {}) {
   this.server = null
 }
 
-SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-inline func-names
-  compiler.plugin('entry-option', (compiler) => {
-    const server = this.server = new Server(this.options)
+SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line func-names
+  compiler.plugin('entry-option', () => {
+    const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
     server.listen()
       .catch(err => log(err, 'error'))
   })
@@ -39,7 +39,9 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-inline 
 
   ;['watch-close', 'failed'].forEach((event) => {
     compiler.plugin(event, () => {
-      this.server && this.server.close()
+      if (this.server) {
+        this.server.close()
+      }
     })
   })
 }

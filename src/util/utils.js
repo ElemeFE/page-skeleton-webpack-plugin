@@ -2,8 +2,8 @@
 
 const { promisify } = require('util')
 const fs = require('fs')
-const fse = require('fs-extra')
 const path = require('path')
+const fse = require('fs-extra')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
 
@@ -65,14 +65,14 @@ function addScriptTag(source, src) {
   const scriptTag = `<script type="text/javascript" src="${src}" defer></script>`
   return `${token[0]}${scriptTag}</body>${token[1]}`
 }
-
+/* eslint-disable no-console */
 function log(msg, type = 'log') {
   if (type === 'log') {
     return console.log(chalk.bold.blueBright(`[PSG] ${msg}`))
   }
   console[type](chalk.bold.redBright(msg))
 }
-
+/* eslint-enable no-console */
 /**
  * original author: pepterbe(https://github.com/peterbe/minimalcss)
  * Take call "important comments" and extract them all to the
@@ -96,7 +96,7 @@ function log(msg, type = 'log') {
  */
 const collectImportantComments = (css) => {
   const once = new Set()
-  const cleaned = css.replace(/\/\*\![\s\S]*?\*\/\n*/gm, (match) => {
+  const cleaned = css.replace(/\/\*![\s\S]*?\*\/\n*/gm, (match) => {
     once.add(match)
     return ''
   })
