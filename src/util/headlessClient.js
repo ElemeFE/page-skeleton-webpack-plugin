@@ -1,6 +1,6 @@
 /**
  * this file's centent will be insert into the page which headless Chrome open.
- * and will be exec in browser environment. 
+ * and will be exec in browser environment.
  */
 // TODO: IF this file is more than 500 lines, pls split it into modules, and use
 // webpack packup it.
@@ -8,8 +8,11 @@
  * get the output html source code,
  * this function return a promise, and the `html` will be resolve
  */
+
+'use strict'
+
 const { getComputedStyle, Node } = window
-const Skeleton = (function (document) {
+const Skeleton = (function skeleton(document) {
   /**
    * constants
    */
@@ -21,7 +24,8 @@ const Skeleton = (function (document) {
   const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/
   const GRADIENT_REG = /gradient/
   const DISPLAY_NONE = /display:\s*none/
-  const CONSOLE_CLASS = '.sk-console' // 插件客户端界面的 className
+  // 插件客户端界面的 className
+  const CONSOLE_CLASS = '.sk-console'
   const PRE_REMOVE_TAGS = ['script']
   const AFTER_REMOVE_TAGS = ['title', 'meta', 'style', 'link']
   const SKELETON_STYLE = 'skeleton-style'
@@ -41,7 +45,7 @@ const Skeleton = (function (document) {
 
   const genClassName = () => `${CLASS_NAME_PREFEX}${Math.random().toString(32).slice(2)}`
   const PSEUDO_CLASS = genClassName()
-  const inViewPort = function (ele) {
+  const inViewPort = (ele) => {
     const rect = ele.getBoundingClientRect()
     return rect.top < window.innerHeight
       && rect.left < window.innerWidth
@@ -83,11 +87,13 @@ const Skeleton = (function (document) {
     const { lineHeight, paddingTop, paddingRight, paddingBottom, position: opos, fontSize } = comStyle
     const position = ['fixed', 'absolute', 'flex'].find(p => p === opos) ? opos : 'relative'
     const height = ele.offsetHeight
-    const lineCount = height / lineHeight | 0 // 向下取整
+    // 向下取整
+    const lineCount = height / lineHeight | 0 // eslint-disable-line no-bitwise
     let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10)
     if (Number.isNaN(textHeightRatio)) {
       textHeightRatio = 1 / 1.4
     }
+    /* eslint-disable no-mixed-operators */
     Object.assign(ele.style, {
       backgroundImage: `linear-gradient(
         transparent ${(1 - textHeightRatio) / 2 * 100}%,
@@ -100,6 +106,7 @@ const Skeleton = (function (document) {
       backgroundColor: TRANSPARENT,
       position
     })
+    /* eslint-enable no-mixed-operators */
     // add white mask
     if (lineCount > 1) {
       const div = document.createElement('div')
@@ -160,19 +167,25 @@ const Skeleton = (function (document) {
 
   function removeHandler(ele) {
     const parent = ele.parentNode
-    parent && parent.removeChild(ele)
+    if (parent) {
+      parent.removeChild(ele)
+    }
   }
 
   function emptyHandler(ele) {
     ele.innerHTML = ''
   }
 
-  function pseudosHandler({ hasBefore, hasAfter, ele }) {
+  function pseudosHandler({ ele }) {
     let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
     if (!styleEle) {
       styleEle = document.createElement('style')
       styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
-      document.head ? document.head.appendChild(styleEle) : document.body.appendChild(styleEle)
+      if (document.head) {
+        document.head.appendChild(styleEle)
+      } else {
+        document.body.appendChild(styleEle)
+      }
       if (!window.createPopup) { /* For Safari */
         styleEle.appendChild(document.createTextNode(''))
       }
@@ -203,7 +216,7 @@ const Skeleton = (function (document) {
     ele.style.background = TRANSPARENT
   }
 
-  function traverse(ele, excludesEle) {
+  function traverse(root, excludesEle) {
     const texts = []
     const buttons = []
     const hasImageBackEles = []
@@ -218,9 +231,11 @@ const Skeleton = (function (document) {
       if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
       }
-      if (~excludesEle.indexOf(ele)) return false
+      if (~excludesEle.indexOf(ele)) return false // eslint-disable-line no-bitwise
 
-      hasPseudoEle && pseudos.push(hasPseudoEle)
+      if (hasPseudoEle) {
+        pseudos.push(hasPseudoEle)
+      }
 
       if (checkHasBorder(styles)) {
         ele.style.border = 'none'
@@ -266,7 +281,7 @@ const Skeleton = (function (document) {
       ) {
         return texts.push(ele)
       }
-    }(ele))
+    }(root))
     svgs.forEach(e => svgHandler(e))
     toRemove.forEach(e => removeHandler(e))
     texts.forEach(e => textHandler(e))
@@ -313,3 +328,5 @@ const Skeleton = (function (document) {
 
   return { genSkeleton, getHtmlAndStyle }
 }(document))
+
+window.Skeleton = Skeleton

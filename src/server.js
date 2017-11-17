@@ -16,8 +16,7 @@ const {
   insertScreenShotTpl,
   log,
   sockWrite,
-  promisify,
-  addScriptTag
+  promisify
 } = require('./util/utils')
 const Skeleton = require('./skeleton')
 
@@ -56,7 +55,7 @@ class Server extends EventEmitter {
         })
       })
 
-    app.get('/preview.html', async(req, res) => {
+    app.get('/preview.html', async (req, res) => {
       fs.createReadStream(path.resolve(__dirname, '..', 'client/dist/index.html')).pipe(res)
     })
 
@@ -162,6 +161,7 @@ class Server extends EventEmitter {
             this.previewSocket = conn
             log('preview page connected')
           }
+          break
         }
         case 'url': {
           if (msg.data !== 'preview') return log(msg)
@@ -212,7 +212,7 @@ class Server extends EventEmitter {
    */
   async writeMagicHtml(html) {
     try {
-      const { staticPath, port } = this
+      const { staticPath } = this
       const pathName = path.join(__dirname, staticPath)
       let fileName = await hasha(html, { algorithm: 'md5' })
       fileName += '.html'
