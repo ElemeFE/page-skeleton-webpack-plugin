@@ -6,6 +6,7 @@ const path = require('path')
 const fse = require('fs-extra')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
+const { html2json, json2html } = require('html2json')
 
 async function writeShell(pathname, html, options) {
   const { h5Only } = options
@@ -126,6 +127,25 @@ const sockWrite = (sockets, type, data) => {
   })
 }
 
+const addDprAndFontSize = html => {
+  const json = html2json(html)
+  const oriAttr = json.child[0].attr
+  const style = oriAttr.style || []
+  const index = style.indexOf('font-size:')
+  if (index > -1) {
+    style[index + 1] = '124.2px;'
+  } else {
+    style.push('font-size:')
+    style.push('124.2px;')
+  }
+  const rootAttr = Object.assign(oriAttr, {
+    'data-dpr': '3',
+    style
+  })
+  json.child[0].attr = rootAttr
+  return json2html(json)
+}
+
 module.exports = {
   log,
   sleep,
@@ -137,5 +157,6 @@ module.exports = {
   htmlMinify,
   getShellCode,
   genScriptContent,
+  addDprAndFontSize,
   collectImportantComments
 }

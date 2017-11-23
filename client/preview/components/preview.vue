@@ -192,9 +192,9 @@
     margin-top: 25px;
   }
   .body iframe {
-    width: 400%;
-    height: 400%;
-    transform: scale(.25);
+    width: 300%;
+    height: 300%;
+    transform: scale(.3333333);
     transform-origin: top left;
   }
   .bottom {

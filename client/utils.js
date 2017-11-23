@@ -1,16 +1,13 @@
 import tiza from 'tiza'
 
 const log = msg => {
-  tiza.color('goldenrod')
-    .italic()
+  tiza.color('#006633')
+    // .italic()
     .size(14)
-    .text(`[PSG] ${msg}`)
+    .text(`😄 -> "[PSG] ${msg}"`)
     .log()
 }
 
-const isPreview = /preview=true/.test(window.location.href)
-
 export {
-  log,
-  isPreview
+  log
 }

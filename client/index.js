@@ -3,7 +3,7 @@
 import SockJS from 'sockjs-client'
 import Vue from 'vue/dist/vue.esm'
 import { port } from '../src/config/config'
-import { log, isPreview } from './utils'
+import { log } from './utils'
 import Console from './components/console/index.vue'
 
 // TODO headless 打开的页面不连接 socket
@@ -48,13 +48,24 @@ function createView(sock) {
     },
     el: root,
     data: {
-      show: isPreview,
-      title: isPreview ? 'G' : 'P',
-      text: isPreview ? 'Write shell files' : 'Preview skeleton page'
+      show: false,
+      title: 'P',
+      text: 'Preview skeleton page'
     },
     template: '<Console :show="show" :title="title" :text="text" @pclick="handleClick"></Console>',
     created() {
       this.$nextTick(() => {
+        const self = this
+        Object.defineProperty(window, 'toogleBar', {
+          enumerable: false,
+          configrable: true,
+          get() {
+            self.show = !self.show
+            log('toogle the preview control bar.')
+            return '🐶'
+          }
+        })
+
         document.body.addEventListener('keydown', e => {
           const keyCode = e.keyCode || e.which || e.charCode
           const ctrlKey = e.ctrlKey || e.metaKey
@@ -67,11 +78,7 @@ function createView(sock) {
     methods: {
       handleClick() {
         this.text = 'IN PROGRESS...'
-        if (isPreview) {
-          sock.send(JSON.stringify({ type: 'ok' }))
-        } else {
-          sock.send(JSON.stringify({ type: 'generate', data: window.location.href }))
-        }
+        sock.send(JSON.stringify({ type: 'generate', data: window.location.href }))
       }
     }
   })

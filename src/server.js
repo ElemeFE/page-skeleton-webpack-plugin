@@ -16,7 +16,8 @@ const {
   insertScreenShotTpl,
   log,
   sockWrite,
-  promisify
+  promisify,
+  addDprAndFontSize
 } = require('./util/utils')
 const Skeleton = require('./skeleton')
 
@@ -211,13 +212,14 @@ class Server extends EventEmitter {
    * 将 sleleton 模块生成的 html 写入到内存中。
    */
   async writeMagicHtml(html) {
+    const decHtml = addDprAndFontSize(html)
     try {
       const { staticPath } = this
       const pathName = path.join(__dirname, staticPath)
-      let fileName = await hasha(html, { algorithm: 'md5' })
+      let fileName = await hasha(decHtml, { algorithm: 'md5' })
       fileName += '.html'
       myFs.mkdirpSync(pathName)
-      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), html, 'utf8')
+      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), decHtml, 'utf8')
       return fileName
     } catch (err) {
       log(err, 'error')

@@ -45,7 +45,7 @@
     text-align: center;
     color: #fff;
     font-size: .45rem;
-    background: rgba(255, 255, 255, .8);
+    background: radial-gradient(circle at top right,#667EEA,#764BA2);
     transition: all .2s .1s ease-out;
   }
   .show {
@@ -56,14 +56,16 @@
     position: relative;
     width: 85%;
     height: 1rem;
-    background: rgba(0, 0, 0, .8);
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
     border-radius: 1rem;
     margin: .5rem auto;
     box-sizing: border-box;
     line-height: 1rem;
+    overflow: hidden;
   }
 
   a {
+    text-decoration: none;
     width: 1rem;
     height: 1rem;
     line-height: 1rem;
@@ -74,7 +76,7 @@
     left: 0;
     top: 0;
     border-radius: 50%;
-    background: rgb(255, 64, 129);
+    background: rgb(0, 188, 212);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px;
   }
 </style>
