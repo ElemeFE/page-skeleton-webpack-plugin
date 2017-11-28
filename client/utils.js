@@ -1,13 +1,11 @@
 import tiza from 'tiza'
 
-const log = msg => {
-  tiza.color('#006633')
+export const log = (msg, type = 'success') => { // eslint-disable-line import/prefer-default-export
+  const color = type === 'success' ? '#006633' : 'red'
+  const emoji = type === 'success' ? '😄' : '😭'
+  tiza.color(color)
     // .italic()
     .size(14)
-    .text(`😄 -> "[PSG] ${msg}"`)
+    .text(`${emoji} -> "[PSG] ${msg}"`)
     .log()
-}
-
-export {
-  log
 }

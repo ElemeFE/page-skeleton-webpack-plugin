@@ -139,22 +139,29 @@ class Server extends EventEmitter {
           const preGenMsg = 'begin to generator HTML...'
           log(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
-          const { html, shellHtml } = await this._getSkeleton().genHtml(url)
-          // CACHE SHELLHTML
-          this.cacheHtml = shellHtml
-          const fileName = await this.writeMagicHtml(html)
-          const afterGenMsg = 'generator HTML successfully...'
-          log(afterGenMsg)
-          sockWrite(this.sockets, 'console', afterGenMsg)
-          this.previewUrl = `http://127.0.0.1:${this.port}/${fileName}`
-          const openMsg = 'Browser open another page...'
-          sockWrite([conn], 'console', openMsg)
-          sockWrite([conn], 'success', openMsg)
-          if (!this.previewSocket) {
-            open(this.directUrl, { app: 'google chrome' })
-          } else {
-            sockWrite([this.previewSocket], 'url', this.previewUrl)
+          try {
+            const { html, shellHtml } = await this._getSkeleton().genHtml(url)
+            // CACHE SHELLHTML
+            this.cacheHtml = shellHtml
+            const fileName = await this.writeMagicHtml(html)
+            const afterGenMsg = 'generator HTML successfully...'
+            log(afterGenMsg)
+            sockWrite(this.sockets, 'console', afterGenMsg)
+            this.previewUrl = `http://127.0.0.1:${this.port}/${fileName}`
+            const openMsg = 'Browser open another page...'
+            sockWrite([conn], 'console', openMsg)
+            sockWrite([conn], 'success', openMsg)
+            if (!this.previewSocket) {
+              open(this.directUrl, { app: 'google chrome' })
+            } else {
+              sockWrite([this.previewSocket], 'url', this.previewUrl)
+            }
+          } catch (err) {
+            const message = err.message || 'generate html failed.'
+            log(err)
+            sockWrite(this.sockets, 'error', message)
           }
+
           break
         }
         case 'connect': {

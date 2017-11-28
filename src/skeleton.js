@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
 const { parse, toPlainObject, fromPlainObject, translate } = require('css-tree')
 const {
-  sleep, genScriptContent, log,
+  sleep, genScriptContent,
   htmlMinify, collectImportantComments
 } = require('./util/utils')
 
@@ -16,9 +16,8 @@ class Skeleton {
   }
 
   async initPage() {
-    if (this.browser && this.page) {
-      return this.page
-    }
+    // close old browser and page.
+    this.closeBrowser()
     const { device, headless, debug } = this.options
     const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
@@ -87,6 +86,7 @@ class Skeleton {
       throw new Error(`${response.status} on ${url}`)
     }
 
+
     await this.makeSkeleton()
 
     const { rawHtml, styles, cleanedHtml } = await page.evaluate(async () => {
@@ -117,7 +117,7 @@ class Skeleton {
           return keep
         } catch (err) {
           const exception = err.toString()
-          log(`Unable to querySelector('${selector}') [${exception}]`, 'error')
+          console.log(`Unable to querySelector('${selector}') [${exception}]`, 'error') // eslint-disable-line no-console
           return false
         }
       }
@@ -197,6 +197,7 @@ class Skeleton {
       html: rawHtml,
       shellHtml
     }
+    this.closeBrowser()
     return Promise.resolve(returned)
   }
   // TODO...
@@ -212,10 +213,12 @@ class Skeleton {
       type: 'png',
       fullPage: true
     })
+    this.closeBrowser()
     return { screenShotBuffer }
   }
 
   closeBrowser() {
+    if (this.page) this.page.close()
     if (this.browser) this.browser.close()
   }
 }

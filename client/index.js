@@ -30,6 +30,10 @@ sock.onmessage = function(e) {
     log(data)
     break
   }
+  case 'error': {
+    log(data, 'error')
+    break
+  }
   }
 }
 

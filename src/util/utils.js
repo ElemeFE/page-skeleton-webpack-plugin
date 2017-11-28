@@ -132,7 +132,7 @@ const sockWrite = (sockets, type, data) => {
   })
 }
 
-const addDprAndFontSize = html => {
+const addDprAndFontSize = (html) => {
   const json = html2json(html)
   const oriAttr = json.child[0].attr
   const style = oriAttr.style || []
