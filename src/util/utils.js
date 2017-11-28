@@ -17,6 +17,11 @@ async function writeShell(pathname, html, options) {
   const jsDestPath = path.resolve(pathname, jsFilename)
   const vueDestPath = path.resolve(pathname, vueFilename)
   const htmlDestPath = path.resolve(pathname, htmlFilename)
+  try {
+    await fse.ensureDir(pathname)
+  } catch (err) {
+    log(err)
+  }
 
   if (!h5Only) {
     await promisify(fs.writeFile)(htmlDestPath, html, 'utf-8')
