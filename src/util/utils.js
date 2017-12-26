@@ -38,12 +38,6 @@ async function writeShell(pathname, html, options) {
   }
 }
 
-async function insertScreenShotTpl(html) {
-  const tplFilePath = path.resolve(__dirname, '../templates/screenShotTpl.html')
-  const screenShotTemplate = await promisify(fs.readFile)(tplFilePath, 'utf-8')
-  return screenShotTemplate.replace(/\$\$html/g, html)
-}
-
 function htmlMinify(html, options) {
   return options === false ? html : minify(html, options)
 }
@@ -102,8 +96,8 @@ function log(msg, type = 'log') {
  */
 const collectImportantComments = (css) => {
   const once = new Set()
-  const cleaned = css.replace(/\/\*![\s\S]*?\*\/\n*/gm, (match) => {
-    once.add(match)
+  const cleaned = css.replace(/(\/\*![\s\S]*?\*\/)\n*/gm, (match, p1) => {
+    once.add(p1)
     return ''
   })
   const combined = Array.from(once)
@@ -112,13 +106,12 @@ const collectImportantComments = (css) => {
 }
 
 const getShellCode = async (pathname) => {
-  const filename = 'shell.html'
-  let code
+  const FILE_NAME = 'shell.html'
+  let code = ''
   try {
-    code = await promisify(fs.readFile)(path.resolve(pathname, filename), 'utf-8')
+    code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
   } catch (err) {
-    log('You do not has shell.html file now!')
-    code = ''
+    log(`You do not has ${FILE_NAME} file now!`)
   }
   return code
 }
@@ -134,7 +127,8 @@ const sockWrite = (sockets, type, data) => {
 
 const addDprAndFontSize = (html) => {
   const json = html2json(html)
-  const oriAttr = json.child[0].attr
+  const rootElement = json.child.filter(c => c.tag === 'html')[0]
+  const oriAttr = rootElement.attr
   const style = oriAttr.style || []
   const index = style.indexOf('font-size:')
   if (index > -1) {
@@ -147,18 +141,16 @@ const addDprAndFontSize = (html) => {
     'data-dpr': '3',
     style
   })
-  json.child[0].attr = rootAttr
+  rootElement.attr = rootAttr
   return json2html(json)
 }
 
 module.exports = {
   log,
   sleep,
-  promisify,
   sockWrite,
   addScriptTag,
   writeShell,
-  insertScreenShotTpl,
   htmlMinify,
   getShellCode,
   genScriptContent,

@@ -4,6 +4,7 @@ const fs = require('fs')
 const http = require('http')
 const path = require('path')
 const EventEmitter = require('events')
+const { promisify } = require('util')
 const sockjs = require('sockjs')
 const hasha = require('hasha')
 const express = require('express')
@@ -13,10 +14,8 @@ const imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 const {
   writeShell,
-  insertScreenShotTpl,
   log,
   sockWrite,
-  promisify,
   addDprAndFontSize
 } = require('./util/utils')
 const Skeleton = require('./skeleton')
@@ -174,32 +173,6 @@ class Server extends EventEmitter {
         case 'url': {
           if (msg.data !== 'preview') return log(msg)
           sockWrite([conn], 'url', this.previewUrl)
-          break
-        }
-        case 'screenshot': {
-          if (!msg.data) return log(msg)
-          const url = msg.data
-          const screenShotMsg = 'begin to generator screenshot...'
-          log(screenShotMsg)
-          sockWrite(this.sockets, 'console', screenShotMsg)
-          let { screenShotBuffer } = await this._getSkeleton().genScreenShot(url)
-          // 图片压缩
-          screenShotBuffer = await imagemin.buffer(screenShotBuffer, {
-            plugins: [
-              imageminPngquant({ quality: '65-80' })
-            ]
-          })
-          const base64 = `data:png;base64,${screenShotBuffer.toString('base64')}`
-          const html = await insertScreenShotTpl(base64)
-          const fileName = await this.writeMagicHtml(html)
-          const afterGenMsg = 'generator screenshot successfully...'
-          log(afterGenMsg)
-          sockWrite(this.sockets, 'console', afterGenMsg)
-          const directUrl = `http://127.0.0.1:${this.port}/${fileName}?preview=false`
-          const openMsg = 'Browser open another page...'
-          sockWrite([conn], 'console', openMsg)
-          sockWrite([conn], 'success', openMsg)
-          open(directUrl, { app: 'google chrome' })
           break
         }
         case 'ok': {

@@ -1,5 +1,6 @@
 npm-debug.log
 node_modules
+coverage
 /client/index.bundle.js
 /client/sockjs.bundle.js
 /client/dist
