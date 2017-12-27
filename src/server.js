@@ -10,8 +10,6 @@ const hasha = require('hasha')
 const express = require('express')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
-const imagemin = require('imagemin')
-const imageminPngquant = require('imagemin-pngquant')
 const {
   writeShell,
   log,
@@ -27,7 +25,7 @@ class Server extends EventEmitter {
     super()
     Object.keys(options).forEach(k => Object.assign(this, { [k]: options[k] }))
     this.options = options
-    // 用于缓存写入 shell.vue 文件的 html
+    // 用于缓存写入 shell.html 文件的 html
     this.cacheHtml = ''
     this.previewUrl = ''
     const { port } = options
@@ -62,14 +60,14 @@ class Server extends EventEmitter {
     app.get('/:filename', async (req, res) => {
       const { filename } = req.params
       if (!/\.html$/.test(filename)) return false
-      let html
+      let html = await promisify(fs.readFile)(path.resolve(__dirname, 'templates/notFound.html'), 'utf-8')
       try {
         // if I use `promisify(myFs.readFile)` if will occur an error
         // `TypeError: this[(fn + "Sync")] is not a function`,
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
         html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
       } catch (err) {
-        log(err, 'error')
+        log(`When you request the preview html, ${err} ${filename}`, 'error')
       }
       res.send(html)
     })

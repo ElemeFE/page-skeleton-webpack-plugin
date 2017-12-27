@@ -1,15 +1,15 @@
-var path = require('path')
-var webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var px2rem = require('postcss-px2rem')
-var cssnext = require('postcss-cssnext')({
+const path = require('path')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const px2rem = require('postcss-px2rem')
+const cssnext = require('postcss-cssnext')({
   browsers: [
     'last 2 versions',
     'iOS >= 7',
     'Android >= 4.0',
   ],
 })
-var SkeletonPlugin = require('../../index.js').SkeletonPlugin
+const SkeletonPlugin = require('../../index.js').SkeletonPlugin
 
 module.exports = {
   entry: './src/main.js',
