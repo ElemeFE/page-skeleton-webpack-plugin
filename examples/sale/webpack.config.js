@@ -58,7 +58,8 @@ module.exports = {
       defer: 5000,
       excludes: ['.app-header'],
       remove: ['.icon-wrapper', '.unlogin-container_1Kyfq_0', '.main-wrapper_2p2-E_0'],
-      hide: ['.remain-bar']
+      hide: ['.remain-bar'],
+      minify: false
     }),
   ],
   resolve: {

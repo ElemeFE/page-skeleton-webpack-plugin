@@ -200,22 +200,6 @@ class Skeleton {
     this.closeBrowser()
     return Promise.resolve(returned)
   }
-  // TODO...
-  async genScreenShot(url) {
-    await this.initPage()
-    await this.page.goto(url)
-    /* 待优化 目前是拿到VP 然后设置VP 主要是 deviceScaleFactor */
-    await this.makeSkeleton()
-    const viewport = await this.page.viewport()
-    viewport.deviceScaleFactor = 1
-    await this.page.setViewport(viewport)
-    const screenShotBuffer = await this.page.screenshot({
-      type: 'png',
-      fullPage: true
-    })
-    this.closeBrowser()
-    return { screenShotBuffer }
-  }
 
   closeBrowser() {
     if (this.page) this.page.close()

@@ -7,6 +7,9 @@ const fse = require('fs-extra')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
 const { html2json, json2html } = require('html2json')
+const htmlBeautify = require('js-beautify').html_beautify
+
+const { htmlBeautifyConfig } = require('../config/config')
 
 async function writeShell(pathname, html, options) {
   const { h5Only } = options
@@ -39,7 +42,7 @@ async function writeShell(pathname, html, options) {
 }
 
 function htmlMinify(html, options) {
-  return options === false ? html : minify(html, options)
+  return options === false ? htmlBeautify(html, htmlBeautifyConfig) : minify(html, options)
 }
 
 function sleep(duration) {

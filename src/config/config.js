@@ -18,7 +18,28 @@ const pluginConfig = {
   headless: true,
   h5Only: false
 }
+
+const htmlBeautifyConfig = {
+  'indent_size': 4,
+  'html': {
+    'end_with_newline': true,
+    'js': {
+      'indent_size': 2
+    },
+    'css': {
+      'indent_size': 2
+    }
+  },
+  'css': {
+    'indent_size': 1
+  },
+  'js': {
+    'preserve-newlines': true
+  }
+}
+
 module.exports = {
+  htmlBeautifyConfig,
   pluginConfig,
   staticPath,
   port

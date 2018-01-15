@@ -1,6 +1,6 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.0.8",
+  "version": "0.1.8",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "html2json": "^1.0.2",
     "imagemin": "^5.3.1",
     "imagemin-pngquant": "^5.0.1",
+    "js-beautify": "^1.7.5",
     "memory-fs": "^0.4.1",
     "opn": "^5.1.0",
     "puppeteer": "^0.12.0",
