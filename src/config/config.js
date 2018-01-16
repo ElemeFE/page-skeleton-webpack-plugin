@@ -3,6 +3,20 @@
 const port = '8989'
 const staticPath = '__webpack_page_skeleton__'
 const pluginConfig = {
+  text: {
+    color: '#EEEEEE'
+  },
+  image: {
+    shape: 'rect', // `rect` | `circle`
+    color: '#EFEFEF'
+  },
+  button: {
+    color: '#EFEFEF'
+  },
+  svg: {
+    color: '#EFEFEF',
+    shape: 'circle' // circle | rect
+  },
   device: 'iPhone 6 Plus',
   debug: false,
   minify: {
@@ -15,6 +29,7 @@ const pluginConfig = {
   excludes: [],
   remove: [],
   hide: [],
+  grayBlock: [],
   headless: true,
   h5Only: false
 }

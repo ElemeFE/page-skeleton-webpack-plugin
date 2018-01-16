@@ -33,15 +33,15 @@ class Skeleton {
   }
 
   async makeSkeleton() {
-    const { defer, remove, excludes, hide } = this.options
+    const { defer } = this.options
     const content = await genScriptContent()
     // `./util/headlessClient.js` 文件插入到 page 中
     await this.page.addScriptTag({ content })
     await sleep(defer)
-    await this.page.evaluate(async (toRemove, toExcludes, toHide) => {
+    await this.page.evaluate(async (options) => {
       const { genSkeleton } = Skeleton
-      genSkeleton(toRemove, toExcludes, toHide)
-    }, remove, excludes, hide)
+      genSkeleton(options)
+    }, this.options)
   }
 
   async genHtml(url) {

@@ -16,10 +16,6 @@ const Skeleton = (function skeleton(document) {
   /**
    * constants
    */
-  const IMG_COLOR = '#EFEFEF'
-  const TEXT_COLOR = '#EEEEEE'
-  const BUTTON_COLOR = '#EFEFEF'
-  const BACK_COLOR = '#EFEFEF'
   const TRANSPARENT = 'transparent'
   const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/
   const GRADIENT_REG = /gradient/
@@ -32,6 +28,7 @@ const Skeleton = (function skeleton(document) {
   const CLASS_NAME_PREFEX = 'sk-'
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+  const MOCK_TEXT_ID = 'skeleton-text-id'
   /**
    * utils
    */
@@ -61,8 +58,136 @@ const Skeleton = (function skeleton(document) {
   }
 
   const checkHasBorder = styles => styles.getPropertyValue('border-style') !== 'none'
+
   const checkHasTextDecoration = styles => !/none/.test(styles.textDecorationLine)
-  function imgHandler(ele) {
+
+  const getTextWidth = (text, style) => {
+    let offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`)
+    if (!offScreenParagraph) {
+      const wrapper = document.createElement('p')
+      offScreenParagraph = document.createElement('span')
+      Object.assign(wrapper.style, {
+        width: '10000px'
+      })
+      offScreenParagraph.id = MOCK_TEXT_ID
+      wrapper.appendChild(offScreenParagraph)
+      document.body.appendChild(wrapper)
+    }
+    Object.assign(offScreenParagraph.style, style)
+    offScreenParagraph.textContent = text
+    return offScreenParagraph.getBoundingClientRect().width
+  }
+
+  function addTextMask (paragraph, { textAlign, lineHeight, paddingBottom, paddingLeft, paddingRight }, maskWidthPercent = 0.5) {
+    let left
+    let right
+    switch (textAlign) {
+      case 'center':
+        left = document.createElement('span')
+        right = document.createElement('span')
+        ;[left, right].forEach(mask => {
+          Object.assign(mask.style, {
+            display: 'inline-block',
+            width: `${maskWidthPercent / 2 * 100}%`,
+            height: lineHeight,
+            background: '#fff',
+            position: 'absolute',
+            bottom: paddingBottom
+          })
+        })
+        left.style.left = paddingLeft
+        right.style.right = paddingRight
+        paragraph.appendChild(left)
+        paragraph.appendChild(right)
+        break
+      case 'right':
+        left = document.createElement('span')
+        Object.assign(left.style, {
+          display: 'inline-block',
+          width: `${maskWidthPercent * 100}%`,
+          height: lineHeight,
+          background: '#fff',
+          position: 'absolute',
+          bottom: paddingBottom,
+          left: paddingLeft
+        })
+        paragraph.appendChild(left)
+        break
+      case 'left':
+      default:
+        right = document.createElement('span')
+        Object.assign(right.style, {
+          display: 'inline-block',
+          width: `${maskWidthPercent * 100}%`,
+          height: lineHeight,
+          background: '#fff',
+          position: 'absolute',
+          bottom: paddingBottom,
+          right: paddingRight
+        })
+        paragraph.appendChild(right)
+        break
+    }
+  }
+
+  function textHandler(ele, { color }) {
+    const { width } = ele.getBoundingClientRect()
+    // 宽度小于 50 的元素就不做阴影处理
+    if (width <= 50) {
+      return setOpacity(ele)
+    }
+    const comStyle = window.getComputedStyle(ele)
+    const text = ele.textContent
+    const {
+      lineHeight,
+      paddingTop,
+      paddingRight,
+      paddingBottom,
+      paddingLeft,
+      position: pos,
+      fontSize,
+      textAlign,
+      wordSpacing,
+      wordBreak
+    } = comStyle
+    const position = ['fixed', 'absolute', 'flex'].find(p => p === pos) ? pos : 'relative'
+
+    const height = ele.offsetHeight
+    // 向下取整
+    const lineCount = (height - parseInt(paddingTop, 10) - parseInt(paddingBottom, 10)) / parseInt(lineHeight, 10) | 0 // eslint-disable-line no-bitwise
+
+    let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10)
+    if (Number.isNaN(textHeightRatio)) {
+      textHeightRatio = 1 / 1.4 // default number
+    }
+    /* eslint-disable no-mixed-operators */
+    Object.assign(ele.style, {
+      backgroundImage: `linear-gradient(
+        transparent ${(1 - textHeightRatio) / 2 * 100}%,
+        ${color} 0%,
+        ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
+        transparent 0%)`,
+      backgroundSize: `100% ${lineHeight}`,
+      backgroundClip: 'content-box',
+      backgroundPositionY: paddingTop,
+      backgroundColor: 'transparent',
+      position,
+      color: 'transparent'
+    })
+    /* eslint-enable no-mixed-operators */
+    // add white mask
+    if (lineCount > 1) {
+      addTextMask(ele, comStyle)
+    } else {
+      const textWidth = getTextWidth(text, { fontSize, lineHeight, wordBreak, wordSpacing })
+      const maskWidthPercent = (width - textWidth) / width
+      if (maskWidthPercent > 0.5) {
+        addTextMask(ele, comStyle, maskWidthPercent)
+      }
+    }
+  }
+
+   function imgHandler(ele, { color, shape }) {
     const { width, height } = ele.getBoundingClientRect()
     const attrs = {
       width,
@@ -71,72 +196,32 @@ const Skeleton = (function skeleton(document) {
     }
     setAttributes(ele, attrs)
     // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
-    ele.style.background = IMG_COLOR
+    Object.assign(ele.style, {
+      background: color,
+      borderRadius: shape === 'circle' ? '50%' : 0
+    })
+
     if (ele.hasAttribute('alt')) {
       ele.removeAttribute('alt')
-    }
-  }
-
-  function textHandler(ele) {
-    const { width } = ele.getBoundingClientRect()
-    // 宽度小于 50 的元素就不做阴影处理
-    if (width <= 50) {
-      return setOpacity(ele)
-    }
-    const comStyle = window.getComputedStyle(ele)
-    const { lineHeight, paddingTop, paddingRight, paddingBottom, position: opos, fontSize } = comStyle
-    const position = ['fixed', 'absolute', 'flex'].find(p => p === opos) ? opos : 'relative'
-    const height = ele.offsetHeight
-    // 向下取整
-    const lineCount = height / lineHeight | 0 // eslint-disable-line no-bitwise
-    let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10)
-    if (Number.isNaN(textHeightRatio)) {
-      textHeightRatio = 1 / 1.4
-    }
-    /* eslint-disable no-mixed-operators */
-    Object.assign(ele.style, {
-      backgroundImage: `linear-gradient(
-        transparent ${(1 - textHeightRatio) / 2 * 100}%,
-        ${TEXT_COLOR} 0%,
-        ${TEXT_COLOR} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
-        transparent 0%)`,
-      backgroundSize: `100% ${lineHeight}px`,
-      backgroundClip: 'content-box',
-      backgroundPositionY: paddingTop,
-      backgroundColor: TRANSPARENT,
-      position
-    })
-    /* eslint-enable no-mixed-operators */
-    // add white mask
-    if (lineCount > 1) {
-      const div = document.createElement('div')
-
-      Object.assign(div.style, {
-        width: '50%',
-        height: lineHeight,
-        background: '#fff',
-        position: 'absolute',
-        right: paddingRight,
-        bottom: paddingBottom
-      })
-
-      ele.appendChild(div)
     }
   }
   /**
    * [buttonHandler 改变 button 元素样式：包括去除 border和 box-shadow, 背景色和文字颜色统一]
    */
-  function buttonHandler(ele) {
+  function buttonHandler(ele, { color }) {
     Object.assign(ele.style, {
-      color: BUTTON_COLOR,
-      background: BUTTON_COLOR,
+      color: color,
+      background: color,
       border: 'none',
       boxShadow: 'none'
     })
   }
 
-  function backgroundImageHandler(ele) {
-    ele.style.background = BACK_COLOR
+  function backgroundImageHandler(ele, { color, shape }) {
+    Object.assign(ele.style, {
+      background: color,
+      borderRadius: shape === 'circle' ? '50%' : 0
+    })
   }
   /**
    * [transparent 设置元素字体颜色为透明，必要情况下，设置其 textDecorationColor 也为透明色]
@@ -199,24 +284,46 @@ const Skeleton = (function skeleton(document) {
     }
   }
 
-  function svgHandler(ele) {
+  function svgHandler(ele, { color, shape }) {
     const { width, height } = ele.getBoundingClientRect()
     if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
       return removeHandler(ele)
     }
     emptyHandler(ele)
-    setOpacity(ele)
     Object.assign(ele.style, {
       width,
-      height
+      height,
+      borderRadius: shape === 'circle' ? '50%' : 0
     })
+    if (color === TRANSPARENT) {
+      setOpacity(ele)
+    } else {
+      ele.style.background = color
+    }
   }
 
   function gradientHandler(ele) {
     ele.style.background = TRANSPARENT
   }
 
-  function traverse(root, excludesEle) {
+  function grayHandler(ele, { color }) {
+    const elements = ele.querySelectorAll('*')
+    Array.from(elements).forEach(element => {
+      const childNodes = element.childNodes
+      if (Array.from(childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
+        element.style.color = color
+      }
+    })
+    ele.style.color = color
+    ele.style.background = color
+  }
+
+  function traverse(options) {
+    const { excludes, text, image, button, svg, grayBlock } = options
+    const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
+    const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : []
+    const rootElement = document.documentElement
+
     const texts = []
     const buttons = []
     const hasImageBackEles = []
@@ -225,11 +332,16 @@ const Skeleton = (function skeleton(document) {
     const svgs = []
     const pseudos = []
     const gradientBackEles = []
+    const grayBlocks = []
+
     ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)
       const hasPseudoEle = checkHasPseudoEle(ele)
       if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
+      }
+      if (~grayEle.indexOf(ele)) { // eslint-disable-line no-bitwise
+        return grayBlocks.push(ele)
       }
       if (~excludesEle.indexOf(ele)) return false // eslint-disable-line no-bitwise
 
@@ -281,18 +393,26 @@ const Skeleton = (function skeleton(document) {
       ) {
         return texts.push(ele)
       }
-    }(root))
-    svgs.forEach(e => svgHandler(e))
-    toRemove.forEach(e => removeHandler(e))
-    texts.forEach(e => textHandler(e))
-    buttons.forEach(e => buttonHandler(e))
-    hasImageBackEles.forEach(e => backgroundImageHandler(e))
-    imgs.forEach(e => imgHandler(e))
+    }(rootElement))
+
+    svgs.forEach(e => svgHandler(e, svg))
+    texts.forEach(e => textHandler(e, text))
+    buttons.forEach(e => buttonHandler(e, button))
+    hasImageBackEles.forEach(e => backgroundImageHandler(e, image))
+    imgs.forEach(e => imgHandler(e, image))
     pseudos.forEach(e => pseudosHandler(e))
     gradientBackEles.forEach(e => gradientHandler(e))
+    grayBlocks.forEach(e => grayHandler(e, button))
+    // remove mock text wrapper
+    const offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`)
+    if (offScreenParagraph && offScreenParagraph.parentNode) {
+      toRemove.push(offScreenParagraph.parentNode)
+    }
+    toRemove.forEach(e => removeHandler(e))
   }
 
-  function genSkeleton(remove, excludes, hide) {
+  function genSkeleton(options) {
+    const { remove, hide } = options
     /**
      * before walk
      */
@@ -310,9 +430,8 @@ const Skeleton = (function skeleton(document) {
     /**
      * walk in process
      */
-    const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
-    const root = document.documentElement
-    traverse(root, excludesEle)
+    
+    traverse(options)
   }
 
   function getHtmlAndStyle() {
@@ -326,7 +445,10 @@ const Skeleton = (function skeleton(document) {
     return { rawHtml, styles, cleanedHtml }
   }
 
-  return { genSkeleton, getHtmlAndStyle }
+  return {
+    genSkeleton,
+    getHtmlAndStyle
+  }
 }(document))
 
 window.Skeleton = Skeleton
