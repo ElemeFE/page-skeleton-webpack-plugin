@@ -318,6 +318,33 @@ const Skeleton = (function skeleton(document) {
     ele.style.background = color
   }
 
+  function addBlickAnimation() {
+    const style = document.createElement('style')
+    const styleContent = `
+      @keyframes blink {
+        0% {
+          opacity: .4;
+        }
+
+        50% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: .4;
+        }
+      }
+      .blink {
+        animation-duration: 2s;
+        animation-name: blink;
+        animation-iteration-count: infinite;
+      }
+    `
+    style.innerHTML = styleContent
+    document.head.appendChild(style)
+    document.body.firstElementChild.classList.add('blink')
+  }
+
   function traverse(options) {
     const { excludes, text, image, button, svg, grayBlock } = options
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
@@ -432,6 +459,10 @@ const Skeleton = (function skeleton(document) {
      */
     
     traverse(options)
+    /**
+     * add animation blink
+     */
+    addBlickAnimation()
   }
 
   function getHtmlAndStyle() {
