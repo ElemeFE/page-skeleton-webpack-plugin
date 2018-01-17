@@ -54,6 +54,10 @@ module.exports = {
       template: 'index.html'
     }),
     new SkeletonPlugin({
+      svg: {
+        color: '#EFEFEF',
+        shape: 'circle'
+      },
       pathname: path.resolve(__dirname, `./src`),
       defer: 5000,
       excludes: ['.app-header'],

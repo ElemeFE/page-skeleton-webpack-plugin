@@ -138,7 +138,7 @@ const Skeleton = (function skeleton(document) {
     }
     const comStyle = window.getComputedStyle(ele)
     const text = ele.textContent
-    const {
+    let {
       lineHeight,
       paddingTop,
       paddingRight,
@@ -150,6 +150,10 @@ const Skeleton = (function skeleton(document) {
       wordSpacing,
       wordBreak
     } = comStyle
+    if (!/\d/.test(lineHeight)) {
+      const fontSizeNum = parseInt(fontSize, 10) || 14
+      lineHeight = `${fontSizeNum * 1.4}px`
+    }
     const position = ['fixed', 'absolute', 'flex'].find(p => p === pos) ? pos : 'relative'
 
     const height = ele.offsetHeight
@@ -167,12 +171,13 @@ const Skeleton = (function skeleton(document) {
         ${color} 0%,
         ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
         transparent 0%)`,
+      backgroundOrigin: 'content-box',
       backgroundSize: `100% ${lineHeight}`,
       backgroundClip: 'content-box',
-      backgroundPositionY: paddingTop,
       backgroundColor: 'transparent',
       position,
-      color: 'transparent'
+      color: 'transparent',
+      backgroundRepeatX: 'no-repeat'
     })
     /* eslint-enable no-mixed-operators */
     // add white mask
@@ -180,9 +185,17 @@ const Skeleton = (function skeleton(document) {
       addTextMask(ele, comStyle)
     } else {
       const textWidth = getTextWidth(text, { fontSize, lineHeight, wordBreak, wordSpacing })
-      const maskWidthPercent = (width - textWidth) / width
-      if (maskWidthPercent > 0.5) {
-        addTextMask(ele, comStyle, maskWidthPercent)
+      const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
+      ele.style.backgroundSize = `${textWidthPercent * 100}% ${lineHeight}`
+      switch (textAlign) {
+        case 'left': // do nothing
+          break
+        case 'center':
+          ele.style.backgroundPositionX = '50%'
+          break
+        case 'right':
+          ele.style.backgroundPositionX = '100%'
+          break
       }
     }
   }
