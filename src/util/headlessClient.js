@@ -57,9 +57,16 @@ const Skeleton = (function skeleton(document) {
     return false
   }
 
-  const checkHasBorder = styles => styles.getPropertyValue('border-style') !== 'none'
+  const checkHasBorder = (styles) => styles.getPropertyValue('border-style') !== 'none'
 
-  const checkHasTextDecoration = styles => !/none/.test(styles.textDecorationLine)
+  const checkHasTextDecoration = (styles) => !/none/.test(styles.textDecorationLine)
+
+  const px2rem = px => {
+    const pxValue = typeof px === 'string' ? parseInt(px, 10) : px
+    const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize
+
+    return `${(pxValue / parseInt(htmlElementFontSize, 10))}rem`
+  }
 
   const getTextWidth = (text, style) => {
     let offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`)
@@ -315,8 +322,8 @@ const Skeleton = (function skeleton(document) {
     }
     emptyHandler(ele)
     Object.assign(ele.style, {
-      width,
-      height,
+      width: px2rem(width),
+      height: px2rem(height),
       borderRadius: shape === 'circle' ? '50%' : 0
     })
     if (color === TRANSPARENT) {
