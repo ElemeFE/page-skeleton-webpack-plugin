@@ -17,6 +17,10 @@ const pluginConfig = {
     color: '#EFEFEF',
     shape: 'circle' // circle | rect
   },
+  pseudo: {
+    color: '#EFEFEF', // or transparent
+    shape: 'circle' // circle | rect
+  },
   device: 'iPhone 6 Plus',
   debug: false,
   minify: {

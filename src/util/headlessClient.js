@@ -274,8 +274,19 @@ const Skeleton = (function skeleton(document) {
     ele.innerHTML = ''
   }
 
-  function pseudosHandler({ ele }) {
+  function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape }) {
     let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
+    const selector = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after`
+    let rule = `
+      {
+        background: ${color} !important;
+        background-image: none !important;
+        border-radius: ${shape === 'circle' ? '50%' : 0} !important;
+        color: transparent !important;
+        border-color: transparent !important;
+      }
+    `
+
     if (!styleEle) {
       styleEle = document.createElement('style')
       styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
@@ -291,9 +302,9 @@ const Skeleton = (function skeleton(document) {
 
     ele.classList.add(PSEUDO_CLASS)
     const oldHTML = styleEle.innerHTML
-    if (!/content:\snone!important/.test(oldHTML)) {
-      const rule = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {content: none!important;}`
-      styleEle.innerHTML = `${oldHTML}\n${rule}`
+    if (!/\S/.test(oldHTML)) {
+      const CSSRule = `${selector} ${rule}`
+      styleEle.innerHTML = `${CSSRule}`
     }
   }
 
@@ -359,7 +370,7 @@ const Skeleton = (function skeleton(document) {
   }
 
   function traverse(options) {
-    const { excludes, text, image, button, svg, grayBlock } = options
+    const { excludes, text, image, button, svg, grayBlock, pseudo } = options
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : []
     const rootElement = document.documentElement
@@ -422,7 +433,7 @@ const Skeleton = (function skeleton(document) {
       }
       if (
         ele.nodeType === Node.ELEMENT_NODE
-          && (ele.tagName === 'BUTTON' || (ele.tagName === 'A' && ele.getAttribute('role') === 'button'))
+        && (ele.tagName === 'BUTTON' || (ele.tagName === 'A' && ele.getAttribute('role') === 'button'))
       ) {
         return buttons.push(ele)
       }
@@ -430,6 +441,7 @@ const Skeleton = (function skeleton(document) {
         ele.childNodes
         && ele.childNodes.length === 1
         && ele.childNodes[0].nodeType === Node.TEXT_NODE
+        && /\S/.test(ele.childNodes[0].textContent)
       ) {
         return texts.push(ele)
       }
@@ -440,7 +452,7 @@ const Skeleton = (function skeleton(document) {
     buttons.forEach(e => buttonHandler(e, button))
     hasImageBackEles.forEach(e => backgroundImageHandler(e, image))
     imgs.forEach(e => imgHandler(e, image))
-    pseudos.forEach(e => pseudosHandler(e))
+    pseudos.forEach(e => pseudosHandler(e, pseudo))
     gradientBackEles.forEach(e => gradientHandler(e))
     grayBlocks.forEach(e => grayHandler(e, button))
     // remove mock text wrapper

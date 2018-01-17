@@ -18,9 +18,11 @@ class Skeleton {
   async initPage() {
     // close old browser and page.
     this.closeBrowser()
+
     const { device, headless, debug } = this.options
     const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
+
     await page.emulate(devices[device])
     this.browser = browser
     this.page = page
@@ -29,12 +31,14 @@ class Skeleton {
         console.log(...args) // eslint-disable-line no-console
       })
     }
+
     return this.page
   }
 
   async makeSkeleton() {
     const { defer } = this.options
     const content = await genScriptContent()
+
     // `./util/headlessClient.js` 文件插入到 page 中
     await this.page.addScriptTag({ content })
     await sleep(defer)
@@ -112,6 +116,7 @@ class Skeleton {
         if (/:-(ms|moz)-/.test(selector)) {
           return true
         }
+        console.log(selector)
         try {
           const keep = !!document.querySelector(selector)
           return keep

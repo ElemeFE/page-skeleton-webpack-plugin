@@ -58,11 +58,15 @@ module.exports = {
         color: '#EFEFEF',
         shape: 'circle'
       },
+      pseudo: {
+        color: '#EFEFEF', // or transparent
+        shape: 'circle' // circle | rect
+      },
       pathname: path.resolve(__dirname, `./src`),
       defer: 5000,
       excludes: ['.app-header'],
       remove: ['.icon-wrapper', '.unlogin-container_1Kyfq_0', '.main-wrapper_2p2-E_0'],
-      hide: ['.remain-bar'],
+      hide: ['.remain-bar', '.index-dashedline_7B79b3W'],
       grayBlock: ['#header'],
       minify: false
     }),
