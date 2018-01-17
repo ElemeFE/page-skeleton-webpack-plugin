@@ -23,7 +23,7 @@ const Skeleton = (function skeleton(document) {
   // 插件客户端界面的 className
   const CONSOLE_CLASS = '.sk-console'
   const PRE_REMOVE_TAGS = ['script']
-  const AFTER_REMOVE_TAGS = ['title', 'meta', 'style', 'link']
+  const AFTER_REMOVE_TAGS = ['title', 'meta', 'style']
   const SKELETON_STYLE = 'skeleton-style'
   const CLASS_NAME_PREFEX = 'sk-'
   // 最小 1 * 1 像素的透明 gif 图片

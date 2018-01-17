@@ -107,8 +107,10 @@ class Skeleton {
     })
 
     const cleanedCSS = await page.evaluate(async (stylesheetAstObjects, stylesheetAstArray) => { // eslint-disable-line no-shadow
+
       const DEAD_OBVIOUS = new Set(['*', 'body', 'html'])
       const cleanedStyles = []
+
       const checker = (selector) => {
         if (DEAD_OBVIOUS.has(selector)) {
           return true
@@ -116,7 +118,9 @@ class Skeleton {
         if (/:-(ms|moz)-/.test(selector)) {
           return true
         }
-        console.log(selector)
+        if (/:{1,2}(before|after)/.test(selector)) {
+          return true
+        }
         try {
           const keep = !!document.querySelector(selector)
           return keep
@@ -161,6 +165,7 @@ class Skeleton {
       }
 
       const links = Array.from(document.querySelectorAll('link'))
+
       links
         .filter(link => (
           link.href &&
@@ -170,7 +175,7 @@ class Skeleton {
             link.media !== 'print'
         ))
         .forEach((stylesheet) => {
-          if (stylesheetAstObjects[stylesheet.href]) {
+          if (!stylesheetAstObjects[stylesheet.href]) {
             throw new Error(`${stylesheet.href} not in stylesheetAstObjects`)
           }
           if (!Object.keys(stylesheetAstObjects[stylesheet.href]).length) {
