@@ -184,7 +184,7 @@ const Skeleton = (function skeleton(document) {
       backgroundColor: 'transparent',
       position,
       color: 'transparent',
-      backgroundRepeatX: 'no-repeat'
+      backgroundRepeat: 'repeat-y'
     })
     /* eslint-enable no-mixed-operators */
     // add white mask

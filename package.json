@@ -1,6 +1,6 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {

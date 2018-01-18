@@ -1,3 +1,8 @@
+### v0.3.5
+
+* **bug fix**
+  * 解决 IOS 设备中不支持 background-repeat-x css 属性。
+
 ### v0.3.4
 
 * **package update**
