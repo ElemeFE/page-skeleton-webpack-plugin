@@ -1,3 +1,28 @@
+### v0.4.0
+
+* **API changes**
+
+  * `image`、`svg`、`pseudo`三个配置项增加了一个 `shapeOpposite` 的属性，其接受一个数组，数组中的元素是 DOM 选择器，所代表元素最终展示的形状和`shape`形状相反，举例如下：
+
+    ```json
+    pseudo: {
+       color: '#EFEFEF', // or transparent
+       shape: 'circle', // circle | rect
+       shapeOpposite: ['.apple'] // .apple 的形状将是矩形
+    },
+    ```
+
+  * `button` 配置增加 `excludes` 配置属性，其接受一个数组，数组元素是 DOM 选择器，其配置的 DOM 元素将不被视为 buttom 处理，也就不会在骨架页面中展示成灰色块。
+
+    ```json
+    button: {
+       color: '#EFEFEF',
+       excludes: ['.apple a'] // 即使 a 元素带有 [role = button]特性，也不被视为 button
+    },
+    ```
+
+    ​
+
 ### v0.3.5
 
 * **bug fix**

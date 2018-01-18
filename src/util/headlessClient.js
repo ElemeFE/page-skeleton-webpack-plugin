@@ -25,7 +25,7 @@ const Skeleton = (function skeleton(document) {
   const PRE_REMOVE_TAGS = ['script']
   const AFTER_REMOVE_TAGS = ['title', 'meta', 'style']
   const SKELETON_STYLE = 'skeleton-style'
-  const CLASS_NAME_PREFEX = 'sk-'
+  const CLASS_NAME_PREFEX = 'skeleton-'
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
   const MOCK_TEXT_ID = 'skeleton-text-id'
@@ -40,8 +40,6 @@ const Skeleton = (function skeleton(document) {
     Object.keys(attrs).forEach(k => ele.setAttribute(k, attrs[k]))
   }
 
-  const genClassName = () => `${CLASS_NAME_PREFEX}${Math.random().toString(32).slice(2)}`
-  const PSEUDO_CLASS = genClassName()
   const inViewPort = (ele) => {
     const rect = ele.getBoundingClientRect()
     return rect.top < window.innerHeight
@@ -58,6 +56,8 @@ const Skeleton = (function skeleton(document) {
   }
 
   const checkHasBorder = (styles) => styles.getPropertyValue('border-style') !== 'none'
+
+  const getOppositeShape = shape => shape === 'circle' ? 'rect' : 'circle'
 
   const checkHasTextDecoration = (styles) => !/none/.test(styles.textDecorationLine)
 
@@ -207,18 +207,21 @@ const Skeleton = (function skeleton(document) {
     }
   }
 
-   function imgHandler(ele, { color, shape }) {
+   function imgHandler(ele, { color, shape, shapeOpposite }) {
     const { width, height } = ele.getBoundingClientRect()
     const attrs = {
       width,
       height,
       src: SMALLEST_BASE64
     }
+    
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
+
     setAttributes(ele, attrs)
     // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
     Object.assign(ele.style, {
       background: color,
-      borderRadius: shape === 'circle' ? '50%' : 0
+      borderRadius: finalShape === 'circle' ? '50%' : 0
     })
 
     if (ele.hasAttribute('alt')) {
@@ -228,9 +231,10 @@ const Skeleton = (function skeleton(document) {
   /**
    * [buttonHandler 改变 button 元素样式：包括去除 border和 box-shadow, 背景色和文字颜色统一]
    */
-  function buttonHandler(ele, { color }) {
+  function buttonHandler(ele, { color, excludes }) {
+    if (excludes.indexOf(ele) > -1) return
     Object.assign(ele.style, {
-      color: color,
+      color,
       background: color,
       border: 'none',
       boxShadow: 'none'
@@ -281,50 +285,60 @@ const Skeleton = (function skeleton(document) {
     ele.innerHTML = ''
   }
 
-  function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape }) {
+  function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape, shapeOpposite }) {
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
+    const PSEUDO_CLASS = `${CLASS_NAME_PREFEX}pseudo`
+    const PSEUDO_RECT_CLASS = `${CLASS_NAME_PREFEX}pseudo-rect`
+    const PSEUDO_CIRCLE_CLASS = `${CLASS_NAME_PREFEX}pseudo-circle`
+
     let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
-    const selector = `.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after`
-    let rule = `
-      {
-        background: ${color} !important;
-        background-image: none !important;
-        border-radius: ${shape === 'circle' ? '50%' : 0} !important;
-        color: transparent !important;
-        border-color: transparent !important;
-      }
-    `
 
     if (!styleEle) {
+      const rules = `
+        .${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {
+          background: ${color} !important;
+          background-image: none !important;
+          color: transparent !important;
+          border-color: transparent !important;
+        }
+        .${PSEUDO_RECT_CLASS}::before, .${PSEUDO_RECT_CLASS}::after {
+          border-radius: 0 !important;
+        }
+        .${PSEUDO_CIRCLE_CLASS}::before, .${PSEUDO_CIRCLE_CLASS}::after {
+          border-radius: 50% !important;
+        }
+      `
+
       styleEle = document.createElement('style')
       styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
+      if (!window.createPopup) { /* For Safari */
+        styleEle.appendChild(document.createTextNode(''))
+      }
+      styleEle.innerHTML = rules
       if (document.head) {
         document.head.appendChild(styleEle)
       } else {
         document.body.appendChild(styleEle)
       }
-      if (!window.createPopup) { /* For Safari */
-        styleEle.appendChild(document.createTextNode(''))
-      }
     }
 
     ele.classList.add(PSEUDO_CLASS)
-    const oldHTML = styleEle.innerHTML
-    if (!/\S/.test(oldHTML)) {
-      const CSSRule = `${selector} ${rule}`
-      styleEle.innerHTML = `${CSSRule}`
-    }
+    ele.classList.add(finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS)
   }
 
-  function svgHandler(ele, { color, shape }) {
+  function svgHandler(ele, { color, shape, shapeOpposite }) {
     const { width, height } = ele.getBoundingClientRect()
     if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
       return removeHandler(ele)
     }
+
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
+
     emptyHandler(ele)
     Object.assign(ele.style, {
       width: px2rem(width),
       height: px2rem(height),
-      borderRadius: shape === 'circle' ? '50%' : 0
+      borderRadius: finalShape === 'circle' ? '50%' : 0
     })
     if (color === TRANSPARENT) {
       setOpacity(ele)
@@ -391,6 +405,17 @@ const Skeleton = (function skeleton(document) {
     const pseudos = []
     const gradientBackEles = []
     const grayBlocks = []
+
+    if (button && button.excludes.length) {
+      // translate selector to element
+      button.excludes = Array.from($$(button.excludes.join(',')))
+    }
+
+    ;[svg, pseudo, image].forEach(type => {
+      if (type.shapeOpposite.length) {
+        type.shapeOpposite = Array.from($$(type.shapeOpposite.join(',')))
+      }
+    })
 
     ;(function preTraverse(ele) {
       const styles = window.getComputedStyle(ele)

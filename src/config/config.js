@@ -1,21 +1,26 @@
 'use strict'
 
 const port = '8989'
+
 const staticPath = '__webpack_page_skeleton__'
+
 const pluginConfig = {
   text: {
     color: '#EEEEEE'
   },
   image: {
     shape: 'rect', // `rect` | `circle`
-    color: '#EFEFEF'
+    color: '#EFEFEF',
+    shapeOpposite: []
   },
   button: {
-    color: '#EFEFEF'
+    color: '#EFEFEF',
+    excludes: [] 
   },
   svg: {
     color: '#EFEFEF',
-    shape: 'circle' // circle | rect
+    shape: 'circle', // circle | rect
+    shapeOpposite: []
   },
   pseudo: {
     color: '#EFEFEF', // or transparent

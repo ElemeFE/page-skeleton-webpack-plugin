@@ -56,17 +56,28 @@ module.exports = {
     new SkeletonPlugin({
       svg: {
         color: '#EFEFEF',
-        shape: 'circle'
+        shape: 'circle',
+        shapeOpposite: ['.Rating-gray_1kpffd5_0 svg']
+      },
+      image: {
+        shape: 'rect', // `rect` | `circle`
+        color: '#EFEFEF',
+        shapeOpposite: ['.mint-swipe-items-wrap img']
       },
       pseudo: {
         color: '#EFEFEF', // or transparent
-        shape: 'circle' // circle | rect
+        shape: 'circle', // circle | rect
+        shapeOpposite: ['.delivery-icon-hollow_3q8_B5r_0', '.index-premium_39rl0v9']
+      },
+      button: {
+        color: '#EFEFEF',
+        excludes: ['.mint-swipe-items-wrap a']
       },
       pathname: path.resolve(__dirname, `./src`),
       defer: 5000,
       excludes: [],
       remove: [],
-      hide: [],
+      hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
       minify: false
     }),
