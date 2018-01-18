@@ -179,7 +179,7 @@ const Skeleton = (function skeleton(document) {
         ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
         transparent 0%)`,
       backgroundOrigin: 'content-box',
-      backgroundSize: `100% ${lineHeight}`,
+      backgroundSize: `100% ${px2rem(lineHeight)}`,
       backgroundClip: 'content-box',
       backgroundColor: 'transparent',
       position,
@@ -193,7 +193,7 @@ const Skeleton = (function skeleton(document) {
     } else {
       const textWidth = getTextWidth(text, { fontSize, lineHeight, wordBreak, wordSpacing })
       const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
-      ele.style.backgroundSize = `${textWidthPercent * 100}% ${lineHeight}`
+      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2rem(lineHeight)}`
       switch (textAlign) {
         case 'left': // do nothing
           break

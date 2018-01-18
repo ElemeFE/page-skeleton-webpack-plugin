@@ -1,6 +1,6 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,7 @@
     "js-beautify": "^1.7.5",
     "memory-fs": "^0.4.1",
     "opn": "^5.1.0",
-    "puppeteer": "^0.12.0",
+    "puppeteer": "^1.0.0",
     "sockjs": "^0.3.19",
     "sockjs-client": "^1.1.4",
     "tiza": "^2.1.0",

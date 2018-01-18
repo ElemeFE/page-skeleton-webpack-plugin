@@ -54,7 +54,7 @@ class Skeleton {
 
     const page = await this.initPage()
 
-    await page.setRequestInterceptionEnabled(true)
+    await page.setRequestInterception(true)
     page.on('request', (request) => {
       if (stylesheetAstObjects[request.url]) {
         // don't need to download the same assets
@@ -65,11 +65,12 @@ class Skeleton {
     })
     // To build a map of all downloaded CSS (css use link tag)
     page.on('response', (response) => {
-      const { url } = response // eslint-disable-line no-shadow
-      const ct = response.headers['content-type'] || ''
+      const url = response.url() // eslint-disable-line no-shadow
+      const ct = response.headers()['content-type'] || ''
       if (!response.ok) {
         throw new Error(`${response.status} on ${url}`)
       }
+
       if (ct.indexOf('text/css') > -1 || /\.css$/i.test(url)) {
         response.text().then((text) => {
           const ast = parse(text, {
@@ -85,7 +86,7 @@ class Skeleton {
       throw error
     })
 
-    const response = await page.goto(url, { waitUntil: 'networkidle' })
+    const response = await page.goto(url, { waitUntil: 'networkidle2' })
     if (!response.ok) {
       throw new Error(`${response.status} on ${url}`)
     }

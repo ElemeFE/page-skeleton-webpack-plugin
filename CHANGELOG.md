@@ -1,3 +1,10 @@
+### v0.3.4
+
+* **package update**
+  * Update puppeteer to v1.0.0
+* **bug fix**
+  * 解决了在文本块中由于 background-size设置的 px 单位，导致由于 dpr 变化尺寸发生变化的问题。
+
 ### v0.3.3
 
 * Fix bug:在安卓等机器上，svg 长宽是 px 单位，导致svg 实际大小和真实大小有差异的问题。
