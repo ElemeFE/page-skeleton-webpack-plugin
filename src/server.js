@@ -14,7 +14,9 @@ const {
   writeShell,
   log,
   sockWrite,
-  addDprAndFontSize
+  generateQR,
+  addDprAndFontSize,
+  getLocalIpAddress
 } = require('./util/utils')
 const Skeleton = require('./skeleton')
 
@@ -25,11 +27,15 @@ class Server extends EventEmitter {
     super()
     Object.keys(options).forEach(k => Object.assign(this, { [k]: options[k] }))
     this.options = options
+    this.host = getLocalIpAddress()
     // 用于缓存写入 shell.html 文件的 html
     this.cacheHtml = ''
-    this.previewUrl = ''
-    const { port } = options
-    this.directUrl = `http://127.0.0.1:${port}/preview.html`
+    // 用于缓存 生成 skeleton page 的页面
+    this.url = ''
+    // 骨架页面地址
+    this.skeletonPageUrl = ''
+    // 预览页面地址
+    this.previewPageUrl = `http://${this.host}:${options.port}/preview.html`
     this.sockets = []
     this.previewSocket = null
     this.skeleton = null
@@ -133,6 +139,7 @@ class Server extends EventEmitter {
         case 'generate': {
           if (!msg.data) return log(msg)
           const url = msg.data
+          this.url = url
           const preGenMsg = 'begin to generator HTML...'
           log(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
@@ -144,14 +151,15 @@ class Server extends EventEmitter {
             const afterGenMsg = 'generator HTML successfully...'
             log(afterGenMsg)
             sockWrite(this.sockets, 'console', afterGenMsg)
-            this.previewUrl = `http://127.0.0.1:${this.port}/${fileName}`
+            this.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
             const openMsg = 'Browser open another page...'
             sockWrite([conn], 'console', openMsg)
             sockWrite([conn], 'success', openMsg)
-            if (!this.previewSocket) {
-              open(this.directUrl, { app: 'google chrome' })
+            if (this.previewSocket) {
+              const data = await this.getPreviewData()
+              sockWrite([this.previewSocket], 'url', JSON.stringify(data))
             } else {
-              sockWrite([this.previewSocket], 'url', this.previewUrl)
+              open(this.previewPageUrl, { app: 'google chrome' })
             }
           } catch (err) {
             const message = err.message || 'generate html failed.'
@@ -170,10 +178,11 @@ class Server extends EventEmitter {
         }
         case 'url': {
           if (msg.data !== 'preview') return log(msg)
-          sockWrite([conn], 'url', this.previewUrl)
+          const data = await this.getPreviewData()
+          sockWrite([conn], 'url', JSON.stringify(data))
           break
         }
-        case 'ok': {
+        case 'writeShellFile': {
           sockWrite([conn], 'console', 'before write shell files...')
           const { pathname, cacheHtml, options } = this
           await writeShell(pathname, cacheHtml, options)
@@ -185,6 +194,16 @@ class Server extends EventEmitter {
         default: break
       }
     }
+  }
+  async getPreviewData () {
+    const { skeletonPageUrl, url } = this
+    const qrCode = await generateQR(skeletonPageUrl)
+    const data = {
+      skeletonPageUrl,
+      url,
+      qrCode
+    }
+    return data
   }
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。

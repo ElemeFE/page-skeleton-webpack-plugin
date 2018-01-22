@@ -1,53 +1,47 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { socketWrite } from '../socket'
+import Bus from '../bus'
 
 Vue.use(Vuex)
-
-const shake = (list, type, msg) => {
-  list.push({ type, msg })
-  if (list.length >= 8) list.shift()
-}
 
 const state = {
   connect: false,
   url: '',
-  msgList: []
+  skeletonPageUrl: '',
+  qrCode: ''
 }
 
 const mutations = {
   SET_CONNECT(state, status) {
     state.connect = status
     if (status) {
-      shake(state.msgList, 'server', 'Hi, you have been connected!')
+      Bus.$emit('message', { type: 'success', message: 'Hi, you have been connected!' })
     } else {
-      shake(state.msgList, 'server', 'Sorry, socket closed!')
+      Bus.$emit('message', { type: 'error', message: 'Socket has been closed.' })
     }
   },
-  SET_URL(state, url) {
-    state.url = url
-    shake(state.msgList, 'server', 'Preview page has been updated!')
+  SET_URL(state, data) {
+    Object.assign(state, data)
+    Bus.$emit('message', { type: 'success', message: 'Skeleton page has been updated.' })
   },
-  SET_MSG(state, { user, msg }) {
-    shake(state.msgList, user, msg)
+  SET_MSG(state, { type, message }) {
+    Bus.$emit('message', { type, message })
   }
 }
 
 const actions = {
   GET_CONNECT({ commit }, status) {
-    commit('SET_MSG', { user: 'me', msg: 'Hi, server?' })
     commit('SET_CONNECT', status)
   },
-  GET_URL({ commit }, url) {
-    commit('SET_MSG', { user: 'me', msg: 'Hi, Preview page updated? please give me the new URL.' })
-    commit('SET_URL', url)
+  GET_URL({ commit }, data) {
+    commit('SET_URL', data)
   },
   WRITE_SHELL({ commit }) {
-    commit('SET_MSG', { user: 'me', msg: 'Hi, Please write the shell.html file for me.' })
-    socketWrite('ok')
+    socketWrite('writeShellFile')
   },
-  WRITE_SHELL_SUCCESS({ commit }, msg) {
-    commit('SET_MSG', {user: 'server', msg })
+  WRITE_SHELL_SUCCESS({ commit }, message) {
+    commit('SET_MSG', {type: 'success', message })
   }
 }
 

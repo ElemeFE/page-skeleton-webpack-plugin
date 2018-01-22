@@ -18,7 +18,7 @@
       </div>
     </section>
     <section class="body">
-      <iframe :src="url" frameborder="0"></iframe>
+      <iframe :src="url" frameborder="0" :class="{origin: type === 'origin'}"></iframe>
     </section>
     <section class="bottom"></section>
   </div>
@@ -28,6 +28,10 @@
   export default {
     props: {
       url: {
+        type: String,
+        required: true
+      },
+      type: {
         type: String,
         required: true
       }
@@ -196,6 +200,11 @@
     height: 400%;
     transform: scale(.25);
     transform-origin: top left;
+  }
+  .body iframe.origin {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
   }
   .bottom {
     width: 110px;

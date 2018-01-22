@@ -1,15 +1,48 @@
 <template>
   <div class="edit-panel">
-    <h3>Write Shell File</h3>
-    <p> Are you satified with this page skeleton ?</p>
-    <button @click="handleClick">Write File</button>
-    <p>In the near future, you can edit this skeleton page, So stay tuned!</p>
+    <el-dialog
+      title="手机预览"
+      :visible.sync="dialogVisible"
+      width="25%">
+      <span>打开微信 App，点击右上角「扫一扫」,扫描二维码</span>
+      <div class="image-wrapper">
+        <img :src="qrCode" alt=" 二维码">
+      </div>
+    </el-dialog>
+    <div class="card">
+      <h3>手机预览骨架页面</h3>
+      <p>1. 手机和开发电脑连入统一 WIFI 网络。</p>
+      <p>2. 在系统「安全性与隐私」设置中，关闭防火墙。</p>
+      <p>3. 点击下面按钮生成二维码，手机微信扫描预览。</p>
+      <el-button @click="preview" type="primary" round>QRCode</el-button>     
+    </div>
+    <div class="card">
+      <h3>写入 Shell 文件</h3>
+      <p>Shell 文件将保存在配置路径，你可以对生成的 shell.html 文件进行二次修改来更好的满足你的需求。</p>
+      <el-button @click="handleClick" type="success" round>写入文件</el-button>
+      <p>在不久的将来，编辑页面将可编辑，尽情期待！</p> 
+    </div>
+
   </div>
 </template>
 
 <script>
   export default {
+    data() {
+      return {
+        dialogVisible: false
+      }
+    },
+    props: {
+      qrCode: {
+        type: String,
+        required: true
+      }
+    },
     methods: {
+      preview () {
+        this.dialogVisible = true
+      },
       handleClick() {
         this.$emit('genShell')
       }
@@ -21,19 +54,6 @@
   p {
     color: #666;
   }
-  button {
-    color: #fff;
-    padding: 0 16px;
-    background: rgb(0, 188, 212);
-    border: none;
-    cursor: pointer;
-    line-height: 36px;
-    font-size: 14px;
-    font-weight: 400;
-  }
-  button:hover {
-    background: rgba(0, 188, 212, .5);
-  }
   h3 {
     margin: 0;
     color: #444;
@@ -43,10 +63,15 @@
     height: 635px;
     padding: 20px;
     margin-right: 20px;
-    margin-left: 20px;
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
     box-sizing: border-box;
     border-radius: 10px;
     overflow: hidden;
+  }
+  .image-wrapper {
+    text-align: center;
+  }
+  .card {
+    margin-bottom: 20px;
   }
 </style>

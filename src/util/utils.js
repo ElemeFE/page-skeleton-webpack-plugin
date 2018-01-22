@@ -2,8 +2,10 @@
 
 const { promisify } = require('util')
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 const fse = require('fs-extra')
+const QRCode = require('qrcode')
 const chalk = require('chalk')
 const { minify } = require('html-minifier')
 const { html2json, json2html } = require('html2json')
@@ -148,15 +150,38 @@ const addDprAndFontSize = (html) => {
   return json2html(json)
 }
 
+const generateQR = async (text) => {
+  try {
+    return await QRCode.toDataURL(text)
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+
+const getLocalIpAddress = () => {
+  const interfaces = os.networkInterfaces()
+  for (const devName in interfaces) {
+    const iface = interfaces[devName]
+    for (let i = 0; i < iface.length; i++) {
+      const alias = iface[i]
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+        return alias.address
+      }
+    }
+  }
+}
+
 module.exports = {
   log,
   sleep,
   sockWrite,
   addScriptTag,
+  generateQR,
   writeShell,
   htmlMinify,
   getShellCode,
   genScriptContent,
   addDprAndFontSize,
+  getLocalIpAddress,
   collectImportantComments
 }

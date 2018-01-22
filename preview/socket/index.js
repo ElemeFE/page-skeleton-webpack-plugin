@@ -18,7 +18,7 @@ const initSock = store => {
     const { type, data } = JSON.parse(e.data)
     switch (type) {
       case 'url': {
-        store.dispatch('GET_URL', data)
+        store.dispatch('GET_URL', JSON.parse(data))
         break
       }
       case 'console': {
