@@ -1,3 +1,7 @@
+### v0.5.2
+
+* 优化预览页面二维码显示方式
+
 ### v0.5.1
 
 * 升级 css-tree 到 1.0.0-alpha.27。rename lexer.grammar.translate -> generate

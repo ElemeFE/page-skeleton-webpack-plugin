@@ -1,6 +1,6 @@
 <template>
   <div class="edit-panel">
-    <el-dialog
+ <!--    <el-dialog
       title="手机预览"
       :visible.sync="dialogVisible"
       width="25%">
@@ -8,19 +8,21 @@
       <div class="image-wrapper">
         <img :src="qrCode" alt=" 二维码">
       </div>
-    </el-dialog>
+    </el-dialog> -->
     <div class="card">
       <h3>手机预览骨架页面</h3>
-      <p>1. 手机和开发电脑连入统一 WIFI 网络。</p>
+      <p>1. 手机和开发电脑连入同一 WIFI 网络。</p>
       <p>2. 在系统「安全性与隐私」设置中，关闭防火墙。</p>
-      <p>3. 点击下面按钮生成二维码，手机微信扫描预览。</p>
-      <el-button @click="preview" type="primary" round>QRCode</el-button>     
+      <p>3. 打开微信「扫一扫」，扫描二维码。</p>
+      <div class="image-wrapper">
+        <img :src="qrCode" alt="二维码">
+      </div>   
     </div>
     <div class="card">
       <h3>写入 Shell 文件</h3>
       <p>Shell 文件将保存在配置路径，你可以对生成的 shell.html 文件进行二次修改来更好的满足你的需求。</p>
       <el-button @click="handleClick" type="success" round>写入文件</el-button>
-      <p>在不久的将来，编辑页面将可编辑，尽情期待！</p> 
+      <p>在不久的将来，预览页面将可编辑，尽情期待！</p> 
     </div>
 
   </div>
