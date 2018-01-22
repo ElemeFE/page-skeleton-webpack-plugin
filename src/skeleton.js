@@ -2,7 +2,7 @@
 
 const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
-const { parse, toPlainObject, fromPlainObject, translate } = require('css-tree')
+const { parse, toPlainObject, fromPlainObject, generate } = require('css-tree')
 const {
   sleep, genScriptContent,
   htmlMinify, collectImportantComments
@@ -196,7 +196,7 @@ class Skeleton {
 
     const allCleanedCSS = cleanedCSS.map((ast) => {
       const cleanedAst = fromPlainObject(ast)
-      return translate(cleanedAst)
+      return generate(cleanedAst)
     }).join('\n')
 
     const finalCss = collectImportantComments(allCleanedCSS)

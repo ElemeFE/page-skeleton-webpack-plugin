@@ -1,3 +1,7 @@
+### v0.5.1
+
+* 升级 css-tree 到 1.0.0-alpha.27。rename lexer.grammar.translate -> generate
+
 ### v0.5.0
 
 * 预览页面界面调整，及增加原始页面，这样就是可以实时对原始页面和骨架页面进行对比。

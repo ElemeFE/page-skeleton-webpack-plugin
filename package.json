@@ -1,6 +1,6 @@
 {
   "name": "page-skeleton-webpack-plugin",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "web site skeleton generator",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.3.0",
-    "css-tree": "^1.0.0-alpha.26",
+    "css-tree": "^1.0.0-alpha.27",
     "csso": "^3.3.1",
     "element-ui": "^2.0.11",
     "express": "^4.16.2",
