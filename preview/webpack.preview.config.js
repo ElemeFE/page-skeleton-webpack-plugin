@@ -5,7 +5,7 @@ const path = require('path')
 
 
 const PATH = {
-  app: path.join(__dirname, 'preview'),
+  app: __dirname,
   build: __dirname
 }
 

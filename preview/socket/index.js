@@ -1,5 +1,5 @@
 import SockJS from 'sockjs-client'
-import { port } from '../../../src/config/config'
+import { port } from '../../src/config/config'
 const sock = new SockJS(`http://localhost:${port}/socket`)
 
 window.sock = sock

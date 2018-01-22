@@ -9,12 +9,12 @@
     "mocha": "mocha --full-trace --check-leaks",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha",
     "test": "npm run lint && npm run mocha",
-    "dev:preview": "webpack --color --config client/webpack.preview.config.js --watch",
+    "dev:preview": "webpack --color --config preview/webpack.preview.config.js --watch",
     "dev:client": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js --watch",
     "dev:sale": "cd examples/sale && npm run dev",
     "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
-    "build:preview": "webpack --color --config client/webpack.preview.config.js",
+    "build:preview": "webpack --color --config preview/webpack.preview.config.js",
     "prepare": "npm run build:index && npm run build:sockjs && npm run build:preview"
   },
   "keywords": [

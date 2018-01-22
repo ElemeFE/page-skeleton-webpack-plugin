@@ -40,7 +40,7 @@ class Server extends EventEmitter {
   }
   async initRouters() {
     const { app, staticPath } = this
-    app.use('/', express.static(path.resolve(__dirname, '../client/dist')))
+    app.use('/', express.static(path.resolve(__dirname, '../preview/dist')))
 
     const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
 
@@ -54,7 +54,7 @@ class Server extends EventEmitter {
       })
 
     app.get('/preview.html', async (req, res) => {
-      fs.createReadStream(path.resolve(__dirname, '..', 'client/dist/index.html')).pipe(res)
+      fs.createReadStream(path.resolve(__dirname, '..', 'preview/dist/index.html')).pipe(res)
     })
 
     app.get('/:filename', async (req, res) => {
