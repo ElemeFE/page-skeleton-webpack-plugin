@@ -79,7 +79,17 @@ module.exports = {
       remove: [],
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
-      minify: false
+      minify: false,
+      cookies: [{
+        name: 'hello',
+        value: 'world',
+        url: 'http://127.0.0.1'
+      }, {
+        name: 'ransixi',
+        value: 'jocs',
+        path: '/',
+        url: 'http://127.0.0.1'
+      }]
     }),
   ],
   resolve: {

@@ -39,6 +39,7 @@ const pluginConfig = {
   remove: [],
   hide: [],
   grayBlock: [],
+  cookies: [],
   headless: true,
   h5Only: false
 }

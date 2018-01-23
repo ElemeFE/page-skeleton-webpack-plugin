@@ -53,6 +53,7 @@ class Skeleton {
     const stylesheetContents = {}
 
     const page = await this.initPage()
+    const { cookies } = this.options
 
     await page.setRequestInterception(true)
     page.on('request', (request) => {
@@ -87,6 +88,9 @@ class Skeleton {
     })
 
     try {
+      if (cookies.length) {
+        await page.setCookie(...cookies.filter(cookie => typeof cookie === 'object'))
+      }
       const response = await page.goto(url, { waitUntil: 'networkidle2' })
       if (response && !response.ok()) {
         throw new Error(`${response.status} on ${url}`)
