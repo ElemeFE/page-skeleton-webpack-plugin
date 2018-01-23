@@ -176,6 +176,26 @@ const webpackConfig = {
 
   默认值是空数组，该数组中元素是 CSS 选择器，被选择的元素将被被插件处理成一个色块，色块的颜色和按钮块颜色一致。内部元素将不再做特殊处理，文字将隐藏。
 
+* **cookies**
+
+  非必配置项，其接受一个 Array 类型值
+
+  在打开应用页面时，可能需要鉴权，比如需要某些特定的 cookie，通过该配置项可以设置 puppeteer 打开的 页面的 cookie 值。
+
+  该配置中默认值为空数组，数组中每个对象（Object 类型值）是一个 cookie，其接受的 key 如下：
+
+  - `name` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> **required**
+  - `value` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> **required**
+  - `url` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+  - `domain` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+  - `path` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+  - `expires` \<[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)> Unix time in seconds.
+  - `httpOnly` \<[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)>
+  - `secure` \<[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)>
+  - `sameSite` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> `"Strict"` or `"Lax"`.
+
+  或参考 puppeteer 最新文档。
+
 项目中所有配置项的默认配置如下：
 
 ```javascript
@@ -214,6 +234,7 @@ const pluginDefaultConfig = {
   remove: [],
   hide: [],
   grayBlock: [],
+  cookies: [],
   headless: true,
   h5Only: false
 }
