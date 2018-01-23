@@ -67,7 +67,7 @@ class Skeleton {
     page.on('response', (response) => {
       const url = response.url() // eslint-disable-line no-shadow
       const ct = response.headers()['content-type'] || ''
-      if (!response.ok) {
+      if (response.ok && !response.ok()) {
         throw new Error(`${response.status} on ${url}`)
       }
 
@@ -86,11 +86,14 @@ class Skeleton {
       throw error
     })
 
-    const response = await page.goto(url, { waitUntil: 'networkidle2' })
-    if (!response.ok) {
-      throw new Error(`${response.status} on ${url}`)
+    try {
+      const response = await page.goto(url, { waitUntil: 'networkidle2' })
+      if (response && !response.ok()) {
+        throw new Error(`${response.status} on ${url}`)
+      }
+    } catch (err) {
+      console.log(err)
     }
-
 
     await this.makeSkeleton()
 

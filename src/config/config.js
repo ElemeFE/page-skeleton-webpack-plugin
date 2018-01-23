@@ -18,7 +18,7 @@ const pluginConfig = {
     excludes: [] 
   },
   svg: {
-    color: '#EFEFEF',
+    color: '#EFEFEF', // or transparent
     shape: 'circle', // circle | rect
     shapeOpposite: []
   },

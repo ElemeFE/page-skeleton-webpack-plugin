@@ -166,9 +166,9 @@ class Server extends EventEmitter {
             log(err)
             sockWrite(this.sockets, 'error', message)
           }
-
           break
         }
+
         case 'connect': {
           if (msg.data === 'preview') {
             this.previewSocket = conn
@@ -176,12 +176,14 @@ class Server extends EventEmitter {
           }
           break
         }
+
         case 'url': {
           if (msg.data !== 'preview') return log(msg)
           const data = await this.getPreviewData()
           sockWrite([conn], 'url', JSON.stringify(data))
           break
         }
+
         case 'writeShellFile': {
           sockWrite([conn], 'console', 'before write shell files...')
           const { pathname, cacheHtml, options } = this
@@ -198,12 +200,11 @@ class Server extends EventEmitter {
   async getPreviewData () {
     const { skeletonPageUrl, url } = this
     const qrCode = await generateQR(skeletonPageUrl)
-    const data = {
+    return {
       skeletonPageUrl,
       url,
       qrCode
     }
-    return data
   }
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。
