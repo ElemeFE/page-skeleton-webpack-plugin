@@ -260,7 +260,7 @@ const Skeleton = (function skeleton(document) {
 
   function listHandle(ele) {
     const children = ele.children
-    const len = children.length
+    const len = Array.from(children).filter(child => child.tagName === 'LI').length
     if (len === 0) return false
     const firstChild = children[0]
     // 解决有时ul元素子元素不是 li元素的 bug。
@@ -460,7 +460,7 @@ const Skeleton = (function skeleton(document) {
       if (GRADIENT_REG.test(styles.background) || GRADIENT_REG.test(styles.backgroundImage)) {
         return gradientBackEles.push(ele)
       }
-      if (ele.tagName === 'IMG' && !isBase64Img(ele)) {
+      if (ele.tagName === 'IMG' || isBase64Img(ele)) {
         return imgs.push(ele)
       }
       if (

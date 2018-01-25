@@ -79,7 +79,6 @@ module.exports = {
       remove: [],
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
-      minify: false,
       cookies: [{
         name: 'hello',
         value: 'world',
