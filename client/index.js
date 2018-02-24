@@ -60,12 +60,12 @@ function createView(sock) {
     created() {
       this.$nextTick(() => {
         const self = this
-        Object.defineProperty(window, 'toogleBar', {
+        Object.defineProperty(window, 'toggleBar', {
           enumerable: false,
           configrable: true,
           get() {
             self.show = !self.show
-            log('toogle the preview control bar.')
+            log('toggle the preview control bar.')
             return '🐶'
           }
         })

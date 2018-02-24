@@ -241,7 +241,7 @@ const Skeleton = (function skeleton(document) {
     })
   }
 
-  function backgroundImageHandler(ele, { color, shape }) {
+  function backgroundHandler(ele, { color, shape }) {
     Object.assign(ele.style, {
       background: color,
       borderRadius: shape === 'circle' ? '50%' : 0
@@ -345,10 +345,6 @@ const Skeleton = (function skeleton(document) {
     } else {
       ele.style.background = color
     }
-  }
-
-  function gradientHandler(ele) {
-    ele.style.background = TRANSPARENT
   }
 
   function grayHandler(ele, { color }) {
@@ -482,10 +478,10 @@ const Skeleton = (function skeleton(document) {
     svgs.forEach(e => svgHandler(e, svg))
     texts.forEach(e => textHandler(e, text))
     buttons.forEach(e => buttonHandler(e, button))
-    hasImageBackEles.forEach(e => backgroundImageHandler(e, image))
+    hasImageBackEles.forEach(e => backgroundHandler(e, image))
     imgs.forEach(e => imgHandler(e, image))
     pseudos.forEach(e => pseudosHandler(e, pseudo))
-    gradientBackEles.forEach(e => gradientHandler(e))
+    gradientBackEles.forEach(e => backgroundHandler(e, image))
     grayBlocks.forEach(e => grayHandler(e, button))
     // remove mock text wrapper
     const offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`)

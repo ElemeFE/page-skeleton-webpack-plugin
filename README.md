@@ -67,7 +67,7 @@ const webpackConfig = {
 
 #### 第三步：界面操作生成、写入骨架页面
 
-1. 在开发页面中通过 Ctrl|Cmd + enter 呼出插件交互界面，或者在在浏览器的 JavaScript 控制台内输入`toogleBar` 呼出交互界面。
+1. 在开发页面中通过 Ctrl|Cmd + enter 呼出插件交互界面，或者在在浏览器的 JavaScript 控制台内输入`toggleBar` 呼出交互界面。
 
 ![](./docs/step1.jpg)
 
@@ -78,7 +78,7 @@ const webpackConfig = {
 3. 扫描预览页面中的二维码，可在手机端预览骨架页面，通过点击写入文件按钮，将骨架页面写入到 shell.html 文件中，你可以通过你喜爱的编辑器打开该文件进行修改，来更好匹配你的应用。
 4. 通过 webpack 重新打包应用，当页面重新启动后，就能够在获取到数据前看到应用的骨架结构了。
 
-###配置插件
+### 配置插件
 
 可以向插件传递一个配置对象，该配置对象可以包含如下字段。
 
@@ -252,7 +252,7 @@ pageSkeletonWebpackPlugin 完全兼容 h5 项目，只需要添加配置项 `h5O
 
 **问题三：项目中必须使用 DefinePlugin 吗？**
 
-是的，因为pageSkeletonWebpackPlugin 插件会根据环境，进行不同的操作，例如，在生成环境下，将无法通过`ctrl + enter` 呼出交互界面。
+是的，因为pageSkeletonWebpackPlugin 插件会根据环境，进行不同的操作，例如，在生产环境下，将无法通过`ctrl + enter` 呼出交互界面。
 
 **注意：** **page-skeleton-webpack-plugin** 还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必检查生产的**骨架页面** 是否满足你的要求。
 
