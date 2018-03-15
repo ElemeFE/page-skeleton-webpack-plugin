@@ -11,7 +11,7 @@ Page SkeletonWebpack Plugin 是一款 webpack 插件，在开发过程中，通�
 通过 npm 来安装插件及依赖，该插件依赖于 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)。
 
 > npm install -- save-dev page-skeleton-webpack-plugin
->
+> 
 > npm install --save-dev html-webpack-plugin
 
 ### 基础使用
@@ -48,7 +48,7 @@ const webpackConfig = {
 
 #### 第二步：修改 HTML Webpack Plugin 插件的模板
 
-在你启动 App 的根元素内部添加 `<!-- shell -->` 的注释，这样插件才能够在打包的时候将 shel.html 内容插入到正确位置。
+在你启动 App 的根元素内部添加 `
 
 ```html
 <!DOCTYPE html>
@@ -71,24 +71,25 @@ const webpackConfig = {
 
 ![](./docs/step1.jpg)
 
-2. 点击交互界面中的按钮，进行骨架页面的预览，这一过程可能会花费 20s 左右时间，当插件准备好骨架页面后，会自动通过浏览器打开预览页面，如下图。
+1. 点击交互界面中的按钮，进行骨架页面的预览，这一过程可能会花费 20s 左右时间，当插件准备好骨架页面后，会自动通过浏览器打开预览页面，如下图。
 
 ![](./docs/step2.jpg)
 
-3. 扫描预览页面中的二维码，可在手机端预览骨架页面，通过点击写入文件按钮，将骨架页面写入到 shell.html 文件中，你可以通过你喜爱的编辑器打开该文件进行修改，来更好匹配你的应用。
-4. 通过 webpack 重新打包应用，当页面重新启动后，就能够在获取到数据前看到应用的骨架结构了。
+1. 扫描预览页面中的二维码，可在手机端预览骨架页面，通过点击写入文件按钮，将骨架页面写入到 shell.html 文件中，你可以通过你喜爱的编辑器打开该文件进行修改，来更好匹配你的应用。
+
+2. 通过 webpack 重新打包应用，当页面重新启动后，就能够在获取到数据前看到应用的骨架结构了。
 
 ### 配置插件
 
 可以向插件传递一个配置对象，该配置对象可以包含如下字段。
 
-* **pathname**
+- **pathname**
 
   **必须配置项** String 类型值
 
   该配置项要求配置一个绝对路径，用于确定生成的 shell.html 文件存放路径。
 
-* **text**
+- **text**
 
   非必须配置项，其接受一个 Object 类型值
 
@@ -96,7 +97,7 @@ const webpackConfig = {
 
   该配置对象可以配置一个 `color` 字段，用于决定骨架页面中文字块的的颜色，颜色值支持16进制、RGB等。
 
-* **image**
+- **image**
 
   非必须配置项，其接受一个 Object 类型值
 
@@ -104,7 +105,7 @@ const webpackConfig = {
 
   该配置接受 3 个字段，`color`、`shape`、`shapeOpposite`。color 和 shape 用于确定骨架页面中图片块的颜色和形状，颜色值支持16 进制和 RGB等，形状支持两个枚举值，`circle` （矩形）和 `rect`（圆形）。shapeOpposite 字段接受一个数组，数组中每个元素是一个 DOM 选择器，用于选择 DOM 元素，被选择 DOM 的形状将和配置的 shape 形状相反，例如，配置的是 `rect`那么，shapeOpposite 中的图片块将在骨架页面中显示成 circle 形状（圆形），具体怎么配置可以参考该部分末尾的默认配置。
 
-* **button**
+- **button**
 
   非必须配置项，其接受一个 Object 类型值
 
@@ -112,7 +113,7 @@ const webpackConfig = {
 
   该配置接受两个字段，`color` 和 `excludes`。color 用来确定骨架页面中被视为按钮块的颜色，excludes 接受一个数组，数组中元素是 DOM 选择器，用来选择元素，该数组中的元素将不被视为**按钮块**。
 
-* **svg**
+- **svg**
 
   非必须配置项，其接受一个 Object 类型值
 
@@ -120,7 +121,7 @@ const webpackConfig = {
 
   该配置接受 3 个字段，`color`、`shape`、`shapeOpposite`。color 和 shape 用于确定骨架页面中 svg 块的颜色和形状，颜色值支持16 进制和 RGB等，同时也支持 `transparent` 枚举值，设置为 transparent 后，svg 块将是透明块。形状支持两个枚举值，`circle` （矩形）和 `rect`（圆形）。shapeOpposite 字段接受一个数组，数组中每个元素是一个 DOM 选择器，用于选择 DOM 元素，被选择 DOM 的形状将和配置的 shape 形状相反，例如，配置的是 `rect`那么，shapeOpposite 中的 svg 块将在骨架页面中显示成 circle 形状（圆形），具体怎么配置可以参考该部分末尾的默认配置。
 
-* **pseudo**
+- **pseudo**
 
   非必须配置项，其接受一个 Object 类型值
 
@@ -128,55 +129,55 @@ const webpackConfig = {
 
   该配置接受两个字段，`color` 和 `shape`。color 用来确定骨架页面中被视为伪元素块的颜色，shape 用来设置伪元素块的形状，接受两个枚举值：circle 和 rect。
 
-* **device**
+- **device**
 
   非必须配置项，接受一个 String 类型值
 
   用来设置你在哪款移动设备的模拟器上生成骨架页面，配置参考[puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js)。默认值是`iPhone 6 Plus`。
 
-* **debug**
+- **debug**
 
   非必须配置项，其接受一个 Boolean 类型值
 
    默认值为 `false`，是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。
 
-* **minify**
+- **minify**
 
   非必须配置项，其接受 **false** 或者 Object 类型值
 
   插件默认会压缩生成的 shell.html 文件，默认压缩配置参见本部分默认配置。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。当配置为 false 时，不压缩生成的 shell.html 文件，并且会对 shell.html 文件进行格式化处理。
 
-* **defer**
+- **defer**
 
   非必须配置项，其接受一个 Number 类型值
 
   默认值 5000，puppeteer 启动 headless Chrome 浏览器，打开页面后的延迟，主要是为了保证页面加载完全，单位是`ms`。
 
-* **excludes**
+- **excludes**
 
   非必须配置项，其接受一个 Array 类型值
 
   默认值为空数组，如果你有不需要进行骨架处理的元素，那么将该元素的 CSS 选择器写入该数组。
 
-* **remove**
+- **remove**
 
   非必须配置项，其接受一个 Array 类型值
 
   默认值是空数组，不需要生成页面骨架，且需要从 DOM 中移除的元素，配置值为移除元素的 CSS 选择器。
 
-* **hide**
+- **hide**
 
   非必须配置项，其接受一个 Array 类型值
 
   默认值为空数组，不需要移除，但是通过设置其透明度为 0，来隐藏该元素，配置值为隐藏元素的 CSS 选择器。
 
-* **grayBlock**
+- **grayBlock**
 
   非必须配置项，其接受一个 Array 类型值
 
   默认值是空数组，该数组中元素是 CSS 选择器，被选择的元素将被被插件处理成一个色块，色块的颜色和按钮块颜色一致。内部元素将不再做特殊处理，文字将隐藏。
 
-* **cookies**
+- **cookies**
 
   非必配置项，其接受一个 Array 类型值
 
@@ -185,13 +186,21 @@ const webpackConfig = {
   该配置中默认值为空数组，数组中每个对象（Object 类型值）是一个 cookie，其接受的 key 如下：
 
   - `name` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> **required**
+
   - `value` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> **required**
+
   - `url` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+
   - `domain` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+
   - `path` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)>
+
   - `expires` \<[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)> Unix time in seconds.
+
   - `httpOnly` \<[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)>
+
   - `secure` \<[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)>
+
   - `sameSite` \<[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)> `"Strict"` or `"Lax"`.
 
   或参考 puppeteer 最新文档。
@@ -246,9 +255,11 @@ const pluginDefaultConfig = {
 
 pageSkeletonWebpackPlugin 完全兼容 h5 项目，只需要添加配置项 `h5Only: true`，这样插件就知道是 h5项目，会生成与项目兼容的 `shell.js` 和 `shell.vue` 两个文件，而不是通常的 `shell.html` 文件。并且在 h5项目中，pageSkeletonWebpackPlugin 插件将不会对 shell 文件进行打包，打包 shell 文件的工作依然交给 h5 项目中的 prerenderPlugin。
 
+备注：此处 h5 项目是指外卖平台的 [h5 项目](https://github.elenet.me/waimai/h5)
+
 **问题二：pageSkeletonWebpackPlugin 的实现原理？**
 
-插件通过 Chrome headless 在服务端打开你所开发的页面，通过对页面中元素进行增减，以及对元素样式进行修改，生成骨架页面。这一过程，也就是上图的演示过程。生成骨架页面，然后保存到配置路径，文件命名为 `shell.html` ，在重新通过 webpack 打包的过程中，插件读取 `shell.html` 文件，并通过文件内容替换`<!-- shell -->`。当再次刷新页面的时候，页面中首先预览的就是骨架页面了。
+插件通过 Chrome headless 在服务端打开你所开发的页面，通过对页面中元素进行增减，以及对元素样式进行修改，生成骨架页面。这一过程，也就是上图的演示过程。生成骨架页面，然后保存到配置路径，文件命名为 `shell.html` ，在重新通过 webpack 打包的过程中，插件读取 `shell.html` 文件，并通过文件内容替换`
 
 **问题三：项目中必须使用 DefinePlugin 吗？**
 
