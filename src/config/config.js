@@ -41,7 +41,8 @@ const pluginConfig = {
   grayBlock: [],
   cookies: [],
   headless: true,
-  h5Only: false
+  h5Only: false,
+  cssUnit: 'rem' // or 'vw|vh|vmin|vmax'
 }
 
 const htmlBeautifyConfig = {

@@ -61,11 +61,28 @@ const Skeleton = (function skeleton(document) {
 
   const checkHasTextDecoration = (styles) => !/none/.test(styles.textDecorationLine)
 
-  const px2rem = px => {
-    const pxValue = typeof px === 'string' ? parseInt(px, 10) : px
-    const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize
+  const getViewPort = () => {
+    const vh = window.innerHeight
+    const vw = window.innerWidth
 
-    return `${(pxValue / parseInt(htmlElementFontSize, 10))}rem`
+    return {
+      vh,
+      vw,
+      vmax: Math.max(vw, vh),
+      vmin: Math.min(vw, vh),
+    }
+  }
+
+  const px2relativeUtil = (px, unit = 'rem') => {
+    const pxValue = typeof px === 'string' ? parseFloat(px, 10) : px
+    if (unit === 'rem') {
+      const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize
+      return `${(pxValue / parseFloat(htmlElementFontSize, 10))}${unit}`
+    } else {
+      const dimensions = getViewPort()
+      const base = dimensions[unit]
+      return `${pxValue / base * 100}${unit}`
+    }
   }
 
   const getTextWidth = (text, style) => {
@@ -137,7 +154,7 @@ const Skeleton = (function skeleton(document) {
     }
   }
 
-  function textHandler(ele, { color }) {
+  function textHandler(ele, { color }, cssUnit) {
     const { width } = ele.getBoundingClientRect()
     // 宽度小于 50 的元素就不做阴影处理
     if (width <= 50) {
@@ -179,7 +196,7 @@ const Skeleton = (function skeleton(document) {
         ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
         transparent 0%)`,
       backgroundOrigin: 'content-box',
-      backgroundSize: `100% ${px2rem(lineHeight)}`,
+      backgroundSize: `100% ${px2relativeUtil(lineHeight, cssUnit)}`,
       backgroundClip: 'content-box',
       backgroundColor: 'transparent',
       position,
@@ -193,7 +210,7 @@ const Skeleton = (function skeleton(document) {
     } else {
       const textWidth = getTextWidth(text, { fontSize, lineHeight, wordBreak, wordSpacing })
       const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
-      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2rem(lineHeight)}`
+      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2relativeUtil(lineHeight, cssUnit)}`
       switch (textAlign) {
         case 'left': // do nothing
           break
@@ -326,7 +343,7 @@ const Skeleton = (function skeleton(document) {
     ele.classList.add(finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS)
   }
 
-  function svgHandler(ele, { color, shape, shapeOpposite }) {
+  function svgHandler(ele, { color, shape, shapeOpposite }, cssUnit) {
     const { width, height } = ele.getBoundingClientRect()
     if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
       return removeHandler(ele)
@@ -336,8 +353,8 @@ const Skeleton = (function skeleton(document) {
 
     emptyHandler(ele)
     Object.assign(ele.style, {
-      width: px2rem(width),
-      height: px2rem(height),
+      width: px2relativeUtil(width, cssUnit),
+      height: px2relativeUtil(height, cssUnit),
       borderRadius: finalShape === 'circle' ? '50%' : 0
     })
     if (color === TRANSPARENT) {
@@ -387,7 +404,7 @@ const Skeleton = (function skeleton(document) {
   }
 
   function traverse(options) {
-    const { excludes, text, image, button, svg, grayBlock, pseudo } = options
+    const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
     const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : []
     const rootElement = document.documentElement
@@ -475,8 +492,8 @@ const Skeleton = (function skeleton(document) {
       }
     }(rootElement))
 
-    svgs.forEach(e => svgHandler(e, svg))
-    texts.forEach(e => textHandler(e, text))
+    svgs.forEach(e => svgHandler(e, svg, cssUnit))
+    texts.forEach(e => textHandler(e, text, cssUnit))
     buttons.forEach(e => buttonHandler(e, button))
     hasImageBackEles.forEach(e => backgroundHandler(e, image))
     imgs.forEach(e => imgHandler(e, image))
