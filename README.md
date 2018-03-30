@@ -251,17 +251,11 @@ const pluginDefaultConfig = {
 
 ### FAQ
 
-**问题一：h5 项目中已经有将 shell.js 文件打包的插件了，怎么使用该插件？**
-
-pageSkeletonWebpackPlugin 完全兼容 h5 项目，只需要添加配置项 `h5Only: true`，这样插件就知道是 h5项目，会生成与项目兼容的 `shell.js` 和 `shell.vue` 两个文件，而不是通常的 `shell.html` 文件。并且在 h5项目中，pageSkeletonWebpackPlugin 插件将不会对 shell 文件进行打包，打包 shell 文件的工作依然交给 h5 项目中的 prerenderPlugin。
-
-备注：此处 h5 项目是指外卖平台的 [h5 项目](https://github.elenet.me/waimai/h5)
-
-**问题二：pageSkeletonWebpackPlugin 的实现原理？**
+**问题一：pageSkeletonWebpackPlugin 的实现原理？**
 
 插件通过 Chrome headless 在服务端打开你所开发的页面，通过对页面中元素进行增减，以及对元素样式进行修改，生成骨架页面。这一过程，也就是上图的演示过程。生成骨架页面，然后保存到配置路径，文件命名为 `shell.html` ，在重新通过 webpack 打包的过程中，插件读取 `shell.html` 文件，并通过文件内容替换`
 
-**问题三：项目中必须使用 DefinePlugin 吗？**
+**问题二：项目中必须使用 DefinePlugin 吗？**
 
 是的，因为pageSkeletonWebpackPlugin 插件会根据环境，进行不同的操作，例如，在生产环境下，将无法通过`ctrl + enter` 呼出交互界面。
 
