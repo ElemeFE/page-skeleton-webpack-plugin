@@ -1,0 +1,139 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "pathname": {
+      "description": "The place where the shell.html will be writen",
+      "type": "string"
+    },
+    "port": {
+      "description": "The port of Page skeleton webpack plugin",
+      "type": "string"
+    },
+    "text": {
+      "description": "configuration of text block",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "image": {
+      "description": "configuration of image block",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "shape": {
+          "enum": [
+            "rect",
+            "circle"
+          ]
+        },
+        "shapeOpposite": {
+          "type": "array"
+        }
+      }
+    },
+    "button": {
+      "description": "configuration of button block",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "excludes": {
+          "type": "array"
+        }
+      }
+    },
+    "svg": {
+      "description": "configuration of svg block",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "shape": {
+          "enum": [
+            "rect",
+            "circle"
+          ]
+        },
+        "shapeOpposite": {
+          "type": "array"
+        }
+      }
+    },
+    "pseudo": {
+      "description": "configuration of pseudo block",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "shape": {
+          "enum": [
+            "rect",
+            "circle"
+          ]
+        },
+        "shapeOpposite": {
+          "type": "array"
+        }
+      }
+    },
+    "device": {
+      "description": "The device you want to generate skeleton page",
+      "type": "string"     
+    },
+    "debug": {
+      "description": "Weather to show debug info",
+      "type": "boolean"     
+    },
+    "minify": {
+      "description": "Weather to minify the HTML",
+      "type": "object"     
+    },
+    "defer": {
+      "description": "Defer to generate skeleton page",
+      "type": "number"     
+    },
+    "excludes": {
+      "description": "which element that you dont want to generate skeleton",
+      "type": "array"     
+    },
+    "remove": {
+      "description": "the elements that you want to remove",
+      "type": "array"     
+    },
+    "hide": {
+      "description": "the element that you want to hide",
+      "type": "array"     
+    },
+    "grayBlock": {
+      "description": "the element that you just want to make it display a gray block",
+      "type": "array"     
+    },
+    "cookies": {
+      "description": "Add cookies to the page which puppeteer opened",
+      "type": "array"     
+    },
+    "headless": {
+      "description": "Open headless chrome or not",
+      "type": "boolean"     
+    },
+    "cssUnit": {
+      "description": "The css unit used in shell.html",
+      "enum": [
+        "rem",
+        "vw",
+        "vh",
+        "vmin",
+        "vmax"
+      ]  
+    }
+  },
+  "type": "object"
+}

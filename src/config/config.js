@@ -2,7 +2,7 @@
 
 const staticPath = '__webpack_page_skeleton__'
 
-const pluginConfig = {
+const defaultOptions = {
   port: '8989',
   text: {
     color: '#EEEEEE'
@@ -14,7 +14,7 @@ const pluginConfig = {
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: []
   },
   svg: {
     color: '#EFEFEF', // or transparent
@@ -23,7 +23,8 @@ const pluginConfig = {
   },
   pseudo: {
     color: '#EFEFEF', // or transparent
-    shape: 'circle' // circle | rect
+    shape: 'circle', // circle | rect
+    shapeOpposite: []
   },
   device: 'iPhone 6 Plus',
   debug: false,
@@ -65,6 +66,6 @@ const htmlBeautifyConfig = {
 
 module.exports = {
   htmlBeautifyConfig,
-  pluginConfig,
+  defaultOptions,
   staticPath
 }

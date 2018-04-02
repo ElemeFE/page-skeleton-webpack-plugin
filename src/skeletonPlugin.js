@@ -1,11 +1,21 @@
 'use strict'
+const merge = require('lodash/merge')
+const webpack = require('webpack')
+const optionsSchema = require('./config/optionsSchema.json')
 
 const Server = require('./server')
 const { log, addScriptTag, getShellCode } = require('./util/utils')
-const { pluginConfig, staticPath } = require('./config/config')
+const { defaultOptions, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
-  this.options = Object.assign({ staticPath }, pluginConfig, options)
+  const validationErrors = webpack.validateSchema(optionsSchema, options)
+  if (validationErrors.length) {
+    const errorMsg = validationErrors.map(error => {
+      return `option ${error.dataPath} ${error.message}, but got ${typeof error.data}`
+    }).join('\n')
+    throw new Error(`The options do not match the optionsSchema:\n${errorMsg}`)
+  }
+  this.options = merge({ staticPath }, defaultOptions, options)
   this.server = null
 }
 

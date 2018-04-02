@@ -54,6 +54,7 @@ module.exports = {
       template: 'index.html'
     }),
     new SkeletonPlugin({
+      pathname: path.resolve(__dirname, `./src`),
       port: '7890',
       svg: {
         color: '#EFEFEF',
@@ -74,7 +75,6 @@ module.exports = {
         color: '#EFEFEF',
         excludes: ['.mint-swipe-items-wrap a']
       },
-      pathname: path.resolve(__dirname, `./src`),
       defer: 5000,
       excludes: [],
       remove: [],
