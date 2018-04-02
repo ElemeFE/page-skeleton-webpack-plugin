@@ -178,6 +178,12 @@ const webpackConfig = {
 
   该配置项要求配置一个绝对路径，用于确定生成的 shell.html 文件存放路径。
 
+- **port**
+
+  非必须配置项，其接受一个数字组成字符串
+
+  该配置是 Page Skeleton 启动服务的端口号以及 socket 连接的端口号，默认值 `8989`。
+
 - **text**
 
   非必须配置项，其接受一个 Object 类型值

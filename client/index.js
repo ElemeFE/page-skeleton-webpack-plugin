@@ -2,9 +2,10 @@
 
 import SockJS from 'sockjs-client'
 import Vue from 'vue/dist/vue.esm'
-import { port } from '../src/config/config'
 import { log } from './utils'
 import Console from './components/console/index.vue'
+
+const port = window._pageSkeletonSocketPort
 
 // TODO headless 打开的页面不连接 socket
 const sock = new SockJS(`http://localhost:${port}/socket`)

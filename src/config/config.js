@@ -1,10 +1,9 @@
 'use strict'
 
-const port = '8989'
-
 const staticPath = '__webpack_page_skeleton__'
 
 const pluginConfig = {
+  port: '8989',
   text: {
     color: '#EEEEEE'
   },
@@ -67,6 +66,5 @@ const htmlBeautifyConfig = {
 module.exports = {
   htmlBeautifyConfig,
   pluginConfig,
-  staticPath,
-  port
+  staticPath
 }

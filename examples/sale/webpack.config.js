@@ -54,6 +54,7 @@ module.exports = {
       template: 'index.html'
     }),
     new SkeletonPlugin({
+      port: '7890',
       svg: {
         color: '#EFEFEF',
         shape: 'circle',

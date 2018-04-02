@@ -2,10 +2,10 @@
 
 const Server = require('./server')
 const { log, addScriptTag, getShellCode } = require('./util/utils')
-const { pluginConfig, port, staticPath } = require('./config/config')
+const { pluginConfig, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
-  this.options = Object.assign({ port, staticPath }, pluginConfig, options)
+  this.options = Object.assign({ staticPath }, pluginConfig, options)
   this.server = null
 }
 
@@ -20,9 +20,10 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
     compilation.plugin('html-webpack-plugin-before-html-processing', async (htmlPluginData, callback) => {
       // at develop phase, insert the interface code
       if (process.env.NODE_ENV !== 'production') {
+        const { port } = this.options
         const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
         const oldHtml = htmlPluginData.html
-        htmlPluginData.html = addScriptTag(oldHtml, clientEntry)
+        htmlPluginData.html = addScriptTag(oldHtml, clientEntry, port)
       }
       // replace `<!-- shell -->` with `shell code`
       if (!this.options.h5Only) {
