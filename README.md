@@ -1,12 +1,101 @@
-## Page Skeleton Webpack Plugin
+<p align="center">
+<img src="https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/banner.jpg" alt="mark text" width="100%" height="230">
+</p>
 
-你是否还在为你的应用首屏前的一段白屏而困扰？或者单纯重复的 **loading** 图已经让用户产生了审美疲劳？如果在应用首屏出现之前能够展示应用的骨架样式该多好啊，这样用户感觉页面似乎加载更快了。但是开发者都不想重复的去写这些繁琐的骨架页面。**Page Skeleton Webpack Plugin** 就是一款帮你解决以上痛点的整套方案。
+<h1 align="center">Page Skeleton</h1>
 
-Page SkeletonWebpack Plugin 是一款 webpack 插件，在开发过程中，通过简单的点击操作，生成开发页面对应的骨架页面，并通过 webpack 将骨架页面打包到你的应用中，这样就能够在你的应用启动之前，看到页面的骨架结构了。
+<div align="center">
+  <strong>:high_brightness:Automatically generate Skeleton Page:crescent_moon:</strong>
+</div>
 
-![](./docs/compare.jpg)
+<div align="center">
+  A <code>Webpack</code> plugin helps you build better JavaScript application
+</div>
 
-### 安装
+
+
+<br />
+
+
+<div align="center">
+  <!-- Version -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://badge.fury.io/gh/elemefe%2Fpage-skeleton-webpack-plugin.svg" alt="website">
+  </a>
+  <!-- node -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://img.shields.io/node/v/passport.svg?style=flat-square" alt="node">
+  </a>
+  <!-- License -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://img.shields.io/github/license/ElemeFE/page-skeleton-webpack-plugin.svg?style=flat-square" alt="LICENSE">
+  </a>
+  <!-- Build Status -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://travis-ci.org/ElemeFE/page-skeleton-webpack-plugin.svg?branch=master" alt="build">
+  </a>
+  <!-- Downloads weekly -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://img.shields.io/npm/dw/localeval.svg?style=flat-square" alt="download">
+  </a>
+  <!-- deps -->
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+    <img src="https://img.shields.io/hackage-deps/v/lens.svg" alt="dependencies">
+  </a>
+</div>
+
+<div align="center">
+  <h3>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#features">
+      Features
+    </a>
+    <span> | </span>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#installation">
+      Install
+    </a>
+    <span> | </span>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#basic-use">
+      Basic Use
+    </a>
+    <span> | </span>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#configuration">
+      Configuration
+    </a>
+    <span> | </span>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#faq">
+      FAQ
+    </a>
+    <span> | </span>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#contribution">
+      Contribution
+    </a>
+  </h3>
+</div>
+
+<div align="center">
+  <sub>An innovative tool. Built with ❤︎ by
+  <a href="https://github.com/ElemeFE">ElemeFE</a> and
+  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin/graphs/contributors">
+    contributors
+  </a>
+</div>
+
+
+
+<br />
+
+![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/page.gif)
+
+### Features
+
+Page Skeleton 是一款 webpack 插件，在开发过程中，通过简单的点击操作，生成开发页面对应的骨架页面，并通过 webpack 将骨架页面打包到你的应用中，这样就能够在你的应用启动之前，看到页面的骨架结构了。
+
+- 简单易于使用
+- 针对移动端 web 页面
+- 完全可定制，可以通过配置项对骨架块形状颜色进行配置，同时最终输入的`shell.html` 你也可以按自己喜好修改
+- 配置友好几乎可以零配置使用
+
+### Installation
 
 通过 npm 来安装插件及依赖，该插件依赖于 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)。
 
@@ -14,7 +103,7 @@ Page SkeletonWebpack Plugin 是一款 webpack 插件，在开发过程中，通�
 > 
 > npm install --save-dev html-webpack-plugin
 
-### 基础使用
+### Basic Use
 
 #### 第一步：配置插件
 
@@ -48,7 +137,7 @@ const webpackConfig = {
 
 #### 第二步：修改 HTML Webpack Plugin 插件的模板
 
-在你启动 App 的根元素内部添加 `
+在你启动 App 的根元素内部添加 `<!-- shell -->`
 
 ```html
 <!DOCTYPE html>
@@ -79,7 +168,7 @@ const webpackConfig = {
 
 2. 通过 webpack 重新打包应用，当页面重新启动后，就能够在获取到数据前看到应用的骨架结构了。
 
-### 配置插件
+### Configuration
 
 可以向插件传递一个配置对象，该配置对象可以包含如下字段。
 
@@ -261,10 +350,12 @@ const pluginDefaultConfig = {
 
 **注意：** **page-skeleton-webpack-plugin** 还处于 beta 阶段，你可以随意试用，用于生产环境之前请务必检查生产的**骨架页面** 是否满足你的要求。
 
-### 贡献代码
+### Contribution
 
 运行 npm run dev:sale 启动 sample 文件夹的 sale 项目，可以进行项目的开发，client 端和 preview 页面的开发请参见 package 中的 script 命令，如果你对该项目感兴趣，欢迎大家贡献代码。
 
 ### License
 
-This project is licensed under MIT.
+ [**MIT**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/LICENSE).
+
+Copyright (c) 2017-present, @ElemeFE
