@@ -94,7 +94,11 @@
     },
     "minify": {
       "description": "Weather to minify the HTML",
-      "type": "object"     
+      "anyOf": [{
+        "type": "object"
+      }, {
+        "type": "boolean"
+      }]   
     },
     "defer": {
       "description": "Defer to generate skeleton page",

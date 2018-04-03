@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/banner.jpg" alt="mark text" width="100%" height="230">
+<img src="https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/banner.jpg" alt="mark text" width="100%">
 </p>
 
 <h1 align="center">Page Skeleton</h1>
@@ -304,6 +304,7 @@ const webpackConfig = {
 
 ```javascript
 const pluginDefaultConfig = {
+  port: '8989',
   text: {
     color: '#EEEEEE'
   },
@@ -348,7 +349,7 @@ const pluginDefaultConfig = {
 
 **问题一：pageSkeletonWebpackPlugin 的实现原理？**
 
-插件通过 Chrome headless 在服务端打开你所开发的页面，通过对页面中元素进行增减，以及对元素样式进行修改，生成骨架页面。这一过程，也就是上图的演示过程。生成骨架页面，然后保存到配置路径，文件命名为 `shell.html` ，在重新通过 webpack 打包的过程中，插件读取 `shell.html` 文件，并通过文件内容替换`
+插件通过 Chrome headless 在服务端打开你所开发的页面，通过对页面中元素进行增减，以及对元素样式进行修改，生成骨架页面。这一过程，也就是上图的演示过程。生成骨架页面，然后保存到配置路径，文件命名为 `shell.html` ，在重新通过 webpack 打包的过程中，插件读取 `shell.html` 文件，并通过文件内容替换`<!-- shell.html -->`
 
 **问题二：项目中必须使用 DefinePlugin 吗？**
 
@@ -359,6 +360,8 @@ const pluginDefaultConfig = {
 ### Contribution
 
 运行 npm run dev:sale 启动 sample 文件夹的 sale 项目，可以进行项目的开发，client 端和 preview 页面的开发请参见 package 中的 script 命令，如果你对该项目感兴趣，欢迎大家贡献代码。
+
+Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
 ### License
 
