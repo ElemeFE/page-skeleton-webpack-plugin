@@ -13,7 +13,8 @@
       "description": "The animation of the skeleton page loading",
       "enum": [
         "spin",
-        "chiaroscuro"
+        "chiaroscuro",
+        "shine"
       ]
     },
     "text": {

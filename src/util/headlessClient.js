@@ -403,6 +403,43 @@ const Skeleton = (function skeleton(document) {
     document.body.firstElementChild.classList.add('blink')
   }
 
+  function addShine () {
+    const style = document.createElement('style')
+    const styleContent = `
+      body {
+        overflow: hidden;
+      }
+      @keyframes flush {
+        0% {
+          left: -100%;
+        }
+        50% {
+          left: 0;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+      .sk-loading {
+        animation: flush 2s linear infinite;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        background: linear-gradient(to left, 
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, .85) 50%,
+          rgba(255, 255, 255, 0) 100%
+        )
+      }
+    `
+    style.innerHTML = styleContent
+    const load = document.createElement('div')
+    load.classList.add('sk-loading')
+    document.head.appendChild(style)
+    document.body.appendChild(load)
+  }
+
   function addSpin () {
     const style = document.createElement('style')
     const styleContent = `
@@ -593,6 +630,9 @@ const Skeleton = (function skeleton(document) {
         break
       case 'spin':
         addSpin()
+        break
+      case 'shine':
+        addShine()
         break
       default:
         addSpin()

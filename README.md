@@ -188,7 +188,7 @@ const webpackConfig = {
 
   非必须配置项，其接受一个可枚举的字符串
 
-  该配置是在展示骨架页面时使用的动画方案，可选值有`spin`, `chiaroscuro`。默认值是 `spin`。
+  该配置是在展示骨架页面时使用的动画方案，可选值有`spin`, `chiaroscuro` 和 `shine`。默认值是 `spin`。
 
 - **text**
 

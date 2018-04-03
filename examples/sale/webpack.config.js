@@ -9,7 +9,7 @@ const cssnext = require('postcss-cssnext')({
     'Android >= 4.0',
   ],
 })
-const SkeletonPlugin = require('page-skeleton-webpack-plugin').SkeletonPlugin
+const SkeletonPlugin = require('../../index.js').SkeletonPlugin
 
 module.exports = {
   entry: './src/main.js',
@@ -56,7 +56,7 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./src`),
       port: '7890',
-      loading: 'spin',
+      loading: 'shine',
       svg: {
         color: '#EFEFEF',
         shape: 'circle',
