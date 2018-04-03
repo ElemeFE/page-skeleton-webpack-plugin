@@ -403,6 +403,61 @@ const Skeleton = (function skeleton(document) {
     document.body.firstElementChild.classList.add('blink')
   }
 
+  function addSpin () {
+    const style = document.createElement('style')
+    const styleContent = `
+      @keyframes loading-rotate {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes loading-dash {
+        0% {
+          stroke-dasharray: 1, 200;
+          stroke-dashoffset: 0;
+        }
+        50% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -40px;
+        }
+        100% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -120px;
+        }
+      }
+
+      .sk-loading-spinner {
+        top: 50%;
+        margin-top: -0.5rem;
+        width: 100%;
+        text-align: center;
+        position: absolute;
+      }
+
+      .sk-loading-spinner .circular {
+        height: 1rem;
+        width: 1rem;
+        animation: loading-rotate 2s linear infinite;
+      }
+
+      .sk-loading-spinner .path {
+        animation: loading-dash 1.5s ease-in-out infinite;
+        stroke-dasharray: 90,150;
+        stroke-dashoffset: 0;
+        stroke-width: 2;
+        stroke: #409eff;
+        stroke-linecap: round;
+      }
+    `
+    style.innerHTML = styleContent
+    document.head.appendChild(style)
+    const spinContainer = document.createElement('div')
+    spinContainer.classList.add('sk-loading-spinner')
+    spinContainer.innerHTML = `<svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>`
+    document.body.appendChild(spinContainer)
+  }
+
   function traverse(options) {
     const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
@@ -509,7 +564,7 @@ const Skeleton = (function skeleton(document) {
   }
 
   function genSkeleton(options) {
-    const { remove, hide } = options
+    const { remove, hide, loading = 'spin' } = options
     /**
      * before walk
      */
@@ -530,9 +585,19 @@ const Skeleton = (function skeleton(document) {
     
     traverse(options)
     /**
-     * add animation blink
+     * add animation of skeleton page when loading
      */
-    addBlickAnimation()
+    switch (loading) {
+      case 'chiaroscuro':
+        addBlickAnimation()
+        break
+      case 'spin':
+        addSpin()
+        break
+      default:
+        addSpin()
+        break
+    }
   }
 
   function getHtmlAndStyle() {

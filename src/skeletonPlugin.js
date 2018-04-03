@@ -1,4 +1,5 @@
 'use strict'
+
 const merge = require('lodash/merge')
 const webpack = require('webpack')
 const optionsSchema = require('./config/optionsSchema.json')

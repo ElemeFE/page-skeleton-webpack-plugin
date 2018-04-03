@@ -4,6 +4,7 @@ const staticPath = '__webpack_page_skeleton__'
 
 const defaultOptions = {
   port: '8989',
+  loading: 'spin', // ['spin', 'chiaroscuro'],
   text: {
     color: '#EEEEEE'
   },

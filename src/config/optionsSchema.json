@@ -9,6 +9,13 @@
       "description": "The port of Page skeleton webpack plugin",
       "type": "string"
     },
+    "loading": {
+      "description": "The animation of the skeleton page loading",
+      "enum": [
+        "spin",
+        "chiaroscuro"
+      ]
+    },
     "text": {
       "description": "configuration of text block",
       "type": "object",

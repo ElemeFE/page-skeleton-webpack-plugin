@@ -115,7 +115,6 @@ class Skeleton {
     })
 
     const cleanedCSS = await page.evaluate(async (stylesheetAstObjects, stylesheetAstArray) => { // eslint-disable-line no-shadow
-
       const DEAD_OBVIOUS = new Set(['*', 'body', 'html'])
       const cleanedStyles = []
 

@@ -184,6 +184,12 @@ const webpackConfig = {
 
   该配置是 Page Skeleton 启动服务的端口号以及 socket 连接的端口号，默认值 `8989`。
 
+- **loading**
+
+  非必须配置项，其接受一个可枚举的字符串
+
+  该配置是在展示骨架页面时使用的动画方案，可选值有`spin`, `chiaroscuro`。默认值是 `spin`。
+
 - **text**
 
   非必须配置项，其接受一个 Object 类型值
