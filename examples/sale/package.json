@@ -9,6 +9,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "page-skeleton-webpack-plugin": "^0.7.0",
     "postcss-px2rem": "^0.3.0",
     "vue": "^2.4.4"
   },
