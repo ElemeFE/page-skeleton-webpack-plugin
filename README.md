@@ -99,7 +99,7 @@ Page Skeleton 是一款 webpack 插件，在开发过程中，通过简单的点
 
 通过 npm 来安装插件及依赖，该插件依赖于 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)。
 
-> npm install -- save-dev page-skeleton-webpack-plugin
+> npm install --save-dev page-skeleton-webpack-plugin
 > 
 > npm install --save-dev html-webpack-plugin
 

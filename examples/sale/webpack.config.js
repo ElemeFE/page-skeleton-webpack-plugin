@@ -56,7 +56,7 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./src`),
       port: '7890',
-      loading: 'shine',
+      loading: 'spin',
       svg: {
         color: '#EFEFEF',
         shape: 'circle',
@@ -82,15 +82,15 @@ module.exports = {
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
       cssUnit: 'vw',
+      headless: false,
       cookies: [{
-        name: 'hello',
-        value: 'world',
-        url: 'http://127.0.0.1'
+        name: 'SID',
+        value: 'a495vvmEPEE4DZi083dr8yR3EAPYqW40HaWA',
+        url: 'https://h5.ele.me'
       }, {
-        name: 'ransixi',
-        value: 'jocs',
-        path: '/',
-        url: 'http://127.0.0.1'
+        name: 'USERID',
+        value: '273745271',
+        url: 'https://h5.ele.me'
       }]
     }),
   ],
