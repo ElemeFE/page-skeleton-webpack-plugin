@@ -17,7 +17,7 @@ const {
   generateQR,
   addDprAndFontSize,
   getLocalIpAddress
-} = require('./util/utils')
+} = require('./util')
 const Skeleton = require('./skeleton')
 
 const myFs = new MemoryFileSystem()

@@ -12,9 +12,11 @@
     "dev:preview": "webpack --color --config preview/webpack.preview.config.js --watch",
     "dev:client": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js --watch",
     "dev:sale": "cd examples/sale && npm run dev",
+    "dev:script": "rollup --config src/script/rollup.config.js --watch",
     "build:index": "webpack ./client/index.js client/index.bundle.js --color --config client/webpack.config.js",
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
     "build:preview": "webpack --color --config preview/webpack.preview.config.js",
+    "build:script": "rollup --config src/script/rollup.config.js",
     "prepare": "npm run build:index && npm run build:sockjs && npm run build:preview"
   },
   "keywords": [
@@ -78,6 +80,7 @@
     "postcss-loader": "^2.0.8",
     "postcss-nested": "^2.1.2",
     "raw-loader": "^0.5.1",
+    "rollup": "^0.57.1",
     "sinon": "^4.1.3",
     "style-loader": "^0.19.0",
     "supertest": "^3.0.0",

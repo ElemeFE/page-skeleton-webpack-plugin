@@ -54,7 +54,7 @@ function sleep(duration) {
 }
 
 async function genScriptContent() {
-  const sourcePath = path.resolve(__dirname, './headlessClient.js')
+  const sourcePath = path.resolve(__dirname, '../script/index.js')
   let result
   try {
     result = await promisify(fs.readFile)(sourcePath, 'utf-8')

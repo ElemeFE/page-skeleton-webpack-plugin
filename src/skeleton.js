@@ -6,7 +6,7 @@ const { parse, toPlainObject, fromPlainObject, generate } = require('css-tree')
 const {
   sleep, genScriptContent,
   htmlMinify, collectImportantComments
-} = require('./util/utils')
+} = require('./util')
 
 class Skeleton {
   constructor(options = {}) {

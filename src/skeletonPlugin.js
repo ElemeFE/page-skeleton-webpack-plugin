@@ -5,7 +5,7 @@ const webpack = require('webpack')
 const optionsSchema = require('./config/optionsSchema.json')
 
 const Server = require('./server')
-const { log, addScriptTag, getShellCode } = require('./util/utils')
+const { log, addScriptTag, getShellCode } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
