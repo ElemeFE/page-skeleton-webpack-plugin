@@ -96,7 +96,7 @@ class Skeleton {
         throw new Error(`${response.status} on ${url}`)
       }
     } catch (err) {
-      console.log(err)
+      console.log(err) // eslint-disable-line no-console
     }
 
     await this.makeSkeleton()

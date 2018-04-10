@@ -5,7 +5,7 @@ import Vue from 'vue/dist/vue.esm'
 import { log } from './utils'
 import Console from './components/console/index.vue'
 
-const port = window._pageSkeletonSocketPort
+const port = window._pageSkeletonSocketPort // eslint-disable-line no-underscore-dangle
 
 // TODO headless 打开的页面不连接 socket
 const sock = new SockJS(`http://localhost:${port}/socket`)

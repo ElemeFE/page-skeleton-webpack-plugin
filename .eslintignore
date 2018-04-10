@@ -1,0 +1,6 @@
+test/unit/coverage/**
+test/unit/*.js
+test/e2e/*.js
+src/script/**/*.js
+src/templates/shell.js
+

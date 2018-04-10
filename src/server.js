@@ -156,8 +156,8 @@ class Server extends EventEmitter {
             sockWrite([conn], 'console', openMsg)
             sockWrite([conn], 'success', openMsg)
             if (this.previewSocket) {
-              const data = await this.getPreviewData()
-              sockWrite([this.previewSocket], 'url', JSON.stringify(data))
+              const previewData = await this.getPreviewData()
+              sockWrite([this.previewSocket], 'url', JSON.stringify(previewData))
             } else {
               open(this.previewPageUrl, { app: 'google chrome' })
             }
@@ -179,8 +179,8 @@ class Server extends EventEmitter {
 
         case 'url': {
           if (msg.data !== 'preview') return log(msg)
-          const data = await this.getPreviewData()
-          sockWrite([conn], 'url', JSON.stringify(data))
+          const previewData = await this.getPreviewData()
+          sockWrite([conn], 'url', JSON.stringify(previewData))
           break
         }
 
@@ -197,7 +197,7 @@ class Server extends EventEmitter {
       }
     }
   }
-  async getPreviewData () {
+  async getPreviewData() {
     const { skeletonPageUrl, url } = this
     const qrCode = await generateQR(skeletonPageUrl)
     return {

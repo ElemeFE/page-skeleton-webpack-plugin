@@ -4,12 +4,14 @@ const staticPath = '__webpack_page_skeleton__'
 
 const defaultOptions = {
   port: '8989',
-  loading: 'spin', // ['spin', 'chiaroscuro'],
+  // ['spin', 'chiaroscuro'],
+  loading: 'spin',
   text: {
     color: '#EEEEEE'
   },
   image: {
-    shape: 'rect', // `rect` | `circle`
+    // `rect` | `circle`
+    shape: 'rect',
     color: '#EFEFEF',
     shapeOpposite: []
   },
@@ -18,13 +20,17 @@ const defaultOptions = {
     excludes: []
   },
   svg: {
-    color: '#EFEFEF', // or transparent
-    shape: 'circle', // circle | rect
+    // or transparent
+    color: '#EFEFEF',
+    // circle | rect
+    shape: 'circle',
     shapeOpposite: []
   },
   pseudo: {
-    color: '#EFEFEF', // or transparent
-    shape: 'circle', // circle | rect
+    // or transparent
+    color: '#EFEFEF',
+    // circle | rect
+    shape: 'circle',
     shapeOpposite: []
   },
   device: 'iPhone 6 Plus',
@@ -43,24 +49,25 @@ const defaultOptions = {
   cookies: [],
   headless: true,
   h5Only: false,
-  cssUnit: 'rem' // or 'vw|vh|vmin|vmax'
+  // or 'vw|vh|vmin|vmax'
+  cssUnit: 'rem'
 }
 
 const htmlBeautifyConfig = {
-  'indent_size': 4,
-  'html': {
-    'end_with_newline': true,
-    'js': {
-      'indent_size': 2
+  indent_size: 4,
+  html: {
+    end_with_newline: true,
+    js: {
+      indent_size: 2
     },
-    'css': {
-      'indent_size': 2
+    css: {
+      indent_size: 2
     }
   },
-  'css': {
-    'indent_size': 1
+  css: {
+    indent_size: 1
   },
-  'js': {
+  js: {
     'preserve-newlines': true
   }
 }

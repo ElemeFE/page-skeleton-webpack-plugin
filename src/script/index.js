@@ -1,126 +1,125 @@
-var Skeleton = (function (exports) {
-  'use strict';
+const Skeleton = (function (exports) {
+  'use strict'
 
   /**
   * constants
   */
-  const TRANSPARENT = 'transparent';
-  const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/;
-  const GRADIENT_REG = /gradient/;
-  const DISPLAY_NONE = /display:\s*none/;
+  const TRANSPARENT = 'transparent'
+  const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/
+  const GRADIENT_REG = /gradient/
+  const DISPLAY_NONE = /display:\s*none/
   // 插件客户端界面的 className
-  const CONSOLE_CLASS = '.sk-console';
-  const PRE_REMOVE_TAGS = ['script'];
-  const AFTER_REMOVE_TAGS = ['title', 'meta', 'style'];
-  const SKELETON_STYLE = 'skeleton-style';
-  const CLASS_NAME_PREFEX = 'skeleton-';
+  const CONSOLE_CLASS = '.sk-console'
+  const PRE_REMOVE_TAGS = ['script']
+  const AFTER_REMOVE_TAGS = ['title', 'meta', 'style']
+  const SKELETON_STYLE = 'skeleton-style'
+  const CLASS_NAME_PREFEX = 'skeleton-'
   // 最小 1 * 1 像素的透明 gif 图片
-  const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  const MOCK_TEXT_ID = 'skeleton-text-id';
-  const Node = window.Node;
+  const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+  const MOCK_TEXT_ID = 'skeleton-text-id'
+  const Node = window.Node
 
-  const getComputedStyle = window.getComputedStyle;
-  const $$ = document.querySelectorAll.bind(document);
-  const $ = document.querySelector.bind(document);
-  const isBase64Img = (img) => /base64/.test(img.src);
+  const getComputedStyle = window.getComputedStyle
+  const $$ = document.querySelectorAll.bind(document)
+  const $ = document.querySelector.bind(document)
+  const isBase64Img = img => /base64/.test(img.src)
 
   const setAttributes = (ele, attrs) => {
-    Object.keys(attrs).forEach(k => ele.setAttribute(k, attrs[k]));
-  };
+    Object.keys(attrs).forEach(k => ele.setAttribute(k, attrs[k]))
+  }
 
   const inViewPort = (ele) => {
-    const rect = ele.getBoundingClientRect();
+    const rect = ele.getBoundingClientRect()
     return rect.top < window.innerHeight && rect.left < window.innerWidth
-  };
+  }
 
   const checkHasPseudoEle = (ele) => {
-    const hasBefore = getComputedStyle(ele, '::before').getPropertyValue('content') !== '';
-    const hasAfter = getComputedStyle(ele, '::after').getPropertyValue('content') !== '';
+    const hasBefore = getComputedStyle(ele, '::before').getPropertyValue('content') !== ''
+    const hasAfter = getComputedStyle(ele, '::after').getPropertyValue('content') !== ''
     if (hasBefore || hasAfter) {
       return { hasBefore, hasAfter, ele }
     }
     return false
-  };
+  }
 
-  const checkHasBorder = (styles) => styles.getPropertyValue('border-style') !== 'none';
+  const checkHasBorder = styles => styles.getPropertyValue('border-style') !== 'none'
 
-  const getOppositeShape = (shape) => shape === 'circle' ? 'rect' : 'circle';
+  const getOppositeShape = shape => (shape === 'circle' ? 'rect' : 'circle')
 
-  const checkHasTextDecoration = (styles) => !/none/.test(styles.textDecorationLine);
+  const checkHasTextDecoration = styles => !/none/.test(styles.textDecorationLine)
 
   const getViewPort = () => {
-    const vh = window.innerHeight;
-    const vw = window.innerWidth;
+    const vh = window.innerHeight
+    const vw = window.innerWidth
 
     return {
       vh,
       vw,
       vmax: Math.max(vw, vh),
-      vmin: Math.min(vw, vh),
+      vmin: Math.min(vw, vh)
     }
-  };
+  }
 
   const px2relativeUtil = (px, unit = 'rem') => {
-    const pxValue = typeof px === 'string' ? parseFloat(px, 10) : px;
+    const pxValue = typeof px === 'string' ? parseFloat(px, 10) : px
     if (unit === 'rem') {
-      const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize;
+      const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize
       return `${(pxValue / parseFloat(htmlElementFontSize, 10))}${unit}`
-    } else {
-      const dimensions = getViewPort();
-      const base = dimensions[unit];
-      return `${pxValue / base * 100}${unit}`
     }
-  };
+    const dimensions = getViewPort()
+    const base = dimensions[unit]
+    return `${pxValue / base * 100}${unit}`
+  }
 
   const getTextWidth = (text, style) => {
-    let offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`);
+    let offScreenParagraph = document.querySelector(`#${MOCK_TEXT_ID}`)
     if (!offScreenParagraph) {
-      const wrapper = document.createElement('p');
-      offScreenParagraph = document.createElement('span');
+      const wrapper = document.createElement('p')
+      offScreenParagraph = document.createElement('span')
       Object.assign(wrapper.style, {
         width: '10000px'
-      });
-      offScreenParagraph.id = MOCK_TEXT_ID;
-      wrapper.appendChild(offScreenParagraph);
-      document.body.appendChild(wrapper);
+      })
+      offScreenParagraph.id = MOCK_TEXT_ID
+      wrapper.appendChild(offScreenParagraph)
+      document.body.appendChild(wrapper)
     }
-    Object.assign(offScreenParagraph.style, style);
-    offScreenParagraph.textContent = text;
+    Object.assign(offScreenParagraph.style, style)
+    offScreenParagraph.textContent = text
     return offScreenParagraph.getBoundingClientRect().width
-  };
+  }
 
   const setOpacity = (ele) => {
-    ele.style.opacity = 0;
-  };
+    ele.style.opacity = 0
+  }
 
   const transparent = (ele) => {
-    ele.style.color = TRANSPARENT;
-  };
+    ele.style.color = TRANSPARENT
+  }
 
   const removeElement = (ele) => {
-    const parent = ele.parentNode;
+    const parent = ele.parentNode
     if (parent) {
-      parent.removeChild(ele);
+      parent.removeChild(ele)
     }
-  };
+  }
 
   const emptyElement = (ele) => {
-    ele.innerHTML = '';
-  };
+    ele.innerHTML = ''
+  }
 
   function listHandle(ele) {
-    const children = ele.children;
-    const len = Array.from(children).filter(child => child.tagName === 'LI').length;
+    const children = ele.children
+    const len = Array.from(children).filter(child => child.tagName === 'LI').length
     if (len === 0) return false
-    const firstChild = children[0];
+    const firstChild = children[0]
     // 解决有时ul元素子元素不是 li元素的 bug。
     if (firstChild.tagName !== 'LI') return listHandle(firstChild)
     Array.from(children).forEach((c, i) => {
-      if (i > 0) c.parentNode.removeChild(c);
-    });
+      if (i > 0) c.parentNode.removeChild(c)
+    })
     // 将 li 所有兄弟元素设置成相同的元素，保证生成的页面骨架整齐
     for (let i = 1; i < len; i++) {
-      ele.appendChild(firstChild.cloneNode(true));
+      ele.appendChild(firstChild.cloneNode(true))
     }
   }
 
@@ -128,7 +127,7 @@ var Skeleton = (function (exports) {
     Object.assign(ele.style, {
       background: color,
       borderRadius: shape === 'circle' ? '50%' : 0
-    });
+    })
   }
 
   /**
@@ -141,50 +140,50 @@ var Skeleton = (function (exports) {
       background: color,
       border: 'none',
       boxShadow: 'none'
-    });
+    })
   }
 
   function grayHandler(ele, { color }) {
-    const elements = ele.querySelectorAll('*');
-    Array.from(elements).forEach(element => {
-      const childNodes = element.childNodes;
+    const elements = ele.querySelectorAll('*')
+    Array.from(elements).forEach((element) => {
+      const childNodes = element.childNodes
       if (Array.from(childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
-        element.style.color = color;
+        element.style.color = color
       }
-    });
-    ele.style.color = color;
-    ele.style.background = color;
+    })
+    ele.style.color = color
+    ele.style.background = color
   }
 
   function imgHandler(ele, { color, shape, shapeOpposite }) {
-    const { width, height } = ele.getBoundingClientRect();
+    const { width, height } = ele.getBoundingClientRect()
     const attrs = {
       width,
       height,
       src: SMALLEST_BASE64
-    };
+    }
 
-    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
 
-    setAttributes(ele, attrs);
+    setAttributes(ele, attrs)
     // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
     Object.assign(ele.style, {
       background: color,
       borderRadius: finalShape === 'circle' ? '50%' : 0
-    });
+    })
 
     if (ele.hasAttribute('alt')) {
-      ele.removeAttribute('alt');
+      ele.removeAttribute('alt')
     }
   }
 
   function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape, shapeOpposite }) {
-    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
-    const PSEUDO_CLASS = `${CLASS_NAME_PREFEX}pseudo`;
-    const PSEUDO_RECT_CLASS = `${CLASS_NAME_PREFEX}pseudo-rect`;
-    const PSEUDO_CIRCLE_CLASS = `${CLASS_NAME_PREFEX}pseudo-circle`;
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
+    const PSEUDO_CLASS = `${CLASS_NAME_PREFEX}pseudo`
+    const PSEUDO_RECT_CLASS = `${CLASS_NAME_PREFEX}pseudo-rect`
+    const PSEUDO_CIRCLE_CLASS = `${CLASS_NAME_PREFEX}pseudo-circle`
 
-    let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`);
+    let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`)
 
     if (!styleEle) {
       const rules = `
@@ -200,45 +199,45 @@ var Skeleton = (function (exports) {
         .${PSEUDO_CIRCLE_CLASS}::before, .${PSEUDO_CIRCLE_CLASS}::after {
           border-radius: 50% !important;
         }
-      `;
+      `
 
-      styleEle = document.createElement('style');
-      styleEle.setAttribute('data-skeleton', SKELETON_STYLE);
+      styleEle = document.createElement('style')
+      styleEle.setAttribute('data-skeleton', SKELETON_STYLE)
       if (!window.createPopup) { /* For Safari */
-        styleEle.appendChild(document.createTextNode(''));
+        styleEle.appendChild(document.createTextNode(''))
       }
-      styleEle.innerHTML = rules;
+      styleEle.innerHTML = rules
       if (document.head) {
-        document.head.appendChild(styleEle);
+        document.head.appendChild(styleEle)
       } else {
-        document.body.appendChild(styleEle);
+        document.body.appendChild(styleEle)
       }
     }
 
-    ele.classList.add(PSEUDO_CLASS);
-    ele.classList.add(finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS);
+    ele.classList.add(PSEUDO_CLASS)
+    ele.classList.add(finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS)
   }
 
   function svgHandler(ele, { color, shape, shapeOpposite }, cssUnit) {
-    const { width, height } = ele.getBoundingClientRect();
+    const { width, height } = ele.getBoundingClientRect()
 
     if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
       return removeElement(ele)
     }
 
-    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
+    const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
 
-    emptyElement(ele);
+    emptyElement(ele)
 
     Object.assign(ele.style, {
       width: px2relativeUtil(width, cssUnit),
       height: px2relativeUtil(height, cssUnit),
       borderRadius: finalShape === 'circle' ? '50%' : 0
-    });
+    })
     if (color === TRANSPARENT) {
-      setOpacity(ele);
+      setOpacity(ele)
     } else {
-      ele.style.background = color;
+      ele.style.background = color
     }
   }
 
@@ -252,13 +251,13 @@ var Skeleton = (function (exports) {
     paddingLeft,
     paddingRight
   }, maskWidthPercent = 0.5) {
-    let left;
-    let right;
+    let left
+    let right
     switch (textAlign) {
       case 'center':
-        left = document.createElement('span');
+        left = document.createElement('span')
         right = document.createElement('span')
-        ;[left, right].forEach(mask => {
+        ;[left, right].forEach((mask) => {
           Object.assign(mask.style, {
             display: 'inline-block',
             width: `${maskWidthPercent / 2 * 100}%`,
@@ -266,15 +265,15 @@ var Skeleton = (function (exports) {
             background: '#fff',
             position: 'absolute',
             bottom: paddingBottom
-          });
-        });
-        left.style.left = paddingLeft;
-        right.style.right = paddingRight;
-        paragraph.appendChild(left);
-        paragraph.appendChild(right);
+          })
+        })
+        left.style.left = paddingLeft
+        right.style.right = paddingRight
+        paragraph.appendChild(left)
+        paragraph.appendChild(right)
         break
       case 'right':
-        left = document.createElement('span');
+        left = document.createElement('span')
         Object.assign(left.style, {
           display: 'inline-block',
           width: `${maskWidthPercent * 100}%`,
@@ -283,12 +282,12 @@ var Skeleton = (function (exports) {
           position: 'absolute',
           bottom: paddingBottom,
           left: paddingLeft
-        });
-        paragraph.appendChild(left);
+        })
+        paragraph.appendChild(left)
         break
       case 'left':
       default:
-        right = document.createElement('span');
+        right = document.createElement('span')
         Object.assign(right.style, {
           display: 'inline-block',
           width: `${maskWidthPercent * 100}%`,
@@ -297,20 +296,20 @@ var Skeleton = (function (exports) {
           position: 'absolute',
           bottom: paddingBottom,
           right: paddingRight
-        });
-        paragraph.appendChild(right);
+        })
+        paragraph.appendChild(right)
         break
     }
   }
 
   function textHandler(ele, { color }, cssUnit) {
-    const { width } = ele.getBoundingClientRect();
+    const { width } = ele.getBoundingClientRect()
     // if the text block's width is less than 50, just set it to transparent.
     if (width <= 50) {
       return setOpacity(ele)
     }
-    const comStyle = getComputedStyle(ele);
-    const text = ele.textContent;
+    const comStyle = getComputedStyle(ele)
+    const text = ele.textContent
     let {
       lineHeight,
       paddingTop,
@@ -322,22 +321,22 @@ var Skeleton = (function (exports) {
       textAlign,
       wordSpacing,
       wordBreak
-    } = comStyle;
+    } = comStyle
 
     if (!/\d/.test(lineHeight)) {
-      const fontSizeNum = parseInt(fontSize, 10) || 14;
-      lineHeight = `${fontSizeNum * 1.4}px`;
+      const fontSizeNum = parseInt(fontSize, 10) || 14
+      lineHeight = `${fontSizeNum * 1.4}px`
     }
 
-    const position = ['fixed', 'absolute', 'flex'].find(p => p === pos) ? pos : 'relative';
+    const position = ['fixed', 'absolute', 'flex'].find(p => p === pos) ? pos : 'relative'
 
-    const height = ele.offsetHeight;
+    const height = ele.offsetHeight
     // Math.floor
-    const lineCount = (height - parseInt(paddingTop, 10) - parseInt(paddingBottom, 10)) / parseInt(lineHeight, 10) | 0; // eslint-disable-line no-bitwise
+    const lineCount = (height - parseInt(paddingTop, 10) - parseInt(paddingBottom, 10)) / parseInt(lineHeight, 10) | 0 // eslint-disable-line no-bitwise
 
-    let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10);
+    let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10)
     if (Number.isNaN(textHeightRatio)) {
-      textHeightRatio = 1 / 1.4; // default number
+      textHeightRatio = 1 / 1.4 // default number
     }
     /* eslint-disable no-mixed-operators */
     Object.assign(ele.style, {
@@ -353,35 +352,35 @@ var Skeleton = (function (exports) {
       position,
       color: 'transparent',
       backgroundRepeat: 'repeat-y'
-    });
+    })
     /* eslint-enable no-mixed-operators */
     // add white mask
     if (lineCount > 1) {
-      addTextMask(ele, comStyle);
+      addTextMask(ele, comStyle)
     } else {
       const textWidth = getTextWidth(text, {
         fontSize,
         lineHeight,
         wordBreak,
         wordSpacing
-      });
-      const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10));
-      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2relativeUtil(lineHeight, cssUnit)}`;
+      })
+      const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
+      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2relativeUtil(lineHeight, cssUnit)}`
       switch (textAlign) {
         case 'left': // do nothing
           break
         case 'center':
-          ele.style.backgroundPositionX = '50%';
+          ele.style.backgroundPositionX = '50%'
           break
         case 'right':
-          ele.style.backgroundPositionX = '100%';
+          ele.style.backgroundPositionX = '100%'
           break
       }
     }
   }
 
   const addBlick = () => {
-    const style = document.createElement('style');
+    const style = document.createElement('style')
     const styleContent = `
       @keyframes blink {
         0% {
@@ -401,14 +400,14 @@ var Skeleton = (function (exports) {
         animation-name: blink;
         animation-iteration-count: infinite;
       }
-    `;
-    style.innerHTML = styleContent;
-    document.head.appendChild(style);
-    document.body.firstElementChild.classList.add('blink');
-  };
+    `
+    style.innerHTML = styleContent
+    document.head.appendChild(style)
+    document.body.firstElementChild.classList.add('blink')
+  }
 
   const addShine = () => {
-    const style = document.createElement('style');
+    const style = document.createElement('style')
     const styleContent = `
       body {
         overflow: hidden;
@@ -436,16 +435,16 @@ var Skeleton = (function (exports) {
           rgba(255, 255, 255, 0) 100%
         )
       }
-    `;
-    style.innerHTML = styleContent;
-    const load = document.createElement('div');
-    load.classList.add('sk-loading');
-    document.head.appendChild(style);
-    document.body.appendChild(load);
-  };
+    `
+    style.innerHTML = styleContent
+    const load = document.createElement('div')
+    load.classList.add('sk-loading')
+    document.head.appendChild(style)
+    document.body.appendChild(load)
+  }
 
   const addSpin = () => {
-    const style = document.createElement('style');
+    const style = document.createElement('style')
     const styleContent = `
       @keyframes loading-rotate {
         100% {
@@ -490,44 +489,44 @@ var Skeleton = (function (exports) {
         stroke: #409eff;
         stroke-linecap: round;
       }
-    `;
-    style.innerHTML = styleContent;
-    document.head.appendChild(style);
-    const spinContainer = document.createElement('div');
-    spinContainer.classList.add('sk-loading-spinner');
-    spinContainer.innerHTML = `<svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>`;
-    document.body.appendChild(spinContainer);
-  };
+    `
+    style.innerHTML = styleContent
+    document.head.appendChild(style)
+    const spinContainer = document.createElement('div')
+    spinContainer.classList.add('sk-loading-spinner')
+    spinContainer.innerHTML = '<svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>'
+    document.body.appendChild(spinContainer)
+  }
 
   function traverse(options) {
-    const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options;
-    const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : [];
-    const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : [];
-    const rootElement = document.documentElement;
+    const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options
+    const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
+    const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : []
+    const rootElement = document.documentElement
 
-    const texts = [];
-    const buttons = [];
-    const hasImageBackEles = [];
-    const toRemove = [];
-    const imgs = [];
-    const svgs = [];
-    const pseudos = [];
-    const gradientBackEles = [];
-    const grayBlocks = [];
+    const texts = []
+    const buttons = []
+    const hasImageBackEles = []
+    const toRemove = []
+    const imgs = []
+    const svgs = []
+    const pseudos = []
+    const gradientBackEles = []
+    const grayBlocks = []
 
     if (button && button.excludes.length) {
       // translate selector to element
-      button.excludes = Array.from($$(button.excludes.join(',')));
+      button.excludes = Array.from($$(button.excludes.join(',')))
     }
-  [svg, pseudo, image].forEach(type => {
+    [svg, pseudo, image].forEach((type) => {
       if (type.shapeOpposite.length) {
-        type.shapeOpposite = Array.from($$(type.shapeOpposite.join(',')));
+        type.shapeOpposite = Array.from($$(type.shapeOpposite.join(',')))
       }
     })
 
     ;(function preTraverse(ele) {
-      const styles = getComputedStyle(ele);
-      const hasPseudoEle = checkHasPseudoEle(ele);
+      const styles = getComputedStyle(ele)
+      const hasPseudoEle = checkHasPseudoEle(ele)
       if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
       }
@@ -537,26 +536,26 @@ var Skeleton = (function (exports) {
       if (~excludesEle.indexOf(ele)) return false // eslint-disable-line no-bitwise
 
       if (hasPseudoEle) {
-        pseudos.push(hasPseudoEle);
+        pseudos.push(hasPseudoEle)
       }
 
       if (checkHasBorder(styles)) {
-        ele.style.border = 'none';
+        ele.style.border = 'none'
       }
 
       if (ele.children.length > 0 && /UL|OL/.test(ele.tagName)) {
-        listHandle(ele);
+        listHandle(ele)
       }
       if (ele.children && ele.children.length > 0) {
-        Array.from(ele.children).forEach(child => preTraverse(child));
+        Array.from(ele.children).forEach(child => preTraverse(child))
       }
 
       // 将所有拥有 textChildNode 子元素的元素的文字颜色设置成背景色，这样就不会在显示文字了。
       if (ele.childNodes && Array.from(ele.childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
-        transparent(ele);
+        transparent(ele)
       }
       if (checkHasTextDecoration(styles)) {
-        ele.style.textDecorationColor = TRANSPARENT;
+        ele.style.textDecorationColor = TRANSPARENT
       }
       // 隐藏所有 svg 元素
       if (ele.tagName === 'svg') {
@@ -585,22 +584,22 @@ var Skeleton = (function (exports) {
       ) {
         return texts.push(ele)
       }
-    }(rootElement));
+    }(rootElement))
 
-    svgs.forEach(e => svgHandler(e, svg, cssUnit));
-    texts.forEach(e => textHandler(e, text, cssUnit));
-    buttons.forEach(e => buttonHandler(e, button));
-    hasImageBackEles.forEach(e => backgroundHandler(e, image));
-    imgs.forEach(e => imgHandler(e, image));
-    pseudos.forEach(e => pseudosHandler(e, pseudo));
-    gradientBackEles.forEach(e => backgroundHandler(e, image));
-    grayBlocks.forEach(e => grayHandler(e, button));
+    svgs.forEach(e => svgHandler(e, svg, cssUnit))
+    texts.forEach(e => textHandler(e, text, cssUnit))
+    buttons.forEach(e => buttonHandler(e, button))
+    hasImageBackEles.forEach(e => backgroundHandler(e, image))
+    imgs.forEach(e => imgHandler(e, image))
+    pseudos.forEach(e => pseudosHandler(e, pseudo))
+    gradientBackEles.forEach(e => backgroundHandler(e, image))
+    grayBlocks.forEach(e => grayHandler(e, button))
     // remove mock text wrapper
-    const offScreenParagraph = $(`#${MOCK_TEXT_ID}`);
+    const offScreenParagraph = $(`#${MOCK_TEXT_ID}`)
     if (offScreenParagraph && offScreenParagraph.parentNode) {
-      toRemove.push(offScreenParagraph.parentNode);
+      toRemove.push(offScreenParagraph.parentNode)
     }
-    toRemove.forEach(e => removeElement(e));
+    toRemove.forEach(e => removeElement(e))
   }
 
   function genSkeleton(options) {
@@ -608,53 +607,53 @@ var Skeleton = (function (exports) {
       remove,
       hide,
       loading = 'spin'
-    } = options;
+    } = options
     /**
      * before walk
      */
     // 将 `remove` 队列中的元素删除
     if (Array.isArray(remove)) {
-      remove.push(CONSOLE_CLASS, ...PRE_REMOVE_TAGS);
-      const removeEle = $$(remove.join(','));
-      Array.from(removeEle).forEach(ele => removeElement(ele));
+      remove.push(CONSOLE_CLASS, ...PRE_REMOVE_TAGS)
+      const removeEle = $$(remove.join(','))
+      Array.from(removeEle).forEach(ele => removeElement(ele))
     }
     // 将 `hide` 队列中的元素通过调节透明度为 0 来进行隐藏
     if (hide.length) {
-      const hideEle = $$(hide.join(','));
-      Array.from(hideEle).forEach(ele => setOpacity(ele));
+      const hideEle = $$(hide.join(','))
+      Array.from(hideEle).forEach(ele => setOpacity(ele))
     }
     /**
      * walk in process
      */
 
-    traverse(options);
+    traverse(options)
     /**
      * add animation of skeleton page when loading
      */
     switch (loading) {
       case 'chiaroscuro':
-        addBlick();
+        addBlick()
         break
       case 'spin':
-        addSpin();
+        addSpin()
         break
       case 'shine':
-        addShine();
+        addShine()
         break
       default:
-        addSpin();
+        addSpin()
         break
     }
   }
 
   function getHtmlAndStyle() {
-    const root = document.documentElement;
-    const rawHtml = root.outerHTML;
-    const styles = Array.from($$('style')).map(style => style.innerHTML || style.innerText);
-    Array.from($$(AFTER_REMOVE_TAGS.join(','))).forEach(ele => removeElement(ele));
+    const root = document.documentElement
+    const rawHtml = root.outerHTML
+    const styles = Array.from($$('style')).map(style => style.innerHTML || style.innerText)
+    Array.from($$(AFTER_REMOVE_TAGS.join(','))).forEach(ele => removeElement(ele))
     // fix html parser can not handle `<div ubt-click=3659 ubt-data="{&quot;restaurant_id&quot;:1236835}" >`
     // need replace `&quot;` into `'`
-    const cleanedHtml = document.body.innerHTML.replace(/&quot;/g, "'");
+    const cleanedHtml = document.body.innerHTML.replace(/&quot;/g, "'")
     return {
       rawHtml,
       styles,
@@ -662,9 +661,8 @@ var Skeleton = (function (exports) {
     }
   }
 
-  exports.genSkeleton = genSkeleton;
-  exports.getHtmlAndStyle = getHtmlAndStyle;
+  exports.genSkeleton = genSkeleton
+  exports.getHtmlAndStyle = getHtmlAndStyle
 
-  return exports;
-
-}({}));
+  return exports
+}({}))

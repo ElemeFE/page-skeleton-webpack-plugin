@@ -10,7 +10,6 @@ const chalk = require('chalk')
 const { minify } = require('html-minifier')
 const { html2json, json2html } = require('html2json')
 const htmlBeautify = require('js-beautify').html_beautify
-
 const { htmlBeautifyConfig } = require('../config/config')
 
 async function writeShell(pathname, html, options) {
@@ -165,7 +164,7 @@ const generateQR = async (text) => {
 
 const getLocalIpAddress = () => {
   const interfaces = os.networkInterfaces()
-  for (const devName in interfaces) {
+  for (const devName in interfaces) { // eslint-disable-line guard-for-in
     const iface = interfaces[devName]
     for (const alias of iface) {
       if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
