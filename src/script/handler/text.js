@@ -1,8 +1,7 @@
 import { getComputedStyle, px2relativeUtil, getTextWidth, setOpacity } from '../util'
+import { addStyle } from './styleCache'
+import { CLASS_NAME_PREFEX } from '../config'
 
-/**
- * handle text block
- */
 function addTextMask(paragraph, {
   textAlign,
   lineHeight,
@@ -61,7 +60,7 @@ function addTextMask(paragraph, {
   }
 }
 
-function textHandler(ele, { color }, cssUnit) {
+function textHandler(ele, { color }, cssUnit, decimal) {
   const { width } = ele.getBoundingClientRect()
   // if the text block's width is less than 50, just set it to transparent.
   if (width <= 50) {
@@ -98,20 +97,23 @@ function textHandler(ele, { color }, cssUnit) {
     textHeightRatio = 1 / 1.4 // default number
   }
   /* eslint-disable no-mixed-operators */
-  Object.assign(ele.style, {
-    backgroundImage: `linear-gradient(
-        transparent ${(1 - textHeightRatio) / 2 * 100}%,
-        ${color} 0%,
-        ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
-        transparent 0%)`,
-    backgroundOrigin: 'content-box',
-    backgroundSize: `100% ${px2relativeUtil(lineHeight, cssUnit)}`,
-    backgroundClip: 'content-box',
-    backgroundColor: 'transparent',
-    position,
-    color: 'transparent',
-    backgroundRepeat: 'repeat-y'
-  })
+  const firstColorPoint = ((1 - textHeightRatio) / 2 * 100).toFixed(decimal)
+  const secondColorPoint = (((1 - textHeightRatio) / 2 + textHeightRatio) * 100).toFixed(decimal)
+  const backgroundSize = `100% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`
+  const className = CLASS_NAME_PREFEX + 'text-' + firstColorPoint.toString(32).replace(/\./g, '-')
+  const rule = `{
+    background-image: linear-gradient(transparent ${firstColorPoint}%, ${color} 0%, ${color} ${secondColorPoint}%, transparent 0%) !important;
+    background-origin: content-box !important;
+    background-size: ${backgroundSize};
+    background-clip: content-box !important;
+    background-color: transparent !important;
+    position: ${position} !important;
+    color: transparent !important;
+    background-repeat: repeat-y !important;
+  }`
+
+  addStyle(`.${className}`, rule)
+  ele.classList.add(className)
   /* eslint-enable no-mixed-operators */
   // add white mask
   if (lineCount > 1) {
@@ -124,7 +126,7 @@ function textHandler(ele, { color }, cssUnit) {
       wordSpacing
     })
     const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
-    ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2relativeUtil(lineHeight, cssUnit)}`
+    ele.style.backgroundSize = `${(textWidthPercent > 1 ? 1 : textWidthPercent) * 100}% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`
     switch (textAlign) {
       case 'left': // do nothing
         break

@@ -50,7 +50,8 @@ const defaultOptions = {
   headless: true,
   h5Only: false,
   // or 'vw|vh|vmin|vmax'
-  cssUnit: 'rem'
+  cssUnit: 'rem',
+  decimal: 4
 }
 
 const htmlBeautifyConfig = {

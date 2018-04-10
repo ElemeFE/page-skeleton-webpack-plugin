@@ -8,16 +8,37 @@ var Skeleton = (function (exports) {
   const EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)/;
   const GRADIENT_REG = /gradient/;
   const DISPLAY_NONE = /display:\s*none/;
-  // 插件客户端界面的 className
-  const CONSOLE_CLASS = '.sk-console';
   const PRE_REMOVE_TAGS = ['script'];
   const AFTER_REMOVE_TAGS = ['title', 'meta', 'style'];
-  const SKELETON_STYLE = 'skeleton-style';
-  const CLASS_NAME_PREFEX = 'skeleton-';
+  const CLASS_NAME_PREFEX = 'sk-';
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  const MOCK_TEXT_ID = 'skeleton-text-id';
+  const MOCK_TEXT_ID = 'sk-text-id';
   const Node = window.Node;
+
+  /**
+   * a Map instance to cache the styles which will be inserted into the skeleton page.
+   * key is the selector and value is the css rules.
+   */
+
+  const styleCache = new Map();
+
+  // some common styles
+  const shapeStyle = (shape) => {
+    const selector = `.${CLASS_NAME_PREFEX + shape}`;
+    const rule = `{
+    border-radius: ${shape === 'rect' ? '0' : '50%'};
+  }`;
+    if (!styleCache.has(selector)) {
+      styleCache.set(selector, rule);
+    }
+  };
+
+  const addStyle = (selector, rule) => {
+    if (!styleCache.has(selector)) {
+      styleCache.set(selector, rule);
+    }
+  };
 
   const getComputedStyle = window.getComputedStyle;
   const $$ = document.querySelectorAll.bind(document);
@@ -60,15 +81,15 @@ var Skeleton = (function (exports) {
     }
   };
 
-  const px2relativeUtil = (px, unit = 'rem') => {
+  const px2relativeUtil = (px, unit = 'rem', decimal = 4) => {
     const pxValue = typeof px === 'string' ? parseFloat(px, 10) : px;
     if (unit === 'rem') {
       const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize;
-      return `${(pxValue / parseFloat(htmlElementFontSize, 10))}${unit}`
+      return `${(pxValue / parseFloat(htmlElementFontSize, 10)).toFixed(decimal)}${unit}`
     } else {
       const dimensions = getViewPort();
       const base = dimensions[unit];
-      return `${pxValue / base * 100}${unit}`
+      return `${(pxValue / base * 100).toFixed(decimal)}${unit}`
     }
   };
 
@@ -89,12 +110,28 @@ var Skeleton = (function (exports) {
     return offScreenParagraph.getBoundingClientRect().width
   };
 
+  const addClassName = (ele, classArray) => {
+    for (const name of classArray) {
+      ele.classList.add(name);
+    }
+  };
+
   const setOpacity = (ele) => {
-    ele.style.opacity = 0;
+    const className = CLASS_NAME_PREFEX + 'opacity';
+    const rule = `{
+    opacity: 0 !important;
+  }`;
+    addStyle(`.${className}`, rule);
+    ele.classList.add(className);
   };
 
   const transparent = (ele) => {
-    ele.style.color = TRANSPARENT;
+    const className = CLASS_NAME_PREFEX + 'transparent';
+    const rule = `{
+    color: ${TRANSPARENT} !important;
+  }`;
+    addStyle(`.${className}`, rule);
+    ele.classList.add(className);
   };
 
   const removeElement = (ele) => {
@@ -124,36 +161,57 @@ var Skeleton = (function (exports) {
     }
   }
 
+  /**
+   * use the same config options as image block.
+   */
+
   function backgroundHandler(ele, { color, shape }) {
-    Object.assign(ele.style, {
-      background: color,
-      borderRadius: shape === 'circle' ? '50%' : 0
-    });
+    const imageClass = CLASS_NAME_PREFEX + 'image';
+    const shapeClass = CLASS_NAME_PREFEX + shape;
+    const rule = `{
+    background: ${color} !important;
+  }`;
+    
+    addStyle(`.${imageClass}`, rule);
+
+    shapeStyle(shape);
+
+    addClassName(ele, [imageClass, shapeClass]);
   }
 
   /**
    * [buttonHandler 改变 button 元素样式：包括去除 border和 box-shadow, 背景色和文字颜色统一]
    */
+
   function buttonHandler(ele, { color, excludes }) {
     if (excludes.indexOf(ele) > -1) return false
-    Object.assign(ele.style, {
-      color,
-      background: color,
-      border: 'none',
-      boxShadow: 'none'
-    });
+    const classname = CLASS_NAME_PREFEX + 'button';
+    const rule = `{
+    color: ${color} !important;
+    background: ${color} !important;
+    border: none !important;
+    box-shadow: none !important;
+  }`;
+    addStyle(`.${classname}`, rule);
+    ele.classList.add(classname);
   }
 
   function grayHandler(ele, { color }) {
+    const classname = CLASS_NAME_PREFEX + 'gray';
+    const rule = `{
+    color: ${color} !important;
+    background: ${color} !important;
+  }`;
+    addStyle(`.${classname}`, rule);
+    ele.classList.add(classname);
+
     const elements = ele.querySelectorAll('*');
     Array.from(elements).forEach(element => {
       const childNodes = element.childNodes;
       if (Array.from(childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
-        element.style.color = color;
+        element.classList.add(classname);
       }
     });
-    ele.style.color = color;
-    ele.style.background = color;
   }
 
   function imgHandler(ele, { color, shape, shapeOpposite }) {
@@ -167,11 +225,16 @@ var Skeleton = (function (exports) {
     const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
 
     setAttributes(ele, attrs);
-    // DON'T put `style` attribute in attrs, becasure maybe have another inline style.
-    Object.assign(ele.style, {
-      background: color,
-      borderRadius: finalShape === 'circle' ? '50%' : 0
-    });
+    
+    const className = CLASS_NAME_PREFEX + 'image';
+    const shapeName = CLASS_NAME_PREFEX + finalShape;
+    const rule = `{
+    background: ${color} !important;
+  }`;
+    addStyle(`.${className}`, rule);
+    shapeStyle(finalShape);
+
+    addClassName(ele, [className, shapeName]);
 
     if (ele.hasAttribute('alt')) {
       ele.removeAttribute('alt');
@@ -184,42 +247,29 @@ var Skeleton = (function (exports) {
     const PSEUDO_RECT_CLASS = `${CLASS_NAME_PREFEX}pseudo-rect`;
     const PSEUDO_CIRCLE_CLASS = `${CLASS_NAME_PREFEX}pseudo-circle`;
 
-    let styleEle = $(`[data-skeleton="${SKELETON_STYLE}"]`);
+    const rules = {
+      [`.${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after`]: `{
+      background: ${color} !important;
+      background-image: none !important;
+      color: transparent !important;
+      border-color: transparent !important;
+    }`,
+      [`.${PSEUDO_RECT_CLASS}::before, .${PSEUDO_RECT_CLASS}::after`]: `{
+      border-radius: 0 !important;
+    }`,
+      [`.${PSEUDO_CIRCLE_CLASS}::before, .${PSEUDO_CIRCLE_CLASS}::after`]: `{
+      border-radius: 50% !important;
+    }`
+    };
 
-    if (!styleEle) {
-      const rules = `
-        .${PSEUDO_CLASS}::before, .${PSEUDO_CLASS}::after {
-          background: ${color} !important;
-          background-image: none !important;
-          color: transparent !important;
-          border-color: transparent !important;
-        }
-        .${PSEUDO_RECT_CLASS}::before, .${PSEUDO_RECT_CLASS}::after {
-          border-radius: 0 !important;
-        }
-        .${PSEUDO_CIRCLE_CLASS}::before, .${PSEUDO_CIRCLE_CLASS}::after {
-          border-radius: 50% !important;
-        }
-      `;
+    Object.keys(rules).forEach(key => {
+      addStyle(key, rules[key]);
+    });
 
-      styleEle = document.createElement('style');
-      styleEle.setAttribute('data-skeleton', SKELETON_STYLE);
-      if (!window.createPopup) { /* For Safari */
-        styleEle.appendChild(document.createTextNode(''));
-      }
-      styleEle.innerHTML = rules;
-      if (document.head) {
-        document.head.appendChild(styleEle);
-      } else {
-        document.body.appendChild(styleEle);
-      }
-    }
-
-    ele.classList.add(PSEUDO_CLASS);
-    ele.classList.add(finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS);
+    addClassName(ele, [PSEUDO_CLASS, finalShape === 'circle' ? PSEUDO_CIRCLE_CLASS : PSEUDO_RECT_CLASS]);
   }
 
-  function svgHandler(ele, { color, shape, shapeOpposite }, cssUnit) {
+  function svgHandler(ele, { color, shape, shapeOpposite }, cssUnit, decimal) {
     const { width, height } = ele.getBoundingClientRect();
 
     if (width === 0 || height === 0 || ele.getAttribute('aria-hidden') === 'true') {
@@ -230,21 +280,28 @@ var Skeleton = (function (exports) {
 
     emptyElement(ele);
 
+    const shapeClassName = CLASS_NAME_PREFEX + shape;
+    shapeStyle(shape);
+
     Object.assign(ele.style, {
-      width: px2relativeUtil(width, cssUnit),
-      height: px2relativeUtil(height, cssUnit),
-      borderRadius: finalShape === 'circle' ? '50%' : 0
+      width: px2relativeUtil(width, cssUnit, decimal),
+      height: px2relativeUtil(height, cssUnit, decimal),
     });
+
+    addClassName(ele, [shapeClassName]);
+
     if (color === TRANSPARENT) {
       setOpacity(ele);
     } else {
-      ele.style.background = color;
+      const className = CLASS_NAME_PREFEX + 'svg';
+      const rule = `{
+      background: ${color} !important;
+    }`;
+      addStyle(`.${className}`, rule);
+      ele.classList.add(className);
     }
   }
 
-  /**
-   * handle text block
-   */
   function addTextMask(paragraph, {
     textAlign,
     lineHeight,
@@ -303,7 +360,7 @@ var Skeleton = (function (exports) {
     }
   }
 
-  function textHandler(ele, { color }, cssUnit) {
+  function textHandler(ele, { color }, cssUnit, decimal) {
     const { width } = ele.getBoundingClientRect();
     // if the text block's width is less than 50, just set it to transparent.
     if (width <= 50) {
@@ -340,20 +397,23 @@ var Skeleton = (function (exports) {
       textHeightRatio = 1 / 1.4; // default number
     }
     /* eslint-disable no-mixed-operators */
-    Object.assign(ele.style, {
-      backgroundImage: `linear-gradient(
-        transparent ${(1 - textHeightRatio) / 2 * 100}%,
-        ${color} 0%,
-        ${color} ${((1 - textHeightRatio) / 2 + textHeightRatio) * 100}%,
-        transparent 0%)`,
-      backgroundOrigin: 'content-box',
-      backgroundSize: `100% ${px2relativeUtil(lineHeight, cssUnit)}`,
-      backgroundClip: 'content-box',
-      backgroundColor: 'transparent',
-      position,
-      color: 'transparent',
-      backgroundRepeat: 'repeat-y'
-    });
+    const firstColorPoint = ((1 - textHeightRatio) / 2 * 100).toFixed(decimal);
+    const secondColorPoint = (((1 - textHeightRatio) / 2 + textHeightRatio) * 100).toFixed(decimal);
+    const backgroundSize = `100% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`;
+    const className = CLASS_NAME_PREFEX + 'text-' + firstColorPoint.toString(32).replace(/\./g, '-');
+    const rule = `{
+    background-image: linear-gradient(transparent ${firstColorPoint}%, ${color} 0%, ${color} ${secondColorPoint}%, transparent 0%) !important;
+    background-origin: content-box !important;
+    background-size: ${backgroundSize};
+    background-clip: content-box !important;
+    background-color: transparent !important;
+    position: ${position} !important;
+    color: transparent !important;
+    background-repeat: repeat-y !important;
+  }`;
+
+    addStyle(`.${className}`, rule);
+    ele.classList.add(className);
     /* eslint-enable no-mixed-operators */
     // add white mask
     if (lineCount > 1) {
@@ -366,7 +426,7 @@ var Skeleton = (function (exports) {
         wordSpacing
       });
       const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10));
-      ele.style.backgroundSize = `${textWidthPercent * 100}% ${px2relativeUtil(lineHeight, cssUnit)}`;
+      ele.style.backgroundSize = `${(textWidthPercent > 1 ? 1 : textWidthPercent) * 100}% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`;
       switch (textAlign) {
         case 'left': // do nothing
           break
@@ -500,7 +560,7 @@ var Skeleton = (function (exports) {
   };
 
   function traverse(options) {
-    const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options;
+    const { remove, excludes, text, image, button, svg, grayBlock, pseudo, cssUnit, decimal } = options;
     const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : [];
     const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : [];
     const rootElement = document.documentElement;
@@ -508,12 +568,17 @@ var Skeleton = (function (exports) {
     const texts = [];
     const buttons = [];
     const hasImageBackEles = [];
-    const toRemove = [];
+    let toRemove = [];
     const imgs = [];
     const svgs = [];
     const pseudos = [];
     const gradientBackEles = [];
     const grayBlocks = [];
+
+    if (Array.isArray(remove)) {
+      remove.push(...PRE_REMOVE_TAGS);
+      toRemove.push(...$$(remove.join(',')));
+    }
 
     if (button && button.excludes.length) {
       // translate selector to element
@@ -587,8 +652,8 @@ var Skeleton = (function (exports) {
       }
     }(rootElement));
 
-    svgs.forEach(e => svgHandler(e, svg, cssUnit));
-    texts.forEach(e => textHandler(e, text, cssUnit));
+    svgs.forEach(e => svgHandler(e, svg, cssUnit, decimal));
+    texts.forEach(e => textHandler(e, text, cssUnit, decimal));
     buttons.forEach(e => buttonHandler(e, button));
     hasImageBackEles.forEach(e => backgroundHandler(e, image));
     imgs.forEach(e => imgHandler(e, image));
@@ -612,12 +677,6 @@ var Skeleton = (function (exports) {
     /**
      * before walk
      */
-    // 将 `remove` 队列中的元素删除
-    if (Array.isArray(remove)) {
-      remove.push(CONSOLE_CLASS, ...PRE_REMOVE_TAGS);
-      const removeEle = $$(remove.join(','));
-      Array.from(removeEle).forEach(ele => removeElement(ele));
-    }
     // 将 `hide` 队列中的元素通过调节透明度为 0 来进行隐藏
     if (hide.length) {
       const hideEle = $$(hide.join(','));
@@ -628,6 +687,26 @@ var Skeleton = (function (exports) {
      */
 
     traverse(options);
+    /**
+     * add `<style>`
+     */
+    let rules = '';
+
+    for (const [selector, rule] of styleCache) {
+      rules += `${selector} ${rule}\n`;
+    }
+
+    const styleEle = document.createElement('style');
+
+    if (!window.createPopup) { // For Safari
+      styleEle.appendChild(document.createTextNode(''));
+    }
+      styleEle.innerHTML = rules;
+    if (document.head) {
+      document.head.appendChild(styleEle);
+    } else {
+      document.body.appendChild(styleEle);
+    }
     /**
      * add animation of skeleton page when loading
      */

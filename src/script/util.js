@@ -1,4 +1,5 @@
-import { MOCK_TEXT_ID, TRANSPARENT } from './config'
+import { MOCK_TEXT_ID, TRANSPARENT, CLASS_NAME_PREFEX } from './config'
+import { addStyle } from './handler/styleCache'
 
 export const getComputedStyle = window.getComputedStyle
 export const $$ = document.querySelectorAll.bind(document)
@@ -41,15 +42,15 @@ export const getViewPort = () => {
   }
 }
 
-export const px2relativeUtil = (px, unit = 'rem') => {
+export const px2relativeUtil = (px, unit = 'rem', decimal = 4) => {
   const pxValue = typeof px === 'string' ? parseFloat(px, 10) : px
   if (unit === 'rem') {
     const htmlElementFontSize = getComputedStyle(document.documentElement).fontSize
-    return `${(pxValue / parseFloat(htmlElementFontSize, 10))}${unit}`
+    return `${(pxValue / parseFloat(htmlElementFontSize, 10)).toFixed(decimal)}${unit}`
   } else {
     const dimensions = getViewPort()
     const base = dimensions[unit]
-    return `${pxValue / base * 100}${unit}`
+    return `${(pxValue / base * 100).toFixed(decimal)}${unit}`
   }
 }
 
@@ -70,12 +71,28 @@ export const getTextWidth = (text, style) => {
   return offScreenParagraph.getBoundingClientRect().width
 }
 
+export const addClassName = (ele, classArray) => {
+  for (const name of classArray) {
+    ele.classList.add(name)
+  }
+}
+
 export const setOpacity = (ele) => {
-  ele.style.opacity = 0
+  const className = CLASS_NAME_PREFEX + 'opacity'
+  const rule = `{
+    opacity: 0 !important;
+  }`
+  addStyle(`.${className}`, rule)
+  ele.classList.add(className)
 }
 
 export const transparent = (ele) => {
-  ele.style.color = TRANSPARENT
+  const className = CLASS_NAME_PREFEX + 'transparent'
+  const rule = `{
+    color: ${TRANSPARENT} !important;
+  }`
+  addStyle(`.${className}`, rule)
+  ele.classList.add(className)
 }
 
 export const removeElement = (ele) => {

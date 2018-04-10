@@ -76,7 +76,7 @@ module.exports = {
         color: '#EFEFEF',
         excludes: ['.mint-swipe-items-wrap a']
       },
-      defer: 5000,
+      defer: 10000,
       excludes: [],
       remove: [],
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],

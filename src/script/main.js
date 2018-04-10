@@ -3,14 +3,15 @@ import {
   isBase64Img, transparent, checkHasTextDecoration, removeElement, setOpacity
 } from './util'
 import {
-  DISPLAY_NONE, Node, EXT_REG, TRANSPARENT, GRADIENT_REG, CONSOLE_CLASS,
+  DISPLAY_NONE, Node, EXT_REG, TRANSPARENT, GRADIENT_REG,
   PRE_REMOVE_TAGS, MOCK_TEXT_ID, AFTER_REMOVE_TAGS
 } from './config'
 import * as handler from './handler/index.js'
 import { addSpin, addShine, addBlick } from './animation/index.js'
+import styleCache from './handler/styleCache'
 
 function traverse(options) {
-  const { excludes, text, image, button, svg, grayBlock, pseudo, cssUnit } = options
+  const { remove, excludes, text, image, button, svg, grayBlock, pseudo, cssUnit, decimal } = options
   const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : []
   const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : []
   const rootElement = document.documentElement
@@ -18,12 +19,17 @@ function traverse(options) {
   const texts = []
   const buttons = []
   const hasImageBackEles = []
-  const toRemove = []
+  let toRemove = []
   const imgs = []
   const svgs = []
   const pseudos = []
   const gradientBackEles = []
   const grayBlocks = []
+
+  if (Array.isArray(remove)) {
+    remove.push(...PRE_REMOVE_TAGS)
+    toRemove.push(...$$(remove.join(',')))
+  }
 
   if (button && button.excludes.length) {
     // translate selector to element
@@ -98,8 +104,8 @@ function traverse(options) {
     }
   }(rootElement))
 
-  svgs.forEach(e => handler.svg(e, svg, cssUnit))
-  texts.forEach(e => handler.text(e, text, cssUnit))
+  svgs.forEach(e => handler.svg(e, svg, cssUnit, decimal))
+  texts.forEach(e => handler.text(e, text, cssUnit, decimal))
   buttons.forEach(e => handler.button(e, button))
   hasImageBackEles.forEach(e => handler.background(e, image))
   imgs.forEach(e => handler.image(e, image))
@@ -123,12 +129,6 @@ function genSkeleton(options) {
   /**
    * before walk
    */
-  // 将 `remove` 队列中的元素删除
-  if (Array.isArray(remove)) {
-    remove.push(CONSOLE_CLASS, ...PRE_REMOVE_TAGS)
-    const removeEle = $$(remove.join(','))
-    Array.from(removeEle).forEach(ele => removeElement(ele))
-  }
   // 将 `hide` 队列中的元素通过调节透明度为 0 来进行隐藏
   if (hide.length) {
     const hideEle = $$(hide.join(','))
@@ -139,6 +139,26 @@ function genSkeleton(options) {
    */
 
   traverse(options)
+  /**
+   * add `<style>`
+   */
+  let rules = ''
+
+  for (const [selector, rule] of styleCache) {
+    rules += `${selector} ${rule}\n`
+  }
+
+  const styleEle = document.createElement('style')
+
+  if (!window.createPopup) { // For Safari
+    styleEle.appendChild(document.createTextNode(''))
+  }
+    styleEle.innerHTML = rules
+  if (document.head) {
+    document.head.appendChild(styleEle)
+  } else {
+    document.body.appendChild(styleEle)
+  }
   /**
    * add animation of skeleton page when loading
    */
