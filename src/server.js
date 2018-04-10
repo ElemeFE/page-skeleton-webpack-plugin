@@ -159,7 +159,14 @@ class Server extends EventEmitter {
               const previewData = await this.getPreviewData()
               sockWrite([this.previewSocket], 'url', JSON.stringify(previewData))
             } else {
-              open(this.previewPageUrl, { app: 'google chrome' })
+              // open Chrome browser incognito
+              let appName = 'google chrome'
+              if (process.platform === 'win32') {
+                appName = 'chrome'
+              } else if (process.platform === 'linux') {
+                appName = 'google-chrome'
+              }
+              open(this.previewPageUrl, { app: [appName, '--incognito'] })
             }
           } catch (err) {
             const message = err.message || 'generate html failed.'

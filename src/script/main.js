@@ -1,5 +1,11 @@
-import { $$, $, getComputedStyle, checkHasPseudoEle, inViewPort, checkHasBorder, isBase64Img, transparent, checkHasTextDecoration, removeElement, setOpacity } from './util'
-import { DISPLAY_NONE, Node, EXT_REG, TRANSPARENT, GRADIENT_REG, CONSOLE_CLASS, PRE_REMOVE_TAGS, MOCK_TEXT_ID, AFTER_REMOVE_TAGS } from './config'
+import {
+  $$, $, getComputedStyle, checkHasPseudoEle, inViewPort, checkHasBorder,
+  isBase64Img, transparent, checkHasTextDecoration, removeElement, setOpacity
+} from './util'
+import {
+  DISPLAY_NONE, Node, EXT_REG, TRANSPARENT, GRADIENT_REG, CONSOLE_CLASS,
+  PRE_REMOVE_TAGS, MOCK_TEXT_ID, AFTER_REMOVE_TAGS
+} from './config'
 import * as handler from './handler/index.js'
 import { addSpin, addShine, addBlick } from './animation/index.js'
 
