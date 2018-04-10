@@ -4,7 +4,7 @@ import {
 } from './util'
 import {
   DISPLAY_NONE, Node, EXT_REG, TRANSPARENT, GRADIENT_REG,
-  PRE_REMOVE_TAGS, MOCK_TEXT_ID, AFTER_REMOVE_TAGS
+  PRE_REMOVE_TAGS, MOCK_TEXT_ID, AFTER_REMOVE_TAGS, CONSOLE_SELECTOR
 } from './config'
 import * as handler from './handler/index.js'
 import { addSpin, addShine, addBlick } from './animation/index.js'
@@ -27,7 +27,7 @@ function traverse(options) {
   const grayBlocks = []
 
   if (Array.isArray(remove)) {
-    remove.push(...PRE_REMOVE_TAGS)
+    remove.push(CONSOLE_SELECTOR, ...PRE_REMOVE_TAGS)
     toRemove.push(...$$(remove.join(',')))
   }
 

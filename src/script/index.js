@@ -11,6 +11,7 @@ var Skeleton = (function (exports) {
   const PRE_REMOVE_TAGS = ['script'];
   const AFTER_REMOVE_TAGS = ['title', 'meta', 'style'];
   const CLASS_NAME_PREFEX = 'sk-';
+  const CONSOLE_SELECTOR = '.sk-console';
   // 最小 1 * 1 像素的透明 gif 图片
   const SMALLEST_BASE64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   const MOCK_TEXT_ID = 'sk-text-id';
@@ -576,7 +577,7 @@ var Skeleton = (function (exports) {
     const grayBlocks = [];
 
     if (Array.isArray(remove)) {
-      remove.push(...PRE_REMOVE_TAGS);
+      remove.push(CONSOLE_SELECTOR, ...PRE_REMOVE_TAGS);
       toRemove.push(...$$(remove.join(',')));
     }
 

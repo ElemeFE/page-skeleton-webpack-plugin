@@ -82,7 +82,8 @@ module.exports = {
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
       cssUnit: 'vw',
-      headless: false,
+      headless: true,
+      minify: false,
       cookies: [{
         name: 'SID',
         value: 'a495vvmEPEE4DZi083dr8yR3EAPYqW40HaWA',
