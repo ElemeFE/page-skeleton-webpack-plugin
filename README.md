@@ -84,7 +84,7 @@
 
 <br />
 
-![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/page.gif)
+![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/workflow.gif)
 
 ### Features
 
