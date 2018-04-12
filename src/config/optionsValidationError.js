@@ -1,4 +1,5 @@
-'use strict';
+'use strict'
+
 /**
  * this file copy form webpack-dev-server
  * and modified for PSWP use.

@@ -226,7 +226,7 @@ class Server extends EventEmitter {
       await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), decHtml, 'utf8')
       return fileName
     } catch (err) {
-      log.warn(err)
+      this.log.warn(err)
     }
   }
 }

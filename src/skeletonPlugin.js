@@ -39,7 +39,7 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
           const code = await getShellCode(this.options.pathname)
           htmlPluginData.html = htmlPluginData.html.replace('<!-- shell -->', code)
         } catch (err) {
-          server.log.warn(err.toString())
+          this.server.log.warn(err.toString())
         }
       }
       callback(null, htmlPluginData)
