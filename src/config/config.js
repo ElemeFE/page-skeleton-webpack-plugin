@@ -51,7 +51,11 @@ const defaultOptions = {
   h5Only: false,
   // or 'vw|vh|vmin|vmax'
   cssUnit: 'rem',
-  decimal: 4
+  decimal: 4,
+  logLevel: 'info',
+  quiet: false,
+  noInfo: false,
+  logTime: true
 }
 
 const htmlBeautifyConfig = {

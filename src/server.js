@@ -12,11 +12,11 @@ const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
 const {
   writeShell,
-  log,
   sockWrite,
   generateQR,
   addDprAndFontSize,
-  getLocalIpAddress
+  getLocalIpAddress,
+  createLog
 } = require('./util')
 const Skeleton = require('./skeleton')
 
@@ -39,13 +39,14 @@ class Server extends EventEmitter {
     this.sockets = []
     this.previewSocket = null
     this.skeleton = null
+    this.log = createLog(options)
   }
   _getSkeleton() {
     this.skeleton = this.skeleton || new Skeleton(this.options)
     return this.skeleton
   }
   async initRouters() {
-    const { app, staticPath } = this
+    const { app, staticPath, log } = this
     app.use('/', express.static(path.resolve(__dirname, '../preview/dist')))
 
     const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
@@ -73,18 +74,18 @@ class Server extends EventEmitter {
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
         html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
       } catch (err) {
-        log(`When you request the preview html, ${err} ${filename}`, 'error')
+        log.warn(`When you request the preview html, ${err} ${filename}`)
       }
       res.send(html)
     })
   }
   initSocket() {
-    const { listenServer } = this
+    const { listenServer, log } = this
     const sockjsServer = sockjs.createServer({
       sockjs_url: `/${this.staticPath}/sockjs.bundle.js`,
       log(severity, line) {
         if (severity === 'error') {
-          log(line, 'error')
+          log.warn(line)
         }
       }
     })
@@ -93,7 +94,7 @@ class Server extends EventEmitter {
     sockjsServer.on('connection', (conn) => {
       if (this.sockets.indexOf(conn) === -1) {
         this.sockets.push(conn)
-        log(`client socket: ${conn.id} connect to server`)
+        // log.info(`client socket: ${conn.id.split('-')[0]}... connect to server`)
       }
 
       conn.on('data', this.resiveSocketData(conn))
@@ -103,7 +104,7 @@ class Server extends EventEmitter {
         if (index > -1) this.sockets.splice(index, 1)
         if (this.previewSocket === conn) {
           this.previewSocket = null
-          log('preview closed')
+          log.info('preview closed')
         }
       })
     })
@@ -117,7 +118,7 @@ class Server extends EventEmitter {
     this.initRouters()
     this.initSocket()
     listenServer.listen(this.port, () => {
-      log(`page-skeleton server listen at port: ${this.port}`)
+      this.log.info(`page-skeleton server listen at port: ${this.port}`)
     })
   }
   // 关闭服务
@@ -126,22 +127,23 @@ class Server extends EventEmitter {
     if (this.skeleton) this.skeleton.closeBrowser()
     process.exit()
     this.listenServer.close(() => {
-      log('server closed')
+      this.log.info('server closed')
     })
   }
   /**
    * 处理 data socket 消息
    */
   resiveSocketData(conn) {
+    const { log } = this
     return async (data) => {
       const msg = JSON.parse(data)
       switch (msg.type) {
         case 'generate': {
-          if (!msg.data) return log(msg)
+          if (!msg.data) return log.info(msg)
           const url = msg.data
           this.url = url
           const preGenMsg = 'begin to generator HTML...'
-          log(preGenMsg)
+          log.info(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
           try {
             const { html, shellHtml } = await this._getSkeleton().genHtml(url)
@@ -149,7 +151,7 @@ class Server extends EventEmitter {
             this.cacheHtml = shellHtml
             const fileName = await this.writeMagicHtml(html)
             const afterGenMsg = 'generator HTML successfully...'
-            log(afterGenMsg)
+            log.info(afterGenMsg)
             sockWrite(this.sockets, 'console', afterGenMsg)
             this.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
             const openMsg = 'Browser open another page...'
@@ -170,7 +172,7 @@ class Server extends EventEmitter {
             }
           } catch (err) {
             const message = err.message || 'generate html failed.'
-            log(err)
+            log.warn(err)
             sockWrite(this.sockets, 'error', message)
           }
           break
@@ -179,13 +181,13 @@ class Server extends EventEmitter {
         case 'connect': {
           if (msg.data === 'preview') {
             this.previewSocket = conn
-            log('preview page connected')
+            log.info('preview page connected')
           }
           break
         }
 
         case 'url': {
-          if (msg.data !== 'preview') return log(msg)
+          if (msg.data !== 'preview') return log.info(msg)
           const previewData = await this.getPreviewData()
           sockWrite([conn], 'url', JSON.stringify(previewData))
           break
@@ -194,9 +196,13 @@ class Server extends EventEmitter {
         case 'writeShellFile': {
           sockWrite([conn], 'console', 'before write shell files...')
           const { pathname, cacheHtml, options } = this
-          await writeShell(pathname, cacheHtml, options)
+          try {
+            await writeShell(pathname, cacheHtml, options)
+          } catch (err) {
+            log.warn(err)
+          }
           const afterWriteMsg = 'Write files successfully...'
-          log(afterWriteMsg)
+          log.info(afterWriteMsg)
           sockWrite([conn], 'console', afterWriteMsg)
           break
         }
@@ -227,7 +233,7 @@ class Server extends EventEmitter {
       await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), decHtml, 'utf8')
       return fileName
     } catch (err) {
-      log(err, 'error')
+      log.warn(err)
     }
   }
 }

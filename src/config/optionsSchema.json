@@ -145,6 +145,33 @@
         "vmin",
         "vmax"
       ]  
+    },
+    "decimal": {
+      "description": "The decimal of CSS value",
+      "type": "number"
+    },
+    "logLevel": {
+      "description": "Log level in the terminal/console (trace, debug, info, warn, error or none)",
+      "enum": [
+        "trace",
+        "debug",
+        "info",
+        "warn",
+        "error",
+        "silent"
+      ]
+    },
+    "logTime": {
+      "description": "Report time before and after compiling in console displays.",
+      "type": "boolean"
+    },
+    "noInfo": {
+      "description": "Hide all info messages on console.",
+      "type": "boolean"
+    },
+    "quiet": {
+      "description": "Hide all messages on console.",
+      "type": "boolean"
     }
   },
   "type": "object"

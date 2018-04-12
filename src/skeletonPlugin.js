@@ -4,7 +4,7 @@ const merge = require('lodash/merge')
 const webpack = require('webpack')
 const optionsSchema = require('./config/optionsSchema.json')
 const Server = require('./server')
-const { log, addScriptTag, getShellCode } = require('./util')
+const { addScriptTag, getShellCode } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
 
 function SkeletonPlugin(options = {}) {
@@ -21,7 +21,7 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
   compiler.plugin('entry-option', () => {
     const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
     server.listen()
-      .catch(err => log(err, 'error'))
+      .catch(err => server.log.warn(err))
   })
 
   compiler.plugin('compilation', (compilation) => {
@@ -39,7 +39,7 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
           const code = await getShellCode(this.options.pathname)
           htmlPluginData.html = htmlPluginData.html.replace('<!-- shell -->', code)
         } catch (err) {
-          log(err.toString(), 'error')
+          server.log.warn(err.toString())
         }
       }
       callback(null, htmlPluginData)

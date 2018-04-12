@@ -5,8 +5,8 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const fse = require('fs-extra')
+const weblog = require('webpack-log')
 const QRCode = require('qrcode')
-const chalk = require('chalk')
 const { minify } = require('html-minifier')
 const { html2json, json2html } = require('html2json')
 const htmlBeautify = require('js-beautify').html_beautify
@@ -21,25 +21,19 @@ async function writeShell(pathname, html, options) {
   const jsDestPath = path.resolve(pathname, jsFilename)
   const vueDestPath = path.resolve(pathname, vueFilename)
   const htmlDestPath = path.resolve(pathname, htmlFilename)
-  try {
-    await fse.ensureDir(pathname)
-  } catch (err) {
-    log(err)
-  }
+
+  await fse.ensureDir(pathname)
+
 
   if (!h5Only) {
     await promisify(fs.writeFile)(htmlDestPath, html, 'utf-8')
     return Promise.resolve()
   }
 
-  try {
-    await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
-    const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
-    const code = vueTemplate.replace(/\$\$html/g, html)
-    await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
-  } catch (err) {
-    log(err, 'error')
-  }
+  await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
+  const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
+  const code = vueTemplate.replace(/\$\$html/g, html)
+  await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
 }
 
 function htmlMinify(html, options) {
@@ -54,12 +48,7 @@ function sleep(duration) {
 
 async function genScriptContent() {
   const sourcePath = path.resolve(__dirname, '../script/index.js')
-  let result
-  try {
-    result = await promisify(fs.readFile)(sourcePath, 'utf-8')
-  } catch (err) {
-    log(err, 'error')
-  }
+  let result = await promisify(fs.readFile)(sourcePath, 'utf-8')
   return result
 }
 // add script tag into html string, just as document.body.appendChild(script)
@@ -74,14 +63,23 @@ function addScriptTag(source, src, port) {
     `
   return `${token[0]}${scriptTag}</body>${token[1]}`
 }
-/* eslint-disable no-console */
-function log(msg, type = 'log') {
-  if (type === 'log') {
-    return console.log(chalk.bold.blueBright(`[PSG] ${msg}`))
+
+function createLog(options) {
+  let logLevel = options.logLevel || 'info'
+  if (options.quiet === true) {
+    logLevel = 'silent'
   }
-  console[type](chalk.bold.redBright(msg))
+  if (options.noInfo === true) {
+    logLevel = 'warn'
+  }
+
+  return weblog({
+    level: logLevel,
+    name: 'pswp',
+    timestamp: options.logTime
+  })
 }
-/* eslint-enable no-console */
+
 /**
  * original author: pepterbe(https://github.com/peterbe/minimalcss)
  * Take call "important comments" and extract them all to the
@@ -116,12 +114,7 @@ const collectImportantComments = (css) => {
 
 const getShellCode = async (pathname) => {
   const FILE_NAME = 'shell.html'
-  let code = ''
-  try {
-    code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
-  } catch (err) {
-    log(`You do not has ${FILE_NAME} file now!`)
-  }
+  const code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
   return code
 }
 
@@ -175,7 +168,7 @@ const getLocalIpAddress = () => {
 }
 
 module.exports = {
-  log,
+  createLog,
   sleep,
   sockWrite,
   addScriptTag,

@@ -51,7 +51,8 @@
     "tiza": "^2.1.0",
     "vue": "^2.5.2",
     "vuex": "^3.0.1",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-log": "^1.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

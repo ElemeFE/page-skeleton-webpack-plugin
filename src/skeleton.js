@@ -28,7 +28,7 @@ class Skeleton {
     this.page = page
     if (debug) {
       page.on('console', (...args) => {
-        console.log(...args) // eslint-disable-line no-console
+        this.log.info(...args) // eslint-disable-line no-console
       })
     }
 
@@ -87,17 +87,16 @@ class Skeleton {
       throw error
     })
 
-    try {
-      if (cookies.length) {
-        await page.setCookie(...cookies.filter(cookie => typeof cookie === 'object'))
-      }
-      const response = await page.goto(url, { waitUntil: 'networkidle2' })
-      if (response && !response.ok()) {
-        throw new Error(`${response.status} on ${url}`)
-      }
-    } catch (err) {
-      console.log(err) // eslint-disable-line no-console
+
+    if (cookies.length) {
+      await page.setCookie(...cookies.filter(cookie => typeof cookie === 'object'))
     }
+
+    const response = await page.goto(url, { waitUntil: 'networkidle2' })
+    if (response && !response.ok()) {
+      throw new Error(`${response.status} on ${url}`)
+    }
+
 
     await this.makeSkeleton()
 
@@ -214,13 +213,13 @@ class Skeleton {
       html: rawHtml,
       shellHtml
     }
-    this.closeBrowser()
+    await this.closeBrowser()
     return Promise.resolve(returned)
   }
 
-  closeBrowser() {
-    if (this.page) this.page.close()
-    if (this.browser) this.browser.close()
+  async closeBrowser() {
+    if (this.page) await this.page.close()
+    if (this.browser) await this.browser.close()
   }
 }
 
