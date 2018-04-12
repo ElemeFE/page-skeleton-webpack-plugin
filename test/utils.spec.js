@@ -11,7 +11,7 @@ const {
   log, collectImportantComments,
   getShellCode, addDprAndFontSize,
   sockWrite
-} = require('../src/util/utils')
+} = require('../src/util/')
 
 describe('utils in the project', () => {
   const filePath = path.resolve(__dirname, './temp')

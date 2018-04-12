@@ -48,7 +48,8 @@ function sleep(duration) {
 
 async function genScriptContent() {
   const sourcePath = path.resolve(__dirname, '../script/index.js')
-  return await promisify(fs.readFile)(sourcePath, 'utf-8')
+  const result = await promisify(fs.readFile)(sourcePath, 'utf-8')
+  return result
 }
 // add script tag into html string, just as document.body.appendChild(script)
 function addScriptTag(source, src, port) {
