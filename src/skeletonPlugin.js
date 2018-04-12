@@ -6,12 +6,12 @@ const optionsSchema = require('./config/optionsSchema.json')
 const Server = require('./server')
 const { addScriptTag, getShellCode } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
+const OptionsValidationError = require('./config/optionsValidationError')
 
 function SkeletonPlugin(options = {}) {
   const validationErrors = webpack.validateSchema(optionsSchema, options)
   if (validationErrors.length) {
-    const errorMsg = validationErrors.map(error => `option ${error.dataPath} ${error.message}, but got ${typeof error.data}`).join('\n')
-    throw new Error(`The options do not match the optionsSchema:\n${errorMsg}`)
+    throw new OptionsValidationError(validationErrors)
   }
   this.options = merge({ staticPath }, defaultOptions, options)
   this.server = null

@@ -92,7 +92,8 @@ module.exports = {
         name: 'USERID',
         value: '273745271',
         url: 'https://h5.ele.me'
-      }]
+      }],
+      noInfo: false
     }),
   ],
   resolve: {
