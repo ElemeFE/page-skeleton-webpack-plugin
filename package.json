@@ -17,7 +17,7 @@
     "build:sockjs": "webpack ./client/sockjs.js client/sockjs.bundle.js --color --config client/webpack.sockjs.config.js",
     "build:preview": "webpack --color --config preview/webpack.preview.config.js",
     "build:script": "rollup --config src/script/rollup.config.js",
-    "prepare": "npm run build:index && npm run build:sockjs && npm run build:preview"
+    "prepare": "npm run build:index && npm run build:sockjs && npm run build:preview && npm run build:script"
   },
   "keywords": [
     "puppeteer",

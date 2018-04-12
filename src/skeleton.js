@@ -9,15 +9,16 @@ const {
 } = require('./util')
 
 class Skeleton {
-  constructor(options = {}) {
+  constructor(options = {}, log) {
     this.options = options
     this.browser = null
     this.page = null
+    this.log = log
   }
 
   async initPage() {
     // close old browser and page.
-    this.closeBrowser()
+    await this.closeBrowser()
 
     const { device, headless, debug } = this.options
     const browser = await puppeteer.launch({ headless })
@@ -28,7 +29,7 @@ class Skeleton {
     this.page = page
     if (debug) {
       page.on('console', (...args) => {
-        this.log.info(...args) // eslint-disable-line no-console
+        this.log.info(...args)
       })
     }
 

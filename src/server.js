@@ -10,14 +10,7 @@ const hasha = require('hasha')
 const express = require('express')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
-const {
-  writeShell,
-  sockWrite,
-  generateQR,
-  addDprAndFontSize,
-  getLocalIpAddress,
-  createLog
-} = require('./util')
+const { writeShell, sockWrite, generateQR, addDprAndFontSize, getLocalIpAddress, createLog } = require('./util')
 const Skeleton = require('./skeleton')
 
 const myFs = new MemoryFileSystem()
@@ -42,7 +35,7 @@ class Server extends EventEmitter {
     this.log = createLog(options)
   }
   _getSkeleton() {
-    this.skeleton = this.skeleton || new Skeleton(this.options)
+    this.skeleton = this.skeleton || new Skeleton(this.options, this.log)
     return this.skeleton
   }
   async initRouters() {

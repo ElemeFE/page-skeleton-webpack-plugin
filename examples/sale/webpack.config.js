@@ -56,7 +56,7 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./src`),
       port: '7890',
-      loading: 'spin',
+      loading: 'shine',
       svg: {
         color: '#EFEFEF',
         shape: 'circle',

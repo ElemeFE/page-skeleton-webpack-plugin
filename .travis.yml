@@ -1,0 +1,37 @@
+# Commented sections below can be used to run tests on the CI server
+# https://simulatedgreg.gitbooks.io/electron-vue/content/en/testing.html#on-the-subject-of-ci-testing
+osx_image: xcode9.2
+sudo: required
+dist: trusty
+
+language: node_js
+node_js:
+  - 8
+
+matrix:
+  include:
+  - os: osx
+    env: CC=clang CXX=clang++ npm_config_clang=1
+    compiler: clang
+  - os: linux
+    env: CC=clang CXX=clang++ npm_config_clang=1
+    compiler: clang
+
+install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - source ~/.bashrc
+  - npm install -g xvfb-maybe
+
+  - $CC --version
+  - $CXX --version
+  - npm --version
+  - yarn --version
+
+  - yarn
+
+script:
+  yarn run test && yarn run cover
+
+branches:
+  only:
+  - master
