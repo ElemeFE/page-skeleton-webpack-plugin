@@ -8,7 +8,7 @@ const sinon = require('sinon')
 const {
   writeShell, htmlMinify, sleep,
   genScriptContent, addScriptTag,
-  log, collectImportantComments,
+  collectImportantComments,
   getShellCode, addDprAndFontSize,
   sockWrite
 } = require('../src/util/')
@@ -96,47 +96,7 @@ describe('utils in the project', () => {
       assert.isFalse(/script/.test(negResult))
     })
   })
-  // test `log` function
-  describe(`the basic use of log function`, () => {
-    let message = 'page skeleton'
-    let logSpy
-    let errorSpy
-    let warnSpy
-    let infoSpy
 
-    beforeEach(() => {
-      logSpy = sinon.spy(console, 'log')
-      errorSpy = sinon.spy(console, 'error')
-      warnSpy = sinon.spy(console, 'warn')
-      infoSpy = sinon.spy(console, 'info')
-    })
-
-    afterEach(() => {
-      console.log.restore()
-      console.error.restore()
-      console.warn.restore()
-      console.info.restore()
-      message = ''
-    })
-
-    it(`shoud be found the "console.log" method called`, () => {
-      log(message)
-      assert.isTrue(logSpy.calledOnce)
-      assert.isTrue(new RegExp(message).test(logSpy.getCall(0).args[0]), `the argument should be equal to ${message}`)
-    })
-    it(`shoud be found the "console.error" method called`, () => {
-      log('page skeleton', 'error')
-      assert.isTrue(errorSpy.calledOnce)
-    })
-    it(`shoud be found the "console.warn" method called`, () => {
-      log('page skeleton', 'warn')
-      assert.isTrue(warnSpy.calledOnce)
-    })
-    it(`shoud be found the "console.info" method called`, () => {
-      log('page skeleton', 'info')
-      assert.isTrue(infoSpy.calledOnce)
-    })
-  })
   // test 'collectImportantComments' function
   describe(`the basic use of "collectImportantComments"`, () => {
     it(`should collect the "import comments" in the css, and return it.`, () => {
@@ -156,23 +116,21 @@ describe('utils in the project', () => {
   })
   // test `getShellCode` function
   describe(`the basic use of "getShellCode"`, () => {
-    let logSpy
     beforeEach(async () => {
-      logSpy = sinon.spy(console, 'log')
       await writeShell(filePath, html, { h5Only: false })
     })
-    afterEach(() => {
-      console.log.restore()
-    })
+
     it(`should get the code of "shell.html"`, async () => {
       const code = await getShellCode(filePath)
       assert.isTrue(/page\sskeleton/.test(code))
     })
     it(`should get nothing when the "filePath" is wrong`, async () => {
       const wrongPath = './wrong'
-      const code = await getShellCode(wrongPath)
-      assert.equal(code, '')
-      assert.isTrue(logSpy.calledOnce)
+      try {
+        const code = await getShellCode(wrongPath)
+      } catch (err) {
+        assert.isNotNull(err)
+      }
     })
   })
   // test `addDprAndFontSize` function
