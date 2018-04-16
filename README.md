@@ -306,6 +306,42 @@ const webpackConfig = {
 
   或参考 puppeteer 最新文档。
 
+- **cssUnit**
+
+非必须配置项，其接受一个 String 类型值
+
+生成骨架页面（shell.html）中使用的相对 css 单位，其接受的枚举值`rem`, `vw`, `vh`, `vmin`, `vmax`。默认值为 `rem`， 推荐使用默认值，除非你已经对`vw`, `vh`, `vmin`, `vmax` 做了兼容处理。
+
+- **decimal**
+
+非必须配置项，其接受一个整数 Number
+
+生成骨架页面（shell.html）中 css 值保留的小数位数，默认值是 4.
+
+- **logLevel**
+
+非必须配置项，其接受一个 String 类型值
+
+在运行插件的过程中，想要打印的消息类型，可选值为`info`, `warn` 默认值为 `info`。
+
+- **quiet**
+
+非必须配置项，其接受一个 Boolean 类型值， 默认值为 false
+
+是否在终端打印消息，当设置为 true 时，不打印任何消息。
+
+- **noInfo**
+
+非必须配置项，其接受一个 Boolean 类型值， 默认值为 false
+
+当设置为 true 时，不打印 `info` 类型的消息
+
+- **logTime**
+
+非必须配置项，其接受一个 Boolean 类型值， 默认值为 true
+
+当设置为 true 时，在任何消息前面都会带有一个格式化的时间值。
+
 项目中所有配置项的默认配置如下：
 
 ```javascript
@@ -346,8 +382,12 @@ const pluginDefaultConfig = {
   hide: [],
   grayBlock: [],
   cookies: [],
-  headless: true,
-  h5Only: false
+  cssUnit: 'rem',
+  decimal: 4,
+  logLevel: 'info',
+  quiet: false,
+  noInfo: false,
+  logTime: true
 }
 ```
 
