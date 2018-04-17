@@ -3,6 +3,9 @@ import App from './app.vue'
 import store from './store'
 import initSock from './socket'
 
+import './assets/icons.js'
+import './index.css'
+
 import {
   Button,
   Dialog,

@@ -9,7 +9,7 @@ const cssnext = require('postcss-cssnext')({
     'Android >= 4.0',
   ],
 })
-const SkeletonPlugin = require('page-skeleton-webpack-plugin').SkeletonPlugin
+const SkeletonPlugin = require('../../index.js').SkeletonPlugin
 
 module.exports = {
   entry: './src/main.js',

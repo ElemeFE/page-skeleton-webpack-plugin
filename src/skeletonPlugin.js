@@ -43,6 +43,9 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
         }
       }
       callback(null, htmlPluginData)
+      if (process.env.NODE_ENV === 'production') {
+        this.server.close()
+      }
     })
   })
 

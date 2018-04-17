@@ -44,7 +44,7 @@
     box-sizing: border-box;
     width: 322px;
     height: 635px;
-    border: 2px solid #666;
+    border: 1px solid #e8e8e8;
     border-radius: 30px;
     background: #fff;
     position: relative;

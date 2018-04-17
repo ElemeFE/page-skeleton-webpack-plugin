@@ -1,5 +1,6 @@
 <template>
-  <div class="app">
+  <div class="container">
+    <bar-top></bar-top>
     <div class="main">
       <div class="left">
         <Preview
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+  import BarTop from './components/bartop.vue'
   import Preview from './components/preview.vue'
   import Chatbox from './components/chatbox.vue'
   import Edit from './components/edit.vue'
@@ -31,6 +33,7 @@
   import Bus from './bus'
   export default {
     components: {
+      BarTop,
       Preview,
       Chatbox,
       Edit
@@ -53,16 +56,17 @@
 </script>
 
 <style scoped>
-  .app {
+  .container {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background: radial-gradient(circle at top right,#667EEA,#764BA2);
+    background: #f9f9f9;
   }
   .main {
-    margin-top: 35px;
+    margin-top: 66px;
+    padding-top: 20px;
     display: flex;
   }
   .left {
