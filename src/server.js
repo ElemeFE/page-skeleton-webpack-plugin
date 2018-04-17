@@ -118,7 +118,7 @@ class Server extends EventEmitter {
   close() {
     // TODO...
     if (this.skeleton) this.skeleton.closeBrowser()
-    process.exit()
+    // process.exit()
     this.listenServer.close(() => {
       this.log.info('server closed')
     })

@@ -10,6 +10,11 @@
         <li><a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin" target="_blank">Documents</a></li>
         <li><a href="https://zhuanlan.zhihu.com/p/34702561" target="_blank">Blog</a></li>
     </ul>
+    <ul class="tools">
+      <li>
+        <el-button type="primary" icon="el-icon-edit" circle></el-button>
+      </li>
+    </ul>
   </div>
 </template>
 

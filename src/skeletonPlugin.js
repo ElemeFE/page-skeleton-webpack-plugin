@@ -8,6 +8,8 @@ const { addScriptTag, getShellCode } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
 const OptionsValidationError = require('./config/optionsValidationError')
 
+const EVENT_LIST = process.env.NODE_ENV === 'production' ? ['watch-close', 'failed', 'done'] : ['watch-close', 'failed']
+
 function SkeletonPlugin(options = {}) {
   const validationErrors = webpack.validateSchema(optionsSchema, options)
   if (validationErrors.length) {
@@ -43,13 +45,10 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
         }
       }
       callback(null, htmlPluginData)
-      if (process.env.NODE_ENV === 'production') {
-        this.server.close()
-      }
     })
   })
 
-  ;['watch-close', 'failed'].forEach((event) => {
+  EVENT_LIST.forEach((event) => {
     compiler.plugin(event, () => {
       if (this.server) {
         this.server.close()
