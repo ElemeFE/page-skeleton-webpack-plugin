@@ -1,26 +1,41 @@
 <template>
   <div class="container">
-    <bar-top></bar-top>
+    <bar-top
+      @preview="preview"
+      @genShell="writeShell"
+    ></bar-top>
     <div class="main">
       <div class="left">
-        <Preview
+        <preview
           :url="url"
           type="origin"
-        ></Preview>
+        ></preview>
       </div>
       <div class="middle">
-        <Preview
+        <preview
           :url="skeletonPageUrl"
           type="skeleton"
-        ></Preview>
+        ></preview>
       </div>
       <div class="right">
-        <Edit
-          @genShell="handleClick"
-          :qr-code="qrCode"
-        ></Edit>
+        <edit
+          :shell-html="shellHtml"
+        ></edit>
       </div>
     </div>
+    <el-dialog
+      :visible.sync="dialogVisible"
+      :show-close="false"
+      :modal="true"
+      width="360px">
+      <div slot="title" class="modal-title">手机预览</div>
+      <p>1. 手机和开发电脑连入同一 WIFI 网络。</p>
+      <p>2. 在系统「安全性与隐私」设置中，关闭防火墙。</p>
+      <p>3. 打开微信「扫一扫」，扫描二维码。</p>
+      <div class="image-wrapper">
+        <img :src="qrCode" alt="qr code">
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -38,24 +53,35 @@
       Chatbox,
       Edit
     },
+    data() {
+      return {
+        dialogVisible: false
+      }
+    },
     computed: {
-      ...mapState(['url', 'connect', 'msgList', 'skeletonPageUrl', 'qrCode'])
+      ...mapState(['url', 'connect', 'msgList', 'skeletonPageUrl', 'qrCode', 'shellHtml'])
     },
     created() {
       Bus.$on('message', this.handleMessageReceive)
     },
     methods: {
-      handleClick() {
+      writeShell() {
         this.$store.dispatch('WRITE_SHELL')
       },
       handleMessageReceive(data) {
         this.$message(data)
+      },
+      preview () {
+        this.dialogVisible = true
       }
     }
   }
 </script>
 
 <style scoped>
+  .modal-title, .image-wrapper {
+    text-align: center;
+  }
   .container {
     position: absolute;
     top: 0;
@@ -66,19 +92,18 @@
   }
   .main {
     margin-top: 66px;
-    padding-top: 20px;
     display: flex;
   }
   .left {
     flex: 0;
     flex-shrink: 0;
-    margin-left: 35px;
-    margin-right: 35px;
+    margin: 20px;
+    margin-right: 0;
   }
   .middle {
     flex: 0;
     flex-shrink: 0;
-    margin-right: 35px;
+    margin: 20px;
   }
   .right {
     flex: 1;

@@ -4,3 +4,15 @@
   fill: currentColor;
   overflow: hidden;
 }
+.v-modal {
+  background: #fff;
+}
+.el-dialog {
+  box-shadow: none;
+}
+.el-dialog__body {
+  padding-top: 0;
+}
+.edit-panel .CodeMirror {
+  height: calc(100vh - 66px);
+}

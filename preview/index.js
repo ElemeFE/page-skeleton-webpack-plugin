@@ -9,12 +9,14 @@ import './index.css'
 import {
   Button,
   Dialog,
-  Message
+  Message,
+  ButtonGroup
 } from 'element-ui'
 
 ;[
   Button,
-  Dialog
+  Dialog,
+  ButtonGroup
 ].forEach(cpt => {
   Vue.component(cpt.name, cpt)
 })

@@ -59,7 +59,7 @@ const defaultOptions = {
 }
 
 const htmlBeautifyConfig = {
-  indent_size: 4,
+  indent_size: 2,
   html: {
     end_with_newline: true,
     js: {

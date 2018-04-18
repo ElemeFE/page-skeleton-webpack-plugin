@@ -1,4 +1,5 @@
 import SockJS from 'sockjs-client'
+import bus from '../bus'
 
 const { port } = window.location
 const sock = new SockJS(`http://localhost:${port}/socket`)
@@ -18,8 +19,13 @@ const initSock = store => {
   sock.onmessage = function(e) {
     const { type, data } = JSON.parse(e.data)
     switch (type) {
-      case 'url': {
-        store.dispatch('GET_URL', JSON.parse(data))
+      case 'url':
+      case 'update': {
+        const updateData = JSON.parse(data)
+        store.dispatch('GET_URL', updateData)
+        if (type === 'url') {
+          bus.$emit('set-code', updateData.shellHtml)
+        }
         break
       }
       case 'console': {
