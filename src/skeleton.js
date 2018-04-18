@@ -3,10 +3,7 @@
 const puppeteer = require('puppeteer')
 const devices = require('puppeteer/DeviceDescriptors')
 const { parse, toPlainObject, fromPlainObject, generate } = require('css-tree')
-const {
-  sleep, genScriptContent,
-  htmlMinify, collectImportantComments
-} = require('./util')
+const { sleep, genScriptContent, htmlMinify, collectImportantComments } = require('./util')
 
 class Skeleton {
   constructor(options = {}, log) {
@@ -21,12 +18,11 @@ class Skeleton {
     await this.closeBrowser()
 
     const { device, headless, debug } = this.options
-    const browser = await puppeteer.launch({ headless })
-    const page = await browser.newPage()
-
+    /* eslint-disable no-multi-assign */
+    const browser = this.browser = await puppeteer.launch({ headless })
+    const page = this.page = await browser.newPage()
+    /* eslint-enable no-multi-assign */
     await page.emulate(devices[device])
-    this.browser = browser
-    this.page = page
     if (debug) {
       page.on('console', (...args) => {
         this.log.info(...args)
@@ -101,10 +97,7 @@ class Skeleton {
 
     await this.makeSkeleton()
 
-    const { rawHtml, styles, cleanedHtml } = await page.evaluate(async () => {
-      const { getHtmlAndStyle } = Skeleton
-      return getHtmlAndStyle()
-    })
+    const { styles, cleanedHtml } = await page.evaluate(async () => Skeleton.getHtmlAndStyle())
 
     const stylesheetAstArray = styles.map((style) => {
       const ast = parse(style, {
@@ -208,19 +201,38 @@ class Skeleton {
     const finalCss = collectImportantComments(allCleanedCSS)
     // finalCss = minify(finalCss).css ? `html-minifier` use `clean-css` as css minifier
     // so don't need to use another mimifier.
-    let shellHtml = `<style>${finalCss}</style>\n${cleanedHtml}`
-    shellHtml = htmlMinify(shellHtml, this.options.minify)
+    let shellHtml = `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Page Skeleton</title>
+        <style>
+          $$css$$
+        </style>
+      </head>
+      <body>
+        $$html$$
+      </body>
+      </html>`
+    shellHtml = shellHtml
+      .replace('$$css$$', finalCss)
+      .replace('$$html$$', cleanedHtml)
     const returned = {
-      html: rawHtml,
-      shellHtml
+      shellHtml: htmlMinify(shellHtml, false)
     }
     await this.closeBrowser()
     return Promise.resolve(returned)
   }
 
   async closeBrowser() {
-    if (this.page) await this.page.close()
-    if (this.browser) await this.browser.close()
+    if (this.page) {
+      await this.page.close()
+      this.page = null
+    }
+    if (this.browser) {
+      await this.browser.close()
+      this.browser = null
+    }
   }
 }
 
