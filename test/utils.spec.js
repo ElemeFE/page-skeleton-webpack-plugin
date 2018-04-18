@@ -17,6 +17,13 @@ describe('utils in the project', () => {
   const filePath = path.resolve(__dirname, './temp')
   const html = `
       <html>
+        <head>
+          <style>
+            .sk {
+              color: red;
+            }
+          </style>
+        </head>
         <body>page skeleton</body>
       </html>
     `
@@ -30,13 +37,13 @@ describe('utils in the project', () => {
   // test `writeShell funciton`
   describe('the basic use of writeShell uitl', () => {
     it (`shold write "shell.html" file when use in non-h5 project`, async function () {
-      await writeShell(filePath, html, { h5Only: false })
+      await writeShell(filePath, html, { h5Only: false, minify: false })
       const data = await promisify(fs.readFile)(path.resolve(filePath, './shell.html'), 'utf-8')
       assert.isOk(/page\sskeleton/.test(data) === true, 'expect shell.html has the content of "page skeleton')
     })
 
     it (`shold write "shell.vue" and "shell.js" file in the destination directory`, async function () {
-      await writeShell(filePath, html, { h5Only: true })
+      await writeShell(filePath, html, { h5Only: true, minify: false })
       const files = await promisify(fs.readdir)(filePath)
       assert.lengthOf(files, 2, 'temp directory should has two files')
     })
