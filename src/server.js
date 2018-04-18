@@ -10,7 +10,10 @@ const hasha = require('hasha')
 const express = require('express')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
-const { writeShell, sockWrite, generateQR, addDprAndFontSize, getLocalIpAddress, createLog } = require('./util')
+const {
+  writeShell, sockWrite, generateQR, addDprAndFontSize,
+  getLocalIpAddress, createLog
+} = require('./util')
 const Skeleton = require('./skeleton')
 
 const myFs = new MemoryFileSystem()
@@ -22,22 +25,24 @@ class Server extends EventEmitter {
     this.options = options
     this.host = getLocalIpAddress()
     // 用于缓存写入 shell.html 文件的 html
-    this.cacheHtml = ''
-    // 用于缓存 生成 skeleton page 的页面
+    this.shellHtml = ''
+    // The origin page which used to generate the skeleton page
     this.url = ''
-    // 骨架页面地址
+    // The skeleton page url
     this.skeletonPageUrl = ''
-    // 预览页面地址
+    // the url of preview page
     this.previewPageUrl = `http://${this.host}:${options.port}/preview.html`
     this.sockets = []
     this.previewSocket = null
     this.skeleton = null
     this.log = createLog(options)
   }
+
   _getSkeleton() {
     this.skeleton = this.skeleton || new Skeleton(this.options, this.log)
     return this.skeleton
   }
+
   async initRouters() {
     const { app, staticPath, log } = this
     app.use('/', express.static(path.resolve(__dirname, '../preview/dist')))
@@ -72,6 +77,7 @@ class Server extends EventEmitter {
       res.send(html)
     })
   }
+
   initSocket() {
     const { listenServer, log } = this
     const sockjsServer = sockjs.createServer({
@@ -102,6 +108,7 @@ class Server extends EventEmitter {
       })
     })
   }
+
   // 启动服务
   async listen() {
     /* eslint-disable no-multi-assign */
@@ -114,15 +121,16 @@ class Server extends EventEmitter {
       this.log.info(`page-skeleton server listen at port: ${this.port}`)
     })
   }
+
   // 关闭服务
   close() {
-    // TODO...
     if (this.skeleton) this.skeleton.closeBrowser()
     // process.exit()
     this.listenServer.close(() => {
       this.log.info('server closed')
     })
   }
+
   /**
    * 处理 data socket 消息
    */
@@ -139,10 +147,10 @@ class Server extends EventEmitter {
           log.info(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
           try {
-            const { html, shellHtml } = await this._getSkeleton().genHtml(url)
+            const { shellHtml } = await this._getSkeleton().genHtml(url)
             // CACHE SHELLHTML
-            this.cacheHtml = shellHtml
-            const fileName = await this.writeMagicHtml(html)
+            this.shellHtml = shellHtml
+            const fileName = await this.writeMagicHtml(shellHtml)
             const afterGenMsg = 'generator HTML successfully...'
             log.info(afterGenMsg)
             sockWrite(this.sockets, 'console', afterGenMsg)
@@ -188,9 +196,9 @@ class Server extends EventEmitter {
 
         case 'writeShellFile': {
           sockWrite([conn], 'console', 'before write shell files...')
-          const { pathname, cacheHtml, options } = this
+          const { pathname, shellHtml, options } = this
           try {
-            await writeShell(pathname, cacheHtml, options)
+            await writeShell(pathname, shellHtml, options)
           } catch (err) {
             log.warn(err)
           }
@@ -199,24 +207,39 @@ class Server extends EventEmitter {
           sockWrite([conn], 'console', afterWriteMsg)
           break
         }
+
+        case 'saveShellFile': {
+          const { data: shellHtml } = msg
+          if (shellHtml) {
+            this.shellHtml = shellHtml
+            const fileName = await this.writeMagicHtml(shellHtml)
+            this.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+            const previewData = await this.getPreviewData()
+            sockWrite([this.previewSocket], 'update', JSON.stringify(previewData))
+          }
+          break
+        }
         default: break
       }
     }
   }
+
   async getPreviewData() {
-    const { skeletonPageUrl, url } = this
+    const { skeletonPageUrl, url, shellHtml } = this
     const qrCode = await generateQR(skeletonPageUrl)
     return {
       skeletonPageUrl,
+      shellHtml,
       url,
       qrCode
     }
   }
+
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。
    */
-  async writeMagicHtml(html) {
-    const decHtml = addDprAndFontSize(html)
+  async writeMagicHtml(shellHtml) {
+    const decHtml = addDprAndFontSize(shellHtml)
     try {
       const { staticPath } = this
       const pathName = path.join(__dirname, staticPath)

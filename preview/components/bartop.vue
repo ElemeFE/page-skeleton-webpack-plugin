@@ -10,17 +10,27 @@
         <li><a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin" target="_blank">Documents</a></li>
         <li><a href="https://zhuanlan.zhihu.com/p/34702561" target="_blank">Blog</a></li>
     </ul>
-    <ul class="tools">
-      <li>
-        <el-button type="primary" icon="el-icon-edit" circle></el-button>
-      </li>
-    </ul>
+    <div class="tools">
+        <el-button type="success" icon="el-icon-mobile-phone" circle
+          @click="preview"
+        ></el-button>
+        <el-button type="primary" icon="el-icon-edit" circle
+          @click="write"
+        ></el-button>
+    </div>
   </div>
 </template>
 
 <script>
   export default {
-
+    methods: {
+      preview () {
+        this.$emit('preview')
+      },
+      write () {
+        this.$emit('genShell')
+      }
+    }
   }
 </script>
 
@@ -65,5 +75,9 @@
   .documents li a {
     text-decoration: none;
     color: #909399;
+  }
+  .tools {
+    flex: 1;
+    text-align: right;
   }
 </style>

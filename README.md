@@ -12,10 +12,7 @@
   A <code>Webpack</code> plugin helps you build better JavaScript application
 </div>
 
-
-
 <br />
-
 
 <div align="center">
   <!-- Version -->
@@ -80,8 +77,6 @@
   </a>
 </div>
 
-
-
 <br />
 
 ![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/workflow.gif)
@@ -92,8 +87,8 @@ Page Skeleton 是一款 webpack 插件，在开发过程中，通过简单的点
 
 - 简单易于使用
 - 针对移动端 web 页面
-- 完全可定制，可以通过配置项对骨架块形状颜色进行配置，同时最终输入的`shell.html` 你也可以按自己喜好修改
-- 配置友好几乎可以零配置使用
+- 可定制化，可以通过配置项对骨架块形状颜色进行配置，同时也可以在预览页面直接修改骨架页面源码
+- 几乎可以零配置使用
 
 ### Installation
 
@@ -134,6 +129,17 @@ const webpackConfig = {
   ]
 }
 ```
+
+:notebook_with_decorative_cover:由于插件是根据`process.env.NODE_ENV` 环境变量来选择不同的操作，因此需要在`package.json` 文件中 `scrpt`选项显示配置环境变量如下：
+
+```json
+"scripts": {
+  "dev": "cross-env NODE_ENV=development node server.js",
+  "build": "rm -rf dist && cross-env NODE_ENV=production webpack --progress --hide-modules"
+}
+```
+
+也就是说，在开发环境下设置 `NODE_ENV` 为 development，在生产环境下设置 `NODE_ENV` 为 production。
 
 #### 第二步：修改 HTML Webpack Plugin 插件的模板
 

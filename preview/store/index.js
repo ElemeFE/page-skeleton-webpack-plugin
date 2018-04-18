@@ -8,6 +8,7 @@ Vue.use(Vuex)
 const state = {
   connect: false,
   url: '',
+  shellHtml: '',
   skeletonPageUrl: '',
   qrCode: ''
 }
@@ -39,6 +40,9 @@ const actions = {
   },
   WRITE_SHELL({ commit }) {
     socketWrite('writeShellFile')
+  },
+  SAVE_CODE ({ commit }, value) {
+    socketWrite('saveShellFile', value)
   },
   WRITE_SHELL_SUCCESS({ commit }, message) {
     commit('SET_MSG', {type: 'success', message })

@@ -56,7 +56,7 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./src`),
       port: '7890',
-      loading: 'shine',
+      loading: 'spin',
       svg: {
         color: '#EFEFEF',
         shape: 'circle',
@@ -76,14 +76,14 @@ module.exports = {
         color: '#EFEFEF',
         excludes: ['.mint-swipe-items-wrap a']
       },
-      defer: 10000,
+      defer: 5000,
       excludes: [],
       remove: [],
       hide: ['.index-dashedline_7B79b3W', '.Rating-actived_GBtiHkB_0'],
       grayBlock: ['#header'],
-      cssUnit: 'vw',
+      cssUnit: 'rem',
       headless: true,
-      minify: false,
+      // minify: false,
       cookies: [{
         name: 'SID',
         value: 'a495vvmEPEE4DZi083dr8yR3EAPYqW40HaWA',

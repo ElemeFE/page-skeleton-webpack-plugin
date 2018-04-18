@@ -12,8 +12,21 @@ const { html2json, json2html } = require('html2json')
 const htmlBeautify = require('js-beautify').html_beautify
 const { htmlBeautifyConfig } = require('../config/config')
 
+const getCleanedShellHtml = (html) => {
+  const STYLE_REG = /<style>[\s\S]+?<\/style>/
+  const BODY_REG = /<body>([\s\S]+?)<\/body>/
+  const css = STYLE_REG.exec(html)[0]
+  const cleanHtml = BODY_REG.exec(html)[1]
+  return `${css}\n${cleanHtml}`
+}
+
+function htmlMinify(html, options) {
+  return options === false ? htmlBeautify(html, htmlBeautifyConfig) : minify(html, options)
+}
+
 async function writeShell(pathname, html, options) {
-  const { h5Only } = options
+  const { h5Only, minify: minOptions } = options
+  const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
   const templatesPath = path.resolve(__dirname, '../templates')
   const jsFilename = 'shell.js'
   const vueFilename = 'shell.vue'
@@ -26,18 +39,14 @@ async function writeShell(pathname, html, options) {
 
 
   if (!h5Only) {
-    await promisify(fs.writeFile)(htmlDestPath, html, 'utf-8')
+    await promisify(fs.writeFile)(htmlDestPath, minifiedHtml, 'utf-8')
     return Promise.resolve()
   }
 
   await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
   const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
-  const code = vueTemplate.replace(/\$\$html/g, html)
+  const code = vueTemplate.replace(/\$\$html/g, minifiedHtml)
   await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
-}
-
-function htmlMinify(html, options) {
-  return options === false ? htmlBeautify(html, htmlBeautifyConfig) : minify(html, options)
 }
 
 function sleep(duration) {
