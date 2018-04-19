@@ -38,6 +38,10 @@
 <div align="center">
 
   <h3>
+    <a href="https://zhuanlan.zhihu.com/p/34702561">
+      Blog
+    </a>
+   <span> | </span>
     <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/docs/i18n/zh_cn.md">
       中文
     </a>
