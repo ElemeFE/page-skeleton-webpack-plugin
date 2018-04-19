@@ -83,9 +83,11 @@ Page Skeleton is a webpack plugin. During the development process, use simple cl
 
 <h4 align="center">Loading animations</h4>
 
-| Spin                                                         | Shine                                                              | Chiaroscuro                                                               |
-|:--------------------------------------------------------------------:|:------------------------------------------------------------------------:|:-------------------------------------------------------------------:|
+| Spin | Shine | Chiaroscuro |
+|:---:|:---:|:---:|
 | ![](./docs/spin.gif) | ![](./docs/shine.gif) | ![](./docs/chiaroscuro.gif) |
+
+_speed up play_
 
 ### Examples
 
