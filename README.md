@@ -36,6 +36,13 @@
 </div>
 
 <div align="center">
+
+  <h3>
+    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/docs/i18n/zh_cn.md">
+      中文
+    </a>
+   <span> | </span>
+
   <h3>
     <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#features">
       Features
@@ -257,7 +264,7 @@ const pluginDefaultConfig = {
 
 ### Contribution
 
-The project is under active development. If you have any questions, please submit your issue. Please refer to the issue template to submit the issue. If you are fixing a bug in the issue, please discuss it in the issue and submit the PR. If it is a new feature, submit a feature-related issue first, submit it after discussion, and submit the PR.
+The project is under active development. If you have any questions, please submit your issues. Please refer to the issue template to submit the issue. If you are fixing a bug in the issues, please discuss it in the issue before submit the PR. If it is a new feature, submit a feature-related issue first before submit the PR.
 
 There are three main development folders in the project:
 
