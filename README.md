@@ -42,8 +42,6 @@
       中文
     </a>
    <span> | </span>
-
-  <h3>
     <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#features">
       Features
     </a>
