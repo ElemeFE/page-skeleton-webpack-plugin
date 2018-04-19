@@ -77,7 +77,7 @@
 Page Skeleton is a webpack plugin. During the development process, use simple click operations to generate the skeleton page corresponding to the development page, and the skeleton page is packaged into your application via webpack so that it can be launched. And you see the skeleton structure of the page before your application starts.
 
 - Support multiple loading animations
-- For mobile web pages
+- Preview on mobile
 - Can be customized, and also directly modify the skeleton page source code in the preview page
 - Almost zero configuration available
 
