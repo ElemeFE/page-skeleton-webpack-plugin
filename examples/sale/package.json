@@ -5,13 +5,14 @@
   "author": "cloudIC <844033231@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node server.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "rm -rf dist && cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "page-skeleton-webpack-plugin": "^0.8.0",
     "postcss-px2rem": "^0.3.0",
-    "vue": "^2.4.4"
+    "vue": "^2.4.4",
+    "vue-router": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
