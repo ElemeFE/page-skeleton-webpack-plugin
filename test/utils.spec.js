@@ -9,12 +9,13 @@ const {
   writeShell, htmlMinify, sleep,
   genScriptContent, addScriptTag,
   collectImportantComments,
-  getShellCode, addDprAndFontSize,
+  outputSkeletonScreen, addDprAndFontSize,
   sockWrite
 } = require('../src/util/')
 
 describe('utils in the project', () => {
   const filePath = path.resolve(__dirname, './temp')
+  const outputPath = path.resolve(__dirname, './dist')
   const html = `
       <html>
         <head>
@@ -27,25 +28,31 @@ describe('utils in the project', () => {
         <body>page skeleton</body>
       </html>
     `
+  const routesData = {
+    '/': {
+      html
+    },
+    '/search': {
+      html
+    }
+  }
   beforeEach(async function () {
     await extraFs.remove(filePath)
+    await extraFs.remove(outputPath)
   })
 
   afterEach(async function () {
     await extraFs.remove(filePath)
+    await extraFs.remove(outputPath)
   })
   // test `writeShell funciton`
   describe('the basic use of writeShell uitl', () => {
-    it (`shold write "shell.html" file when use in non-h5 project`, async function () {
-      await writeShell(filePath, html, { h5Only: false, minify: false })
-      const data = await promisify(fs.readFile)(path.resolve(filePath, './shell.html'), 'utf-8')
-      assert.isOk(/page\sskeleton/.test(data) === true, 'expect shell.html has the content of "page skeleton')
-    })
-
-    it (`shold write "shell.vue" and "shell.js" file in the destination directory`, async function () {
-      await writeShell(filePath, html, { h5Only: true, minify: false })
-      const files = await promisify(fs.readdir)(filePath)
-      assert.lengthOf(files, 2, 'temp directory should has two files')
+    it (`shold write "index.html" file`, async function () {
+      await writeShell(routesData, { pathname: filePath, minify: false })
+      const indexData = await promisify(fs.readFile)(path.resolve(filePath, './index.html'), 'utf-8')
+      const searchData = await promisify(fs.readFile)(path.resolve(filePath, './search.html'), 'utf-8')
+      assert.isOk(/page\sskeleton/.test(indexData) === true, 'expect index.html has the content of "page skeleton')
+      assert.isOk(/page\sskeleton/.test(searchData) === true, 'expect search.html has the content of "page skeleton')
     })
   })
   // test `htmlMinify` function
@@ -122,22 +129,16 @@ describe('utils in the project', () => {
     })
   })
   // test `getShellCode` function
-  describe(`the basic use of "getShellCode"`, () => {
+  describe(`the basic use of "outputSkeletonScreen"`, () => {
+    const originalHtml = '<html><!-- shell --><html>'
     beforeEach(async () => {
-      await writeShell(filePath, html, { h5Only: false })
+      await writeShell(routesData, { pathname: filePath, minify: false })
     })
 
     it(`should get the code of "shell.html"`, async () => {
-      const code = await getShellCode(filePath)
-      assert.isTrue(/page\sskeleton/.test(code))
-    })
-    it(`should get nothing when the "filePath" is wrong`, async () => {
-      const wrongPath = './wrong'
-      try {
-        const code = await getShellCode(wrongPath)
-      } catch (err) {
-        assert.isNotNull(err)
-      }
+      await outputSkeletonScreen(originalHtml, { pathname: filePath, staticDir: outputPath, routes: Object.keys(routesData) }, console.log.bind(console))
+      const files = await promisify(fs.readdir)(outputPath)
+      assert.isTrue(files.length === Object.keys(routesData).length)
     })
   })
   // test `addDprAndFontSize` function

@@ -78,10 +78,11 @@
 
 ### Features
 
-Page Skeleton is a webpack plugin. During the development process, use simple click operations to generate the skeleton page corresponding to the development page, and the skeleton page is packaged into your application via webpack so that it can be launched. And you see the skeleton structure of the page before your application starts.
+Page Skeleton is a webpack plugin.The purpose of the plugin is to generate the corresponding skeleton screen page according to different route pages in your project, and to pack the skeleton screen page into the corresponding static route page through webpack.
 
 - Support multiple loading animations
 - Preview on mobile
+- Support multiple routes
 - Can be customized, and also directly modify the skeleton page source code in the preview page
 - Almost zero configuration available
 
@@ -187,16 +188,18 @@ Re-package the application with webpack. When the page is restarted, you can see
 
 **Server Options**
 
-| Option   | Type            | Required? | Default      | Description                                                  |
-| -------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
-| pathname | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
-| Port     | String          | No        | 8989         | The port of Page Skeleton server                             |
-| debug    | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal. |
-| minify   | false or Object | No        | See defaults | The plug-in will uglify the generated shell.html file by default. You can pass [html-minifier](https://github.com/kangax/html-minifier) configuration parameters to mimify shell.html. When configured to false , the generated shell.html file is not uglified and the shell.html file is formatted. |
-| logLevel | String          | No        | `info`       | Which type of messages you want to print in terminal, the optional values are `info`, `warn` and default value is `info`. |
-| quiet    | Boolean         | No        | `false`      | Whether to print messages on the terminal, when set to true, no messages are printed. |
-| noInfo   | Boolean         | No        | `false`      | When the value is `true`, plugin will not print `info` message. |
-| logTime  | Boolean         | No        | `true`       | Print formatted time before the message.                     |
+| Option    | Type            | Required? | Default      | Description                                                  |
+| --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
+| pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
+| staticDir | String          | Yes       | None         | Path to output static route page                             |
+| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale) |
+| Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
+| debug     | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal. |
+| minify    | false or Object | No        | See defaults | The plug-in will uglify the generated shell.html file by default. You can pass [html-minifier](https://github.com/kangax/html-minifier) configuration parameters to mimify shell.html. When configured to false , the generated shell.html file is not uglified and the shell.html file is formatted. |
+| logLevel  | String          | No        | `info`       | Which type of messages you want to print in terminal, the optional values are `info`, `warn` and default value is `info`. |
+| quiet     | Boolean         | No        | `false`      | Whether to print messages on the terminal, when set to true, no messages are printed. |
+| noInfo    | Boolean         | No        | `false`      | When the value is `true`, plugin will not print `info` message. |
+| logTime   | Boolean         | No        | `true`       | Print formatted time before the message.                     |
 
 **Skeleton Page Options**
 

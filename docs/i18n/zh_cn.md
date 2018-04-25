@@ -69,10 +69,11 @@
 
 ### Features
 
-Page Skeleton 是一款 webpack 插件，在开发过程中，通过简单的点击操作，生成开发页面对应的骨架页面，并通过 webpack 将骨架页面打包到你的应用中，这样就能够在你的应用启动之前，看到页面的骨架结构了。
+Page Skeleton 是一款 webpack 插件，该插件的目的是根据你项目中不同的路由页面生成相应的骨架屏页面，并将骨架屏页面通过 webpack 打包到对应的静态路由页面中。
 
 - 支持多种加载动画
 - 针对移动端 web 页面
+- 支持多路由
 - 可定制化，可以通过配置项对骨架块形状颜色进行配置，同时也可以在预览页面直接修改骨架页面源码
 - 几乎可以零配置使用
 
@@ -170,16 +171,18 @@ const webpackConfig = {
 
 **Server Options**
 
-| Option   | Type            | Required? | Default      | Description                                                  |
-| -------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
-| pathname | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
-| Port     | String          | No        | 8989         | The port of Page Skeleton server                             |
-| debug    | Boolean         | No        | true         | 是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。 |
-| minify   | false or Object | No        | See defaults | 插件默认会压缩生成的 shell.html 文件，默认压缩配置参见本部分默认配置。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。当配置为 false 时，不压缩生成的 shell.html 文件，并且会对 shell.html 文件进行格式化处理。 |
-| logLevel | String          | No        | `info`       | 在运行插件的过程中，想要打印的消息类型，可选值为`info`, `warn` 默认值为 `info`。 |
-| quiet    | Boolean         | No        | `false`      | 是否在终端打印消息，当设置为 true 时，不打印任何消息。       |
-| noInfo   | Boolean         | No        | `false`      | 当设置为 true 时，不打印 `info` 类型的消息                   |
-| logTime  | Boolean         | No        | `true`       | 当设置为 true 时，在任何消息前面都会带有一个格式化的时间值。 |
+| Option    | Type            | Required? | Default      | Description                                                  |
+| --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
+| pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
+| staticDir | String          | Yes       | None         | 用来输出静态路由页面的路径                                   |
+| routes    | Array           | Yes       | None         | 需要生成带有骨架屏的静态路由，请参考 [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale) |
+| Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
+| debug     | Boolean         | No        | true         | 是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。 |
+| minify    | false or Object | No        | See defaults | 插件默认会压缩生成的 shell.html 文件，默认压缩配置参见本部分默认配置。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。当配置为 false 时，不压缩生成的 shell.html 文件，并且会对 shell.html 文件进行格式化处理。 |
+| logLevel  | String          | No        | `info`       | 在运行插件的过程中，想要打印的消息类型，可选值为`info`, `warn` 默认值为 `info`。 |
+| quiet     | Boolean         | No        | `false`      | 是否在终端打印消息，当设置为 true 时，不打印任何消息。       |
+| noInfo    | Boolean         | No        | `false`      | 当设置为 true 时，不打印 `info` 类型的消息                   |
+| logTime   | Boolean         | No        | `true`       | 当设置为 true 时，在任何消息前面都会带有一个格式化的时间值。 |
 
 **Skeleton Page Options**
 

@@ -10,13 +10,19 @@ import {
   Button,
   Dialog,
   Message,
-  ButtonGroup
+  ButtonGroup,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'element-ui'
 
 ;[
   Button,
   Dialog,
-  ButtonGroup
+  ButtonGroup,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 ].forEach(cpt => {
   Vue.component(cpt.name, cpt)
 })

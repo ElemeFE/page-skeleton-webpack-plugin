@@ -7,10 +7,7 @@ Vue.use(Vuex)
 
 const state = {
   connect: false,
-  url: '',
-  shellHtml: '',
-  skeletonPageUrl: '',
-  qrCode: ''
+  routes: null
 }
 
 const mutations = {
@@ -23,7 +20,8 @@ const mutations = {
     }
   },
   SET_URL(state, data) {
-    Object.assign(state, data)
+    console.log(data)
+    state.routes = data
     Bus.$emit('message', { type: 'success', message: 'Skeleton page has been updated.' })
   },
   SET_MSG(state, { type, message }) {

@@ -24,29 +24,17 @@ function htmlMinify(html, options) {
   return options === false ? htmlBeautify(html, htmlBeautifyConfig) : minify(html, options)
 }
 
-async function writeShell(pathname, html, options) {
-  const { h5Only, minify: minOptions } = options
-  const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
-  const templatesPath = path.resolve(__dirname, '../templates')
-  const jsFilename = 'shell.js'
-  const vueFilename = 'shell.vue'
-  const htmlFilename = 'shell.html'
-  const jsDestPath = path.resolve(pathname, jsFilename)
-  const vueDestPath = path.resolve(pathname, vueFilename)
-  const htmlDestPath = path.resolve(pathname, htmlFilename)
-
-  await fse.ensureDir(pathname)
-
-
-  if (!h5Only) {
-    await promisify(fs.writeFile)(htmlDestPath, minifiedHtml, 'utf-8')
+async function writeShell(routesData, options) {
+  const { pathname, minify: minOptions } = options
+  return Promise.all(Object.keys(routesData).map(async (route) => {
+    const html = routesData[route].html
+    const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
+    const trimedRoute = route.replace(/\//g, '')
+    const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
+    await fse.ensureDir(pathname)
+    await promisify(fs.writeFile)(filePath, minifiedHtml, 'utf-8')
     return Promise.resolve()
-  }
-
-  await fse.copy(path.resolve(templatesPath, jsFilename), jsDestPath)
-  const vueTemplate = await promisify(fs.readFile)(path.resolve(templatesPath, vueFilename), 'utf-8')
-  const code = vueTemplate.replace(/\$\$html/g, minifiedHtml)
-  await promisify(fs.writeFile)(vueDestPath, code, 'utf-8')
+  }))
 }
 
 function sleep(duration) {
@@ -121,10 +109,26 @@ const collectImportantComments = (css) => {
   return combined.join('\n')
 }
 
-const getShellCode = async (pathname) => {
-  const FILE_NAME = 'shell.html'
-  const code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
-  return code
+// const getShellCode = async (pathname) => {
+//   const FILE_NAME = 'index.html'
+//   const code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
+//   return code
+// }
+
+const outputSkeletonScreen = async (originHtml, options, log) => {
+  const { pathname, staticDir, routes } = options
+  return Promise.all(routes.map(async (route) => {
+    const trimedRoute = route.replace(/\//g, '')
+    const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
+    const html = await promisify(fs.readFile)(filePath, 'utf-8')
+    const finalHtml = originHtml.replace('<!-- shell -->', html)
+    const outputDir = path.join(staticDir, route)
+    const outputFile = path.join(outputDir, 'index.html')
+    await fse.ensureDir(outputDir)
+    await promisify(fs.writeFile)(outputFile, finalHtml, 'utf-8')
+    log(`write ${outputFile} successfully in ${route}`)
+    return Promise.resolve()
+  }))
 }
 
 // Server 端主动推送消息到制定 socket
@@ -184,7 +188,7 @@ module.exports = {
   generateQR,
   writeShell,
   htmlMinify,
-  getShellCode,
+  outputSkeletonScreen,
   genScriptContent,
   addDprAndFontSize,
   getLocalIpAddress,

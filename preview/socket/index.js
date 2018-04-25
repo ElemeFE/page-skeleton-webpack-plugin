@@ -24,7 +24,7 @@ const initSock = store => {
         const updateData = JSON.parse(data)
         store.dispatch('GET_URL', updateData)
         if (type === 'url') {
-          bus.$emit('set-code', updateData.shellHtml)
+          bus.$emit('set-code', updateData)
         }
         break
       }

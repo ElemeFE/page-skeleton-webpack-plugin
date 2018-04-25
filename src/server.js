@@ -25,22 +25,16 @@ class Server extends EventEmitter {
     this.options = options
     this.host = getLocalIpAddress()
     // 用于缓存写入 shell.html 文件的 html
-    this.shellHtml = ''
+    this.routesData = null
     // The origin page which used to generate the skeleton page
-    this.url = ''
-    // The skeleton page url
-    this.skeletonPageUrl = ''
+    this.origin = ''
     // the url of preview page
     this.previewPageUrl = `http://${this.host}:${options.port}/preview.html`
     this.sockets = []
     this.previewSocket = null
     this.skeleton = null
     this.log = createLog(options)
-  }
-
-  _getSkeleton() {
-    this.skeleton = this.skeleton || new Skeleton(this.options, this.log)
-    return this.skeleton
+    this.skeleton = new Skeleton(this.options, this.log)
   }
 
   async initRouters() {
@@ -122,9 +116,9 @@ class Server extends EventEmitter {
     })
   }
 
-  // 关闭服务
+  // Close server
   close() {
-    if (this.skeleton) this.skeleton.closeBrowser()
+    if (this.skeleton && this.skeleton.destroy) this.skeleton.destroy()
     // process.exit()
     this.listenServer.close(() => {
       this.log.info('server closed')
@@ -141,27 +135,37 @@ class Server extends EventEmitter {
       switch (msg.type) {
         case 'generate': {
           if (!msg.data) return log.info(msg)
-          const url = msg.data
-          this.url = url
-          const preGenMsg = 'begin to generator HTML...'
+          const origin = msg.data
+          this.origin = origin
+          const preGenMsg = 'begin to generator skeleton screen'
           log.info(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
           try {
-            const { shellHtml } = await this._getSkeleton().genHtml(url)
-            // CACHE SHELLHTML
-            this.shellHtml = shellHtml
-            const fileName = await this.writeMagicHtml(shellHtml)
-            const afterGenMsg = 'generator HTML successfully...'
+            const skeletonScreens = await this.skeleton.renderRoutes(origin)
+            // CACHE html
+            this.routesData = {}
+            /* eslint-disable no-await-in-loop */
+            for (const { route, html } of skeletonScreens) {
+              const fileName = await this.writeMagicHtml(html)
+              const skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+              this.routesData[route] = {
+                url: origin + route,
+                skeletonPageUrl,
+                qrCode: await generateQR(skeletonPageUrl),
+                html
+              }
+            }
+            /* eslint-ensable no-await-in-loop */
+            const afterGenMsg = 'generator skeleton screen successfully'
             log.info(afterGenMsg)
             sockWrite(this.sockets, 'console', afterGenMsg)
-            this.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
-            const openMsg = 'Browser open another page...'
-            sockWrite([conn], 'console', openMsg)
-            sockWrite([conn], 'success', openMsg)
+
             if (this.previewSocket) {
-              const previewData = await this.getPreviewData()
-              sockWrite([this.previewSocket], 'url', JSON.stringify(previewData))
+              sockWrite([this.previewSocket], 'url', JSON.stringify(this.routesData))
             } else {
+              const openMsg = 'Browser open another page...'
+              sockWrite([conn], 'console', openMsg)
+              sockWrite([conn], 'success', openMsg)
               // open Chrome browser incognito
               let appName = 'google chrome'
               if (process.platform === 'win32') {
@@ -172,7 +176,7 @@ class Server extends EventEmitter {
               open(this.previewPageUrl, { app: [appName, '--incognito'] })
             }
           } catch (err) {
-            const message = err.message || 'generate html failed.'
+            const message = err.message || 'generate skeleton screen failed.'
             log.warn(err)
             sockWrite(this.sockets, 'error', message)
           }
@@ -189,16 +193,15 @@ class Server extends EventEmitter {
 
         case 'url': {
           if (msg.data !== 'preview') return log.info(msg)
-          const previewData = await this.getPreviewData()
-          sockWrite([conn], 'url', JSON.stringify(previewData))
+          sockWrite([conn], 'url', JSON.stringify(this.routesData))
           break
         }
 
         case 'writeShellFile': {
           sockWrite([conn], 'console', 'before write shell files...')
-          const { pathname, shellHtml, options } = this
+          const { routesData, options } = this
           try {
-            await writeShell(pathname, shellHtml, options)
+            await writeShell(routesData, options)
           } catch (err) {
             log.warn(err)
           }
@@ -209,13 +212,12 @@ class Server extends EventEmitter {
         }
 
         case 'saveShellFile': {
-          const { data: shellHtml } = msg
-          if (shellHtml) {
-            this.shellHtml = shellHtml
-            const fileName = await this.writeMagicHtml(shellHtml)
-            this.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
-            const previewData = await this.getPreviewData()
-            sockWrite([this.previewSocket], 'update', JSON.stringify(previewData))
+          const { route, html } = msg.data
+          if (html) {
+            this.routesData[route].html = html
+            const fileName = await this.writeMagicHtml(html)
+            this.routesData[route].skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+            sockWrite([this.previewSocket], 'update', JSON.stringify(this.routesData))
           }
           break
         }
@@ -224,22 +226,11 @@ class Server extends EventEmitter {
     }
   }
 
-  async getPreviewData() {
-    const { skeletonPageUrl, url, shellHtml } = this
-    const qrCode = await generateQR(skeletonPageUrl)
-    return {
-      skeletonPageUrl,
-      shellHtml,
-      url,
-      qrCode
-    }
-  }
-
   /**
    * 将 sleleton 模块生成的 html 写入到内存中。
    */
-  async writeMagicHtml(shellHtml) {
-    const decHtml = addDprAndFontSize(shellHtml)
+  async writeMagicHtml(html) {
+    const decHtml = addDprAndFontSize(html)
     try {
       const { staticPath } = this
       const pathName = path.join(__dirname, staticPath)
