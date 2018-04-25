@@ -135,8 +135,8 @@ class Server extends EventEmitter {
       switch (msg.type) {
         case 'generate': {
           if (!msg.data) return log.info(msg)
+          this.origin = msg.data
           const origin = msg.data
-          this.origin = origin
           const preGenMsg = 'begin to generator skeleton screen'
           log.info(preGenMsg)
           sockWrite(this.sockets, 'console', preGenMsg)
