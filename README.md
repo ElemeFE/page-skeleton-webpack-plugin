@@ -128,13 +128,10 @@ const webpackConfig = {
     new HtmlWebpackPlugin({
        // Your HtmlWebpackPlugin config
     }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"development"' // "development" 是开发，"production"是生产。
-      },
-    }),
     new SkeletonPlugin({
-        pathname: path.resolve(__dirname, `${customPath}`) // 生成名为 shell 文件存放地址
+        pathname: path.resolve(__dirname, `${customPath}`), // the path to store shell file
+        staticDir: path.resolve(__dirname, './dist'), // the same as the `output.path`
+        routes: ['/', '/search'], // Which routes you want to generate skeleton screen
     })
   ]
 }

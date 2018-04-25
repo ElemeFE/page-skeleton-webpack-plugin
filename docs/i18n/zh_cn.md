@@ -111,13 +111,11 @@ const webpackConfig = {
     new HtmlWebpackPlugin({
        // Your HtmlWebpackPlugin config
     }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"development"' // "development" 是开发，"production"是生产。
-      },
-    }),
+
     new SkeletonPlugin({
-        pathname: path.resolve(__dirname, `${customPath}`) // 生成名为 shell 文件存放地址
+      pathname: path.resolve(__dirname, `${customPath}`), // 用来存储 shell 文件的地址
+      staticDir: path.resolve(__dirname, './dist'), // 最好和 `output.path` 相同
+      routes: ['/', '/search'], // 将需要生成骨架屏的路由添加到数组中
     })
   ]
 }
