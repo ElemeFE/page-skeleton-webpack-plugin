@@ -11,6 +11,14 @@
         <li><a href="https://zhuanlan.zhihu.com/p/34702561" target="_blank">Blog</a></li>
     </ul>
     <div class="tools">
+        <div class="routes-dropdown">
+          <el-dropdown size="small" type="primary" split-button @command="handleDropdownSelect">
+              {{ 'Routes: ' + currentRoute }}
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="(route, i) of dropDownRoutes" :key="i" :command="route">{{ route.url }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>      
+        </div>
         <el-button type="success" icon="el-icon-mobile-phone" circle
           @click="preview"
         ></el-button>
@@ -23,12 +31,25 @@
 
 <script>
   export default {
+    props: {
+      dropDownRoutes: {
+        type: Array,
+        required: true
+      },
+      currentRoute: {
+        type: String,
+        required: true
+      }
+    },
     methods: {
       preview () {
         this.$emit('preview')
       },
       write () {
         this.$emit('genShell')
+      },
+      handleDropdownSelect (item) {
+        this.$emit('select', item)
       }
     }
   }
@@ -79,5 +100,10 @@
   .tools {
     flex: 1;
     text-align: right;
+  }
+  .routes-dropdown {
+    display: inline-block;
+    margin-top: 6px;
+    margin-right: 20px;
   }
 </style>

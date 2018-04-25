@@ -4,7 +4,7 @@ const merge = require('lodash/merge')
 const webpack = require('webpack')
 const optionsSchema = require('./config/optionsSchema.json')
 const Server = require('./server')
-const { addScriptTag, getShellCode } = require('./util')
+const { addScriptTag, outputSkeletonScreen } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
 const OptionsValidationError = require('./config/optionsValidationError')
 
@@ -17,6 +17,7 @@ function SkeletonPlugin(options = {}) {
   }
   this.options = merge({ staticPath }, defaultOptions, options)
   this.server = null
+  this.originalHtml = ''
 }
 
 SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line func-names
@@ -35,17 +36,21 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
         const oldHtml = htmlPluginData.html
         htmlPluginData.html = addScriptTag(oldHtml, clientEntry, port)
       }
-      // replace `<!-- shell -->` with `shell code`
-      if (!this.options.h5Only) {
-        try {
-          const code = await getShellCode(this.options.pathname)
-          htmlPluginData.html = htmlPluginData.html.replace('<!-- shell -->', code)
-        } catch (err) {
-          this.server.log.warn(err.toString())
-        }
-      }
       callback(null, htmlPluginData)
     })
+    compilation.plugin('html-webpack-plugin-after-html-processing', async (htmlPluginData, callback) => {
+      this.originalHtml = htmlPluginData.html
+      callback(null, htmlPluginData)
+    })
+  })
+
+  compiler.plugin('after-emit', async (compilation, done) => {
+    try {
+      await outputSkeletonScreen(this.originalHtml, this.options, this.server.log.info)
+    } catch (err) {
+      this.server.log.warn(err.toString())
+    }
+    done()
   })
 
   EVENT_LIST.forEach((event) => {

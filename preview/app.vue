@@ -3,23 +3,27 @@
     <bar-top
       @preview="preview"
       @genShell="writeShell"
+      @select="handleSelectRoute"
+      :drop-down-routes = "dropDownRoutes"
+      :current-route="currentRoute"
     ></bar-top>
     <div class="main">
       <div class="left">
         <preview
-          :url="url"
+          :url="currentSkeletonScreen.url"
           type="origin"
         ></preview>
       </div>
       <div class="middle">
         <preview
-          :url="skeletonPageUrl"
+          :url="currentSkeletonScreen.skeletonPageUrl"
           type="skeleton"
         ></preview>
       </div>
       <div class="right">
         <edit
-          :shell-html="shellHtml"
+          :html="currentSkeletonScreen.html"
+          :current-route="currentRoute"
         ></edit>
       </div>
     </div>
@@ -33,7 +37,7 @@
       <p>2. 在系统「安全性与隐私」设置中，关闭防火墙。</p>
       <p>3. 打开微信「扫一扫」，扫描二维码。</p>
       <div class="image-wrapper">
-        <img :src="qrCode" alt="qr code">
+        <img :src="currentSkeletonScreen.qrCode" alt="qr code">
       </div>
     </el-dialog>
   </div>
@@ -45,7 +49,7 @@
   import Chatbox from './components/chatbox.vue'
   import Edit from './components/edit.vue'
   import { mapState } from 'vuex'
-  import Bus from './bus'
+  import bus from './bus'
   export default {
     components: {
       BarTop,
@@ -55,14 +59,31 @@
     },
     data() {
       return {
-        dialogVisible: false
+        dialogVisible: false,
+        dropDownRoutes: [],
+        currentRoute: '/',
+        currentSkeletonScreen: {
+          url: '',
+          skeletonPageUrl: '',
+          qrCode: '',
+          html: ''
+        }
       }
     },
     computed: {
-      ...mapState(['url', 'connect', 'msgList', 'skeletonPageUrl', 'qrCode', 'shellHtml'])
+      ...mapState(['connect', 'routes'])
+    },
+    watch: {
+      routes: function (value, oldValue) {
+        console.log(this.dropDownRoutes)
+        if (value !== oldValue && value) {
+          this.dropDownRoutes = Object.keys(value).map(route => ({ route, url: value[route].url }))
+          this.currentSkeletonScreen = value[this.currentRoute]
+        }
+      }
     },
     created() {
-      Bus.$on('message', this.handleMessageReceive)
+      bus.$on('message', this.handleMessageReceive)
     },
     methods: {
       writeShell() {
@@ -73,6 +94,13 @@
       },
       preview () {
         this.dialogVisible = true
+      },
+      handleSelectRoute ({ route }) {
+        this.currentRoute = route
+        this.currentSkeletonScreen = this.routes[route]
+        setTimeout(() => {
+          bus.$emit('set-code', this.routes)
+        })
       }
     }
   }

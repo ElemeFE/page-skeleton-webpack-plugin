@@ -9,47 +9,59 @@ class Skeleton {
   constructor(options = {}, log) {
     this.options = options
     this.browser = null
-    this.page = null
+    this.scriptContent = ''
+    this.pages = new Set()
     this.log = log
+    this.initialize()
   }
 
-  async initPage() {
-    // close old browser and page.
-    await this.closeBrowser()
+  // Launch headless Chrome by puppeteer and load script
+  async initialize() {
+    const { headless } = this.options
+    const { log } = this
+    try {
+      // load script content from `script` folder
+      this.scriptContent = await genScriptContent()
+      // Launch the browser
+      this.browser = await puppeteer.launch({ headless })
+    } catch (err) {
+      log(err)
+    }
+  }
 
-    const { device, headless, debug } = this.options
-    /* eslint-disable no-multi-assign */
-    const browser = this.browser = await puppeteer.launch({ headless })
-    const page = this.page = await browser.newPage()
-    /* eslint-enable no-multi-assign */
+  async newPage() {
+    const { device, debug } = this.options
+    const page = await this.browser.newPage()
+    this.pages.add(page)
     await page.emulate(devices[device])
     if (debug) {
       page.on('console', (...args) => {
         this.log.info(...args)
       })
     }
-
-    return this.page
+    return page
   }
 
-  async makeSkeleton() {
-    const { defer } = this.options
-    const content = await genScriptContent()
+  async closePage(page) {
+    page.close()
+    this.pages.delete(page)
+  }
 
-    // `./util/headlessClient.js` 文件插入到 page 中
-    await this.page.addScriptTag({ content })
+  // Generate the skeleton screen for the specific `page`
+  async makeSkeleton(page) {
+    const { defer } = this.options
+    await page.addScriptTag({ content: this.scriptContent })
     await sleep(defer)
-    await this.page.evaluate(async (options) => {
-      const { genSkeleton } = Skeleton
-      genSkeleton(options)
+    await page.evaluate((options) => {
+      Skeleton.genSkeleton(options)
     }, this.options)
   }
 
-  async genHtml(url) {
+  async genHtml(url, route) {
     const stylesheetAstObjects = {}
     const stylesheetContents = {}
 
-    const page = await this.initPage()
+    const page = await this.newPage()
     const { cookies } = this.options
 
     await page.setRequestInterception(true)
@@ -63,20 +75,20 @@ class Skeleton {
     })
     // To build a map of all downloaded CSS (css use link tag)
     page.on('response', (response) => {
-      const url = response.url() // eslint-disable-line no-shadow
+      const requestUrl = response.url()
       const ct = response.headers()['content-type'] || ''
       if (response.ok && !response.ok()) {
-        throw new Error(`${response.status} on ${url}`)
+        throw new Error(`${response.status} on ${requestUrl}`)
       }
 
-      if (ct.indexOf('text/css') > -1 || /\.css$/i.test(url)) {
+      if (ct.indexOf('text/css') > -1 || /\.css$/i.test(requestUrl)) {
         response.text().then((text) => {
           const ast = parse(text, {
             parseValue: false,
             parseRulePrelude: false
           })
-          stylesheetAstObjects[url] = toPlainObject(ast)
-          stylesheetContents[url] = text
+          stylesheetAstObjects[requestUrl] = toPlainObject(ast)
+          stylesheetContents[requestUrl] = text
         })
       }
     })
@@ -95,9 +107,9 @@ class Skeleton {
     }
 
 
-    await this.makeSkeleton()
+    await this.makeSkeleton(page)
 
-    const { styles, cleanedHtml } = await page.evaluate(async () => Skeleton.getHtmlAndStyle())
+    const { styles, cleanedHtml } = await page.evaluate(() => Skeleton.getHtmlAndStyle())
 
     const stylesheetAstArray = styles.map((style) => {
       const ast = parse(style, {
@@ -217,17 +229,35 @@ class Skeleton {
     shellHtml = shellHtml
       .replace('$$css$$', finalCss)
       .replace('$$html$$', cleanedHtml)
-    const returned = {
-      shellHtml: htmlMinify(shellHtml, false)
+    const result = {
+      originalRoute: route,
+      route: await page.evaluate('window.location.pathname'),
+      html: htmlMinify(shellHtml, false)
     }
-    await this.closeBrowser()
-    return Promise.resolve(returned)
+    await this.closePage(page)
+    return Promise.resolve(result)
   }
 
-  async closeBrowser() {
-    if (this.page) {
-      await this.page.close()
-      this.page = null
+  async renderRoutes(origin, routes = this.options.routes) {
+    return Promise.all(routes.map((route) => {
+      const url = `${origin}${route}`
+      return this.genHtml(url, route)
+    }))
+  }
+
+  async destroy() {
+    const { log } = this
+    if (this.pages.size) {
+      const promises = []
+      for (const page of this.pages) {
+        promises.push(page.close())
+      }
+      try {
+        await Promise.all(promises)
+      } catch (err) {
+        log(err)
+      }
+      this.pages = null
     }
     if (this.browser) {
       await this.browser.close()

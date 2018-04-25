@@ -44,14 +44,14 @@ sock.onclose = function() {
 }
 
 function createView(sock) {
-  const root = document.createElement('div')
-  document.body.appendChild(root)
+  const rootEle = document.createElement('div')
+  document.body.appendChild(rootEle)
 
   return new Vue({
     components: {
       Console
     },
-    el: root,
+    el: rootEle,
     data: {
       show: false,
       title: 'P',
@@ -83,7 +83,7 @@ function createView(sock) {
     methods: {
       handleClick() {
         this.text = 'IN PROGRESS...'
-        sock.send(JSON.stringify({ type: 'generate', data: window.location.href }))
+        sock.send(JSON.stringify({ type: 'generate', data: window.location.origin }))
       }
     }
   })

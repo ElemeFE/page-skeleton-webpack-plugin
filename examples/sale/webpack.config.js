@@ -54,7 +54,9 @@ module.exports = {
       template: 'index.html'
     }),
     new SkeletonPlugin({
-      pathname: path.resolve(__dirname, `./src`),
+      pathname: path.resolve(__dirname, `./shell`),
+      staticDir: path.resolve(__dirname, './dist'),
+      routes: ['/', '/search'],
       port: '7890',
       loading: 'chiaroscuro',
       svg: {
