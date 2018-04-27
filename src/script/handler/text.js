@@ -1,4 +1,4 @@
-import { getComputedStyle, px2relativeUtil, getTextWidth, setOpacity } from '../util'
+import { getComputedStyle, px2relativeUtil, getTextWidth, setOpacity, addClassName } from '../util'
 import { addStyle } from './styleCache'
 import { CLASS_NAME_PREFEX } from '../config'
 
@@ -101,19 +101,26 @@ function textHandler(ele, { color }, cssUnit, decimal) {
   const secondColorPoint = (((1 - textHeightRatio) / 2 + textHeightRatio) * 100).toFixed(decimal)
   const backgroundSize = `100% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`
   const className = CLASS_NAME_PREFEX + 'text-' + firstColorPoint.toString(32).replace(/\./g, '-')
+
   const rule = `{
     background-image: linear-gradient(transparent ${firstColorPoint}%, ${color} 0%, ${color} ${secondColorPoint}%, transparent 0%) !important;
-    background-origin: content-box !important;
     background-size: ${backgroundSize};
+    position: ${position} !important;
+  }`
+
+  const invariableClassName = CLASS_NAME_PREFEX + 'text'
+
+  const invariableRule = `{
+    background-origin: content-box !important;
     background-clip: content-box !important;
     background-color: transparent !important;
-    position: ${position} !important;
     color: transparent !important;
     background-repeat: repeat-y !important;
   }`
 
   addStyle(`.${className}`, rule)
-  ele.classList.add(className)
+  addStyle(`.${invariableClassName}`, invariableRule)
+  addClassName(ele, [className, invariableClassName])
   /* eslint-enable no-mixed-operators */
   // add white mask
   if (lineCount > 1) {

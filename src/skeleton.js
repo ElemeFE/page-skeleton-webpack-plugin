@@ -43,8 +43,8 @@ class Skeleton {
   }
 
   async closePage(page) {
-    page.close()
-    this.pages.delete(page)
+    await page.close()
+    return this.pages.delete(page)
   }
 
   // Generate the skeleton screen for the specific `page`
