@@ -10,7 +10,7 @@ const {
   genScriptContent, addScriptTag,
   collectImportantComments,
   outputSkeletonScreen, addDprAndFontSize,
-  sockWrite
+  sockWrite, snakeToCamel
 } = require('../src/util/')
 
 describe('utils in the project', () => {
@@ -187,6 +187,14 @@ describe('utils in the project', () => {
       sockWrite([mockSocket], 'test', 'page skeleton')
       assert.isTrue(write.calledOnce)
       assert.equal(write.getCall(0).args, '{"type":"test","data":"page skeleton"}')
+    })
+  })
+
+  // test `snakeToCamel` function
+  describe(`the basic use of snakeToCamel`,  () => {
+    it(`shoud convert snake name to camel name`, () => {
+      const testName = 'abc-def-ghi'
+      assert.equal(snakeToCamel(testName), 'abcDefGhi')
     })
   })
 })

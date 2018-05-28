@@ -1,6 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// webpack.config.js
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const px2rem = require('postcss-px2rem')
 const cssnext = require('postcss-cssnext')({
   browsers: [
@@ -12,6 +14,7 @@ const cssnext = require('postcss-cssnext')({
 const SkeletonPlugin = require('../../index.js').SkeletonPlugin
 
 module.exports = {
+  mode: 'development',
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -21,23 +24,39 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: { importLoaders: 1 }
           },
-          postcss:[
-            require('postcss-import')(),
-            require('postcss-nested'),
-            cssnext,
-            px2rem({remUnit: 75}) ]
-          // other vue-loader options go here
-        }
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              sourceMap: true,
+              plugins: (loader) => [
+                require('postcss-import')({ root: loader.resourcePath }),
+                require('postcss-nested'),
+                cssnext,
+                px2rem({ remUnit: 75 })
+              ]
+            }
+          }
+        ]
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: file => (
+          /node_modules/.test(file) &&
+          !/\.vue\.js/.test(file)
+        )
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -53,10 +72,11 @@ module.exports = {
       filename: 'index.html',
       template: 'index.html'
     }),
+    new VueLoaderPlugin(),
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `./shell`),
       staticDir: path.resolve(__dirname, './dist'),
-      routes: ['/', '/search'],
+      routes: ['/'],
       port: '7890',
       loading: 'chiaroscuro',
       svg: {
@@ -116,19 +136,9 @@ module.exports = {
 
 if (process.env.NODE_ENV === 'production') {
   module.exports.devtool = '#source-map'
+  module.exports.mode = 'production'
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
     })

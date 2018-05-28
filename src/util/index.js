@@ -109,12 +109,6 @@ const collectImportantComments = (css) => {
   return combined.join('\n')
 }
 
-// const getShellCode = async (pathname) => {
-//   const FILE_NAME = 'index.html'
-//   const code = await promisify(fs.readFile)(path.resolve(pathname, FILE_NAME), 'utf-8')
-//   return code
-// }
-
 const outputSkeletonScreen = async (originHtml, options, log) => {
   const { pathname, staticDir, routes } = options
   return Promise.all(routes.map(async (route) => {
@@ -180,10 +174,13 @@ const getLocalIpAddress = () => {
   }
 }
 
+const snakeToCamel = name => name.replace(/-([a-z])/g, (_, p1) => p1.toUpperCase())
+
 module.exports = {
   createLog,
   sleep,
   sockWrite,
+  snakeToCamel,
   addScriptTag,
   generateQR,
   writeShell,

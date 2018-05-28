@@ -25,7 +25,7 @@
     "webpack"
   ],
   "author": "jocs",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "chalk": "^2.3.0",
     "codemirror": "^5.36.0",

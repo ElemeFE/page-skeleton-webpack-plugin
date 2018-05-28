@@ -82,7 +82,7 @@ function textHandler(ele, { color }, cssUnit, decimal) {
   } = comStyle
 
   if (!/\d/.test(lineHeight)) {
-    const fontSizeNum = parseInt(fontSize, 10) || 14
+    const fontSizeNum = parseFloat(fontSize, 10) || 14
     lineHeight = `${fontSizeNum * 1.4}px`
   }
 
@@ -90,9 +90,9 @@ function textHandler(ele, { color }, cssUnit, decimal) {
 
   const height = ele.offsetHeight
   // Math.floor
-  const lineCount = (height - parseInt(paddingTop, 10) - parseInt(paddingBottom, 10)) / parseInt(lineHeight, 10) | 0 // eslint-disable-line no-bitwise
+  const lineCount = (height - parseFloat(paddingTop, 10) - parseFloat(paddingBottom, 10)) / parseFloat(lineHeight, 10) | 0 // eslint-disable-line no-bitwise
 
-  let textHeightRatio = parseInt(fontSize, 10) / parseInt(lineHeight, 10)
+  let textHeightRatio = parseFloat(fontSize, 10) / parseFloat(lineHeight, 10)
   if (Number.isNaN(textHeightRatio)) {
     textHeightRatio = 1 / 1.4 // default number
   }
