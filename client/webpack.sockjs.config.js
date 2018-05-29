@@ -1,12 +1,7 @@
-// eslint-disable-next-line
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-
 module.exports = {
+  mode: 'production',
   output: {
     library: 'SockJS',
     libraryTarget: 'umd'
-  },
-  plugins: [
-    new UglifyJSPlugin()
-  ]
+  }
 }

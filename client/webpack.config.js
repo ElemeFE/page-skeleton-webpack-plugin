@@ -1,6 +1,8 @@
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const path = require('path')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
+  mode: 'development',
   module: {
     rules: [{
       test: /\.js$/,
@@ -10,6 +12,12 @@ module.exports = {
           presets: ['env']
         }
       }
+    }, {
+      test: /\.css$/,
+      use: [
+        "style-loader",
+        "css-loader"
+      ]
     }, {
       test: /\.tpl\.html$/,
       use: {
@@ -21,6 +29,10 @@ module.exports = {
     }]
   },
   plugins: [
-    new UglifyJSPlugin()
+    new VueLoaderPlugin()
   ]
+}
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.mode = 'production'
 }

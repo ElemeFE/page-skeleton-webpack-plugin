@@ -1,8 +1,8 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const CleanPlugin = require('clean-webpack-plugin')
 const path = require('path')
-
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const CleanPlugin = require('clean-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const PATH = {
   app: __dirname,
@@ -10,6 +10,7 @@ const PATH = {
 }
 
 module.exports = {
+  mode: 'development',
   entry: path.resolve(PATH.app, './index.js'),
   output: {
     filename: 'bundle.[hash:20].js',
@@ -29,10 +30,10 @@ module.exports = {
       }
     }, {
       test: /\.css$/,
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: ['css-loader']
-      })
+      use: [
+        process.env.NODE_ENV === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+        "css-loader"
+      ]
     }, {
       test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
       loader: 'url-loader',
@@ -42,14 +43,22 @@ module.exports = {
     }]
   },
   plugins: [
+    new VueLoaderPlugin(),
     new CleanPlugin('dist'),
     new HtmlWebpackPlugin({
       template: path.resolve(PATH.app, './index.html'),
       filename: path.resolve(PATH.build, './dist/index.html'),
       inject: true
-    }),
-    new ExtractTextPlugin({
-      filename: 'app-[contenthash:8].min.css'
-    }),
+    })
   ]
+}
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.mode = 'production'
+  module.exports.plugins.push(new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // both options are optional
+    filename: '[name].[hash].css',
+    chunkFilename: '[id].[hash].css'
+  }))
 }
