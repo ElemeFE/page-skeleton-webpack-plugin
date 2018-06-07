@@ -25,9 +25,9 @@
   <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
     <img src="https://travis-ci.org/ElemeFE/page-skeleton-webpack-plugin.svg?branch=master" alt="build">
   </a>
-  <!-- Downloads weekly -->
+  <!-- Downloads monthly -->
   <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
-    <img src="https://img.shields.io/npm/dw/page-skeleton-webpack-plugin.svg?style=flat-square" alt="download">
+    <img src="https://img.shields.io/npm/dm/page-skeleton-webpack-plugin.svg?style=flat-square" alt="download">
   </a>
 </div>
 
