@@ -76,7 +76,6 @@
     },
     watch: {
       routes: function (value, oldValue) {
-        console.log(this.dropDownRoutes)
         if (!this.currentRoute) {
           this.currentRoute = Object.keys(value)[0];
         }

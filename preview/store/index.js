@@ -20,7 +20,6 @@ const mutations = {
     }
   },
   SET_URL(state, data) {
-    console.log(data)
     state.routes = data
     Bus.$emit('message', { type: 'success', message: 'Skeleton page has been updated.' })
   },
