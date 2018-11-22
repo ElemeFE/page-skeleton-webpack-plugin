@@ -22,6 +22,7 @@
       </div>
       <div class="right">
         <edit
+          v-if="currentSkeletonScreen && currentSkeletonScreen.html"
           :html="currentSkeletonScreen.html"
           :current-route="currentRoute"
         ></edit>
@@ -61,7 +62,7 @@
       return {
         dialogVisible: false,
         dropDownRoutes: [],
-        currentRoute: '/',
+        currentRoute: '',
         currentSkeletonScreen: {
           url: '',
           skeletonPageUrl: '',
@@ -76,6 +77,9 @@
     watch: {
       routes: function (value, oldValue) {
         console.log(this.dropDownRoutes)
+        if (!this.currentRoute) {
+          this.currentRoute = Object.keys(value)[0];
+        }
         if (value !== oldValue && value) {
           this.dropDownRoutes = Object.keys(value).map(route => ({ route, url: value[route].url }))
           this.currentSkeletonScreen = value[this.currentRoute]
