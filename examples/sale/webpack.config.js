@@ -115,7 +115,10 @@ module.exports = {
         value: '273745271',
         url: 'https://h5.ele.me'
       }],
-      noInfo: false
+      noInfo: false,
+      storagies: {
+        test: '1234'
+      }
     }),
   ],
   resolve: {
