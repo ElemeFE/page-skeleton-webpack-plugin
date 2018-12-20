@@ -206,6 +206,9 @@ const webpackConfig = {
 | device  | String | No        | `iPhone 6 Plus` | 用来设置你在哪款移动设备的模拟器上生成骨架页面，配置参考[puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js)。 |
 | defer   | Number | No        | 5000            | puppeteer 启动 headless Chrome 浏览器，打开页面后的延迟，主要是为了保证页面加载完全，单位是`ms`。 |
 | cookie  | Array  | No        | `[]`            | 数组中每个对象（Object 类型值）是一个 cookie，参考 puppeteer 最新文档。 |
+| storagies | Object | No      | `{}`            | LocalStorage |
+| sessionStoragies | Object | No      | `{}`            | SessionStorage |
+
 
 **Default options**
 
@@ -247,6 +250,8 @@ const pluginDefaultConfig = {
   hide: [],
   grayBlock: [],
   cookies: [],
+  storagies: {},
+  sessionStoragies: {},
   cssUnit: 'rem',
   decimal: 4,
   logLevel: 'info',
