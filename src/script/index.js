@@ -17,6 +17,9 @@ var Skeleton = (function (exports) {
   const MOCK_TEXT_ID = 'sk-text-id';
   const Node = window.Node;
 
+  // 给图片打上固定宽高标签，将会设置行内宽高样式，保证生成骨架后的宽高不会受其他样式影响而变化（目前只针对图片）
+  const IMAGE_FIXED = 'data-pswp-fixedsize';
+
   /**
    * a Map instance to cache the styles which will be inserted into the skeleton page.
    * key is the selector and value is the css rules.
@@ -172,7 +175,7 @@ var Skeleton = (function (exports) {
     const rule = `{
     background: ${color} !important;
   }`;
-    
+
     addStyle(`.${imageClass}`, rule);
 
     shapeStyle(shape);
@@ -217,6 +220,7 @@ var Skeleton = (function (exports) {
 
   function imgHandler(ele, { color, shape, shapeOpposite }) {
     const { width, height } = ele.getBoundingClientRect();
+    const fixedSize = ele.hasAttribute(IMAGE_FIXED);
     const attrs = {
       width,
       height,
@@ -226,7 +230,11 @@ var Skeleton = (function (exports) {
     const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
 
     setAttributes(ele, attrs);
-    
+    if (fixedSize) {
+      ele.style.width = `${width}px`;
+      ele.style.height = `${height}px`;
+    }
+
     const className = CLASS_NAME_PREFEX + 'image';
     const shapeName = CLASS_NAME_PREFEX + finalShape;
     const rule = `{
