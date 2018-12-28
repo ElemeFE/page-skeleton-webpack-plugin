@@ -180,6 +180,14 @@
     "quiet": {
       "description": "Hide all messages on console.",
       "type": "boolean"
+    },
+    "storagies": {
+      "description": "Add localStorage to the page after puppeter opened",
+      "type": "object"
+    },
+    "sessionStoragies": {
+      "description": "Add sessionStorage to the page after puppeter opened",
+      "type": "object"
     }
   },
   "type": "object"

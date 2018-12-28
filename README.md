@@ -222,6 +222,8 @@ Re-package the application with webpack. When the page is restarted, you can see
 | device  | String | No        | `iPhone 6 Plus` | Used to set which mobile device simulator to generate the skeleton page. Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js) for configuration. |
 | defer   | Number | No        | 5000            | Puppeteer starts the headless Chrome browser. The delay after opening the page is mainly to ensure that the page is fully loaded and the unit is `ms`. |
 | cookie  | Array  | No        | `[]`            | Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js). |
+| storagies | Object | No      | `{}`            | LocalStorage
+| sessionStoragies | Object | No      | `{}`     | SessionStorage
 
 **Default options**
 
@@ -263,6 +265,8 @@ const pluginDefaultConfig = {
   hide: [],
   grayBlock: [],
   cookies: [],
+  storagies: {},
+  sessionStoragies: {},
   cssUnit: 'rem',
   decimal: 4,
   logLevel: 'info',

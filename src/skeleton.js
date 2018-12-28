@@ -62,7 +62,7 @@ class Skeleton {
     const stylesheetContents = {}
 
     const page = await this.newPage()
-    const { cookies } = this.options
+    const { cookies, storagies = {}, sessionStoragies = {} } = this.options
 
     await page.setRequestInterception(true)
     page.on('request', (request) => {
@@ -102,6 +102,23 @@ class Skeleton {
     }
 
     const response = await page.goto(url, { waitUntil: 'networkidle2' })
+
+    if (Object.keys(storagies).length) {
+      for (const item in storagies) {
+        if (storagies.hasOwnProperties) {
+          page.evaluate(() => localStorage.setItem(item, storagies[item]));
+        }
+      }
+    }
+
+    if (Object.keys(sessionStoragies).length) {
+      for (const item in sessionStoragies) {
+        if (sessionStoragies.hasOwnProperties) {
+          page.evaluate(() => sessionStorage.setItem(item, sessionStoragies[item]));
+        }
+      }
+    }
+
     if (response && !response.ok()) {
       throw new Error(`${response.status} on ${url}`)
     }
