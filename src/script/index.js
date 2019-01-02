@@ -218,9 +218,9 @@ var Skeleton = (function (exports) {
     });
   }
 
-  function imgHandler(ele, { color, shape, shapeOpposite }) {
+  function imgHandler(ele, { color, shape, shapeOpposite, fixedSize }) {
     const { width, height } = ele.getBoundingClientRect();
-    const fixedSize = ele.hasAttribute(IMAGE_FIXED);
+    const isFixed = ele.hasAttribute(IMAGE_FIXED) || fixedSize;
     const attrs = {
       width,
       height,
@@ -230,7 +230,7 @@ var Skeleton = (function (exports) {
     const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
 
     setAttributes(ele, attrs);
-    if (fixedSize) {
+    if (isFixed) {
       ele.style.width = `${width}px`;
       ele.style.height = `${height}px`;
     }
