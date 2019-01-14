@@ -104,19 +104,23 @@ class Skeleton {
     const response = await page.goto(url, { waitUntil: 'networkidle2' })
 
     if (Object.keys(storagies).length) {
-      for (const item in storagies) {
-        if (storagies.hasOwnProperties) {
-          page.evaluate(() => localStorage.setItem(item, storagies[item]));
+      await page.evaluate((storagies) => {
+        for (const item in storagies) {
+          if (storagies.hasOwnProperty(item)) {
+            localStorage.setItem(item, storagies[item])
+          }
         }
-      }
+      }, storagies)
     }
 
     if (Object.keys(sessionStoragies).length) {
-      for (const item in sessionStoragies) {
-        if (sessionStoragies.hasOwnProperties) {
-          page.evaluate(() => sessionStorage.setItem(item, sessionStoragies[item]));
+      await page.evaluate((sessionStoragies) => {
+        for (const item in sessionStoragies) {
+          if (sessionStoragies.hasOwnProperty(item)) {
+            sessionStorage.setItem(item, sessionStoragies[item])
+          }
         }
-      }
+      }, sessionStoragies)
     }
 
     if (response && !response.ok()) {
