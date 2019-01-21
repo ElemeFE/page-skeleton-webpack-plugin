@@ -5,6 +5,7 @@ const devices = require('puppeteer/DeviceDescriptors')
 const { parse, toPlainObject, fromPlainObject, generate } = require('css-tree')
 const { sleep, genScriptContent, htmlMinify, collectImportantComments } = require('./util')
 
+const { localStorage, sessionStorage } = window
 class Skeleton {
   constructor(options = {}, log) {
     this.options = options
@@ -106,7 +107,7 @@ class Skeleton {
     if (Object.keys(storagies).length) {
       await page.evaluate((storagies) => {
         for (const item in storagies) {
-          if (storagies.hasOwnProperty(item)) {
+          if (Object.prototype.hasOwnProperty.call(storagies, item)) {
             localStorage.setItem(item, storagies[item])
           }
         }
@@ -116,7 +117,7 @@ class Skeleton {
     if (Object.keys(sessionStoragies).length) {
       await page.evaluate((sessionStoragies) => {
         for (const item in sessionStoragies) {
-          if (sessionStoragies.hasOwnProperty(item)) {
+          if (Object.prototype.hasOwnProperty.call(sessionStoragies, item)) {
             sessionStorage.setItem(item, sessionStoragies[item])
           }
         }
