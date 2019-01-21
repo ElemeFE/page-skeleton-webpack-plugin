@@ -172,7 +172,7 @@ var Skeleton = (function (exports) {
     const rule = `{
     background: ${color} !important;
   }`;
-    
+
     addStyle(`.${imageClass}`, rule);
 
     shapeStyle(shape);
@@ -226,7 +226,7 @@ var Skeleton = (function (exports) {
     const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape;
 
     setAttributes(ele, attrs);
-    
+
     const className = CLASS_NAME_PREFEX + 'image';
     const shapeName = CLASS_NAME_PREFEX + finalShape;
     const rule = `{
@@ -498,7 +498,7 @@ var Skeleton = (function (exports) {
         top: 0;
         bottom: 0;
         width: 100%;
-        background: linear-gradient(to left, 
+        background: linear-gradient(to left,
           rgba(255, 255, 255, 0) 0%,
           rgba(255, 255, 255, .85) 50%,
           rgba(255, 255, 255, 0) 100%
@@ -569,8 +569,6 @@ var Skeleton = (function (exports) {
 
   function traverse(options) {
     const { remove, excludes, text, image, button, svg, grayBlock, pseudo, cssUnit, decimal } = options;
-    const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : [];
-    const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : [];
     const rootElement = document.documentElement;
 
     const texts = [];
@@ -604,10 +602,6 @@ var Skeleton = (function (exports) {
       if (!inViewPort(ele) || DISPLAY_NONE.test(ele.getAttribute('style'))) {
         return toRemove.push(ele)
       }
-      if (~grayEle.indexOf(ele)) { // eslint-disable-line no-bitwise
-        return grayBlocks.push(ele)
-      }
-      if (~excludesEle.indexOf(ele)) return false // eslint-disable-line no-bitwise
 
       if (hasPseudoEle) {
         pseudos.push(hasPseudoEle);
@@ -620,6 +614,16 @@ var Skeleton = (function (exports) {
       if (ele.children.length > 0 && /UL|OL/.test(ele.tagName)) {
         listHandle(ele);
       }
+
+      // should be after listHandle
+      const excludesEle = excludes.length ? Array.from($$(excludes.join(','))) : [];
+      const grayEle = grayBlock.length ? Array.from($$(grayBlock.join(','))) : [];
+      if (~grayEle.indexOf(ele)) { // eslint-disable-line no-bitwise
+        return grayBlocks.push(ele)
+      }
+
+      if (~excludesEle.indexOf(ele)) return false // eslint-disable-line no-bitwise
+
       if (ele.children && ele.children.length > 0) {
         Array.from(ele.children).forEach(child => preTraverse(child));
       }
