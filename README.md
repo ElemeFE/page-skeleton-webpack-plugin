@@ -137,7 +137,7 @@ const webpackConfig = {
 }
 ```
 
-:notebook_with_decorative_cover:Since the plugin selects different operations based on the `process.env.NODE_ENV` environment variable, so you need to configurate environment variables in the `scrpt` option in the `package.json` file as follows:
+:notebook_with_decorative_cover:Since the plugin selects different operations based on the `process.env.NODE_ENV` environment variable, so you need to configurate environment variables in the `scripts` option in the `package.json` file as follows:
 
 ```json
 "scripts": {
