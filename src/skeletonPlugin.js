@@ -2,6 +2,7 @@
 
 const merge = require('lodash/merge')
 const webpack = require('webpack')
+const htmlWebpackPlugin = require('html-webpack-plugin')
 const optionsSchema = require('./config/optionsSchema.json')
 const Server = require('./server')
 const { addScriptTag, outputSkeletonScreen, snakeToCamel } = require('./util')
@@ -51,12 +52,16 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
     })
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
-      compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
+      const htmlWebpackPluginBeforeHtmlProcessing = compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing || htmlWebpackPlugin.getHooks(compilation).afterTemplateExecution
+
+      htmlWebpackPluginBeforeHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
         this.insertScriptToClient(htmlPluginData)
         callback(null, htmlPluginData)
       })
 
-      compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
+      const htmlWebpackPluginAfterHtmlProcessing = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing || htmlWebpackPlugin.getHooks(compilation).beforeEmit
+
+      htmlWebpackPluginAfterHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
         this.originalHtml = htmlPluginData.html
         callback(null, htmlPluginData)
       })
