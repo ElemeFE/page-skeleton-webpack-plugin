@@ -13,7 +13,8 @@ const defaultOptions = {
     // `rect` | `circle`
     shape: 'rect',
     color: '#EFEFEF',
-    shapeOpposite: []
+    shapeOpposite: [],
+    fixedSize: false
   },
   button: {
     color: '#EFEFEF',
