@@ -23,8 +23,10 @@ function SkeletonPlugin(options = {}) {
 }
 
 SkeletonPlugin.prototype.createServer = function () { // eslint-disable-line func-names
-  const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
-  server.listen().catch(err => server.log.warn(err))
+  if (!this.server) {
+    const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
+    server.listen().catch(err => server.log.warn(err))
+  }
 }
 
 SkeletonPlugin.prototype.insertScriptToClient = function (htmlPluginData) { // eslint-disable-line func-names
