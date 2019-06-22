@@ -105,7 +105,7 @@ All examples are in the `examples` folder.
 Use `npm` to install this plugin, and you also need to install [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin).
 
 > npm install --save-dev page-skeleton-webpack-plugin
-> 
+>
 > npm install --save-dev html-webpack-plugin
 
 ### Basic Use
@@ -197,6 +197,8 @@ Re-package the application with webpack. When the page is restarted, you can see
 | quiet     | Boolean         | No        | `false`      | Whether to print messages on the terminal, when set to true, no messages are printed. |
 | noInfo    | Boolean         | No        | `false`      | When the value is `true`, plugin will not print `info` message. |
 | logTime   | Boolean         | No        | `true`       | Print formatted time before the message.                     |
+| productionMode | Array      | No        | `['production']` | Set NODE_ENV string can be build production mode, it can be `['develop', 'test', 'staging', 'production']` or any NODE_ENV string. |
+
 
 **Skeleton Page Options**
 
@@ -240,7 +242,7 @@ const pluginDefaultConfig = {
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: []
   },
   svg: {
     color: '#EFEFEF',
@@ -272,7 +274,8 @@ const pluginDefaultConfig = {
   logLevel: 'info',
   quiet: false,
   noInfo: false,
-  logTime: true
+  logTime: true,
+  productionMode: ['production'] // ['develop', 'test', 'staging', 'production'],
 }
 ```
 

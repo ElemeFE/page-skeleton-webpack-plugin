@@ -88,7 +88,7 @@ Page Skeleton 是一款 webpack 插件，该插件的目的是根据你项目中
 通过 npm 来安装插件及依赖，该插件依赖于 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)。
 
 > npm install --save-dev page-skeleton-webpack-plugin
-> 
+>
 > npm install --save-dev html-webpack-plugin
 
 ### Basic Use
@@ -181,6 +181,7 @@ const webpackConfig = {
 | quiet     | Boolean         | No        | `false`      | 是否在终端打印消息，当设置为 true 时，不打印任何消息。       |
 | noInfo    | Boolean         | No        | `false`      | 当设置为 true 时，不打印 `info` 类型的消息                   |
 | logTime   | Boolean         | No        | `true`       | 当设置为 true 时，在任何消息前面都会带有一个格式化的时间值。 |
+| productionMode | Array      | No        | `['production']` | 用来设置 NODE_ENV 多环境生产模式，可以设置 `['develop', 'test', 'staging', 'production']`, 可自定义生产模式的环境变量。 |
 
 **Skeleton Page Options**
 
@@ -225,7 +226,7 @@ const pluginDefaultConfig = {
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: []
   },
   svg: {
     color: '#EFEFEF',
