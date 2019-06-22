@@ -102,11 +102,11 @@
     },
     "device": {
       "description": "The device you want to generate skeleton page",
-      "type": "string"     
+      "type": "string"
     },
     "debug": {
       "description": "Weather to show debug info",
-      "type": "boolean"     
+      "type": "boolean"
     },
     "minify": {
       "description": "Weather to minify the HTML",
@@ -114,35 +114,35 @@
         "type": "object"
       }, {
         "type": "boolean"
-      }]   
+      }]
     },
     "defer": {
       "description": "Defer to generate skeleton page",
-      "type": "number"     
+      "type": "number"
     },
     "excludes": {
       "description": "which element that you dont want to generate skeleton",
-      "type": "array"     
+      "type": "array"
     },
     "remove": {
       "description": "the elements that you want to remove",
-      "type": "array"     
+      "type": "array"
     },
     "hide": {
       "description": "the element that you want to hide",
-      "type": "array"     
+      "type": "array"
     },
     "grayBlock": {
       "description": "the element that you just want to make it display a gray block",
-      "type": "array"     
+      "type": "array"
     },
     "cookies": {
       "description": "Add cookies to the page which puppeteer opened",
-      "type": "array"     
+      "type": "array"
     },
     "headless": {
       "description": "Open headless chrome or not",
-      "type": "boolean"     
+      "type": "boolean"
     },
     "cssUnit": {
       "description": "The css unit used in shell.html",
@@ -152,7 +152,7 @@
         "vh",
         "vmin",
         "vmax"
-      ]  
+      ]
     },
     "decimal": {
       "description": "The decimal of CSS value",
@@ -188,6 +188,10 @@
     "sessionStoragies": {
       "description": "Add sessionStorage to the page after puppeter opened",
       "type": "object"
+    },
+    "productionMode": {
+      "description": "Add production mode NODE_ENV string for webpack",
+      "type": "array"
     }
   },
   "type": "object"
