@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/banner.jpg" alt="mark text" width="100%">
+<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/banner.jpg" alt="mark text" width="100%">
 </p>
 
 # Different from [page-skeleton-webpack-plugin](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable) is *Multiple NODE_ENV String*
@@ -48,7 +48,7 @@
       Blog
     </a>
    <span> | </span>
-    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/blob/master/docs/i18n/zh_cn.md">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/blob/node-env-editable/docs/i18n/zh_cn.md">
       中文
     </a>
    <span> | </span>
@@ -80,7 +80,7 @@
 
 <br />
 
-![](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/workflow.gif)
+![](https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/workflow.gif)
 
 ### Features
 
@@ -104,7 +104,7 @@ _speed up play_
 
 All examples are in the `examples` folder.
 
-* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale)
+* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale)
 
 ### Installation
 
@@ -195,7 +195,7 @@ Re-package the application with webpack. When the page is restarted, you can see
 | --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
 | pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
 | staticDir | String          | Yes       | None         | Path to output static route page                             |
-| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale) |
+| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale) |
 | Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
 | debug     | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal. |
 | minify    | false or Object | No        | See defaults | The plug-in will uglify the generated shell.html file by default. You can pass [html-minifier](https://github.com/kangax/html-minifier) configuration parameters to mimify shell.html. When configured to false , the generated shell.html file is not uglified and the shell.html file is formatted. |
@@ -301,6 +301,6 @@ Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
 ### License
 
- [**MIT**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/blob/master/LICENSE).
+ [**MIT**](https://github.com/kingzez/page-skeleton-webpack-plugin/blob/node-env-editable/LICENSE).
 
 Copyright (c) 2017-present, @ElemeFE

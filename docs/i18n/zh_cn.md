@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/banner.jpg" alt="mark text" width="100%">
+<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/banner.jpg" alt="mark text" width="100%">
 </p>
 
 # 与 [page-skeleton-webpack-plugin](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable) 不同的是可以设置 *多 NODE_ENV环境变量已生成 production 模式*
@@ -71,7 +71,7 @@
 
 <br />
 
-![](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/workflow.gif)
+![](https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/workflow.gif)
 
 ### Features
 
@@ -87,7 +87,7 @@ Page Skeleton 是一款 webpack 插件，该插件的目的是根据你项目中
 
 所有的 example 都放在了 `examples` 文件夹内。
 
-* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale)
+* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale)
 
 ### Installation
 
@@ -179,7 +179,7 @@ const webpackConfig = {
 | --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
 | pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
 | staticDir | String          | Yes       | None         | 用来输出静态路由页面的路径                                   |
-| routes    | Array           | Yes       | None         | 需要生成带有骨架屏的静态路由，请参考 [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale) |
+| routes    | Array           | Yes       | None         | 需要生成带有骨架屏的静态路由，请参考 [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale) |
 | Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
 | debug     | Boolean         | No        | true         | 是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。 |
 | minify    | false or Object | No        | See defaults | 插件默认会压缩生成的 shell.html 文件，默认压缩配置参见本部分默认配置。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。当配置为 false 时，不压缩生成的 shell.html 文件，并且会对 shell.html 文件进行格式化处理。 |
