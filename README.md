@@ -1,6 +1,12 @@
 <p align="center">
-<img src="https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/banner.jpg" alt="mark text" width="100%">
+<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/banner.jpg" alt="mark text" width="100%">
 </p>
+
+# Different from [page-skeleton-webpack-plugin](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable) is *Multiple NODE_ENV String*
+
+## See details
+- [PR](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/pull/110) I had pull request, but have no response, so I publish for temporary
+- [Document productionMode](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#documents)
 
 <div align="center">
   <strong>:high_brightness:Automatically generate Skeleton Page:crescent_moon:</strong>
@@ -14,19 +20,19 @@
 
 <div align="center">
   <!-- Version -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://badge.fury.io/gh/elemefe%2Fpage-skeleton-webpack-plugin.svg" alt="website">
   </a>
   <!-- License -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://img.shields.io/github/license/ElemeFE/page-skeleton-webpack-plugin.svg?style=flat-square" alt="LICENSE">
   </a>
   <!-- Build Status -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://travis-ci.org/ElemeFE/page-skeleton-webpack-plugin.svg?branch=master" alt="build">
   </a>
   <!-- Downloads monthly -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://img.shields.io/npm/dm/page-skeleton-webpack-plugin.svg?style=flat-square" alt="download">
   </a>
 </div>
@@ -42,31 +48,31 @@
       Blog
     </a>
    <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/docs/i18n/zh_cn.md">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/blob/node-env-editable/docs/i18n/zh_cn.md">
       中文
     </a>
    <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#features">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#features">
       Features
     </a>
    <span> | </span>
-​    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#examples">
+​    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#examples">
       Examples
     </a>
 ​    <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#installation">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#installation">
       Install
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#basic-use">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#basic-use">
       Basic Use
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#documents">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#documents">
       Documents
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#contribution">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#contribution">
       Contribution
     </a>
   </h3>
@@ -74,7 +80,7 @@
 
 <br />
 
-![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/workflow.gif)
+![](https://github.com/kingzez/page-skeleton-webpack-plugin/raw/node-env-editable/docs/workflow.gif)
 
 ### Features
 
@@ -98,14 +104,14 @@ _speed up play_
 
 All examples are in the `examples` folder.
 
-* [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale)
+* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale)
 
 ### Installation
 
 Use `npm` to install this plugin, and you also need to install [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin).
 
 > npm install --save-dev page-skeleton-webpack-plugin
-> 
+>
 > npm install --save-dev html-webpack-plugin
 
 ### Basic Use
@@ -189,7 +195,7 @@ Re-package the application with webpack. When the page is restarted, you can see
 | --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
 | pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
 | staticDir | String          | Yes       | None         | Path to output static route page                             |
-| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale) |
+| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/examples/sale) |
 | Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
 | debug     | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal. |
 | minify    | false or Object | No        | See defaults | The plug-in will uglify the generated shell.html file by default. You can pass [html-minifier](https://github.com/kangax/html-minifier) configuration parameters to mimify shell.html. When configured to false , the generated shell.html file is not uglified and the shell.html file is formatted. |
@@ -240,7 +246,7 @@ const pluginDefaultConfig = {
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: []
   },
   svg: {
     color: '#EFEFEF',
@@ -295,6 +301,6 @@ Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
 ### License
 
- [**MIT**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/LICENSE).
+ [**MIT**](https://github.com/kingzez/page-skeleton-webpack-plugin/blob/node-env-editable/LICENSE).
 
 Copyright (c) 2017-present, @ElemeFE

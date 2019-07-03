@@ -55,7 +55,9 @@ const defaultOptions = {
   logLevel: 'info',
   quiet: false,
   noInfo: false,
-  logTime: true
+  logTime: true,
+  productionMode: ['production']
+  // can be ['develop', 'test', 'staging', 'production'] or more NODE_ENV string,
 }
 
 const htmlBeautifyConfig = {

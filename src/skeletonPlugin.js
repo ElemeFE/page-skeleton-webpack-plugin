@@ -9,7 +9,7 @@ const { addScriptTag, outputSkeletonScreen, snakeToCamel } = require('./util')
 const { defaultOptions, staticPath } = require('./config/config')
 const OptionsValidationError = require('./config/optionsValidationError')
 
-const EVENT_LIST = process.env.NODE_ENV === 'production' ? ['watch-close', 'failed', 'done'] : ['watch-close', 'failed']
+let EVENT_LIST
 const PLUGIN_NAME = 'pageSkeletonWebpackPlugin'
 
 function SkeletonPlugin(options = {}) {
@@ -20,6 +20,7 @@ function SkeletonPlugin(options = {}) {
   this.options = merge({ staticPath }, defaultOptions, options)
   this.server = null
   this.originalHtml = ''
+  EVENT_LIST = this.options.productionMode.includes(process.env.NODE_ENV) ? ['watch-close', 'failed', 'done'] : ['watch-close', 'failed']
 }
 
 SkeletonPlugin.prototype.createServer = function () { // eslint-disable-line func-names
@@ -29,8 +30,8 @@ SkeletonPlugin.prototype.createServer = function () { // eslint-disable-line fun
 
 SkeletonPlugin.prototype.insertScriptToClient = function (htmlPluginData) { // eslint-disable-line func-names
   // at develop phase, insert the interface code
-  if (process.env.NODE_ENV !== 'production') {
-    const { port } = this.options
+  const { port, productionMode } = this.options
+  if (!productionMode.includes(process.env.NODE_ENV)) {
     const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
     const oldHtml = htmlPluginData.html
     htmlPluginData.html = addScriptTag(oldHtml, clientEntry, port)
