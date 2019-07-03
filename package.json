@@ -1,5 +1,5 @@
 {
-  "name": "page-skeleton-webpack-plugin",
+  "name": "page-skeleton-with-env-webpack-plugin",
   "version": "0.10.12",
   "description": "web site skeleton generator",
   "main": "index.js",

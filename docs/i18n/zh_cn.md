@@ -1,6 +1,12 @@
 <p align="center">
-<img src="https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/banner.jpg" alt="mark text" width="100%">
+<img src="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/banner.jpg" alt="mark text" width="100%">
 </p>
+
+# 与 [page-skeleton-webpack-plugin](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable) 不同的是可以设置 *多 NODE_ENV环境变量已生成 production 模式*
+
+## 详见
+- [PR](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/pull/110) 提了一个pr，官方暂无回应，因此只能自己发布
+- [文档 productionMode](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#documents)
 
 <div align="center">
   <strong>:high_brightness:Automatically generate Skeleton Page:crescent_moon:</strong>
@@ -14,19 +20,19 @@
 
 <div align="center">
   <!-- Version -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://badge.fury.io/gh/elemefe%2Fpage-skeleton-webpack-plugin.svg" alt="website">
   </a>
   <!-- License -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://img.shields.io/github/license/ElemeFE/page-skeleton-webpack-plugin.svg?style=flat-square" alt="LICENSE">
   </a>
   <!-- Build Status -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://travis-ci.org/ElemeFE/page-skeleton-webpack-plugin.svg?branch=master" alt="build">
   </a>
   <!-- Downloads weekly -->
-  <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin">
+  <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable">
     <img src="https://img.shields.io/npm/dw/page-skeleton-webpack-plugin.svg?style=flat-square" alt="download">
   </a>
 </div>
@@ -37,27 +43,27 @@
 
 <div align="center">
   <h3>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#features">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#features">
       Features
     </a>
    <span> | </span>
-​    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#examples">
+​    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#examples">
       Examples
     </a>
 ​    <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#installation">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#installation">
       Install
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#basic-use">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#basic-use">
       Basic Use
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#documents">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#documents">
       Documents
     </a>
     <span> | </span>
-    <a href="https://github.com/ElemeFE/page-skeleton-webpack-plugin#contribution">
+    <a href="https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable#contribution">
       Contribution
     </a>
   </h3>
@@ -65,7 +71,7 @@
 
 <br />
 
-![](https://github.com/ElemeFE/page-skeleton-webpack-plugin/raw/master/docs/workflow.gif)
+![](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/raw/master/docs/workflow.gif)
 
 ### Features
 
@@ -81,7 +87,7 @@ Page Skeleton 是一款 webpack 插件，该插件的目的是根据你项目中
 
 所有的 example 都放在了 `examples` 文件夹内。
 
-* [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale)
+* [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale)
 
 ### Installation
 
@@ -173,7 +179,7 @@ const webpackConfig = {
 | --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
 | pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
 | staticDir | String          | Yes       | None         | 用来输出静态路由页面的路径                                   |
-| routes    | Array           | Yes       | None         | 需要生成带有骨架屏的静态路由，请参考 [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale) |
+| routes    | Array           | Yes       | None         | 需要生成带有骨架屏的静态路由，请参考 [**sale**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/tree/master/examples/sale) |
 | Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
 | debug     | Boolean         | No        | true         | 是否开启 `debug` 模式，当 `debug` 为 `true` 时，headless Chromium 控制台的输出信息将在终端输出。 |
 | minify    | false or Object | No        | See defaults | 插件默认会压缩生成的 shell.html 文件，默认压缩配置参见本部分默认配置。可以传递 [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference) 的配置参数给 `mimify`，进行按需压缩。当配置为 false 时，不压缩生成的 shell.html 文件，并且会对 shell.html 文件进行格式化处理。 |
@@ -181,7 +187,6 @@ const webpackConfig = {
 | quiet     | Boolean         | No        | `false`      | 是否在终端打印消息，当设置为 true 时，不打印任何消息。       |
 | noInfo    | Boolean         | No        | `false`      | 当设置为 true 时，不打印 `info` 类型的消息                   |
 | logTime   | Boolean         | No        | `true`       | 当设置为 true 时，在任何消息前面都会带有一个格式化的时间值。 |
-| productionMode | Array      | No        | `['production']` | 用来设置 NODE_ENV 多环境生产模式，可以设置 `['develop', 'test', 'staging', 'production']`, 可自定义生产模式的环境变量。 |
 
 **Skeleton Page Options**
 
@@ -270,6 +275,6 @@ Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
 ### License
 
- [**MIT**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/LICENSE).
+ [**MIT**](https://github.com/kingzez/page-skeleton-webpack-plugin/tree/node-env-editable/blob/master/LICENSE).
 
 Copyright (c) 2017-present, @ElemeFE
