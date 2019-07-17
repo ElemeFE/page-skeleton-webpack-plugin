@@ -230,26 +230,34 @@ Re-package the application with webpack. When the page is restarted, you can see
 ```javascript
 const pluginDefaultConfig = {
   port: '8989',
+  // ['spin', 'chiaroscuro', 'shine'],
+  loading: 'spin',
   text: {
     color: '#EEEEEE'
   },
   image: {
-    shape: 'rect', // `rect` | `circle`
+    // `rect` | `circle`
+    shape: 'rect',
     color: '#EFEFEF',
     shapeOpposite: []
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: []
   },
   svg: {
+    // or transparent
     color: '#EFEFEF',
-    shape: 'circle', // circle | rect
+    // circle | rect
+    shape: 'circle',
     shapeOpposite: []
   },
   pseudo: {
-    color: '#EFEFEF', // or transparent
-    shape: 'circle' // circle | rect
+    // or transparent
+    color: '#EFEFEF',
+    // circle | rect
+    shape: 'circle',
+    shapeOpposite: []
   },
   device: 'iPhone 6 Plus',
   debug: false,
@@ -265,8 +273,9 @@ const pluginDefaultConfig = {
   hide: [],
   grayBlock: [],
   cookies: [],
-  storagies: {},
-  sessionStoragies: {},
+  headless: true,
+  h5Only: false,
+  // or 'vw|vh|vmin|vmax'
   cssUnit: 'rem',
   decimal: 4,
   logLevel: 'info',
